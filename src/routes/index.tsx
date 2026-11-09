@@ -13,7 +13,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import bestiesImage from "@/assets/miumi-besties.png";
+
 import {
   calculateScore,
   getPersonalityType,
@@ -261,7 +261,7 @@ function HomePage({
         <div className="hero-art-wrap">
           <span className="art-spark art-spark-one">✧</span>
           <span className="art-spark art-spark-two">♡</span>
-          <img className="hero-art" src={bestiesImage} alt="A bunny and a teddy bear sharing a strawberry picnic" width={1024} height={1024} />
+          
           <span className="art-caption">a little sweetness<br />for you & your bestie</span>
         </div>
       </section>
