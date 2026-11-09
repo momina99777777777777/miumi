@@ -84,6 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "miumi ♡ — your little friendship world" },
       { name: "description", content: "A dreamy little world of bestie quizzes, daily questions, and sweet discoveries." },
       { name: "author", content: "Lovable" },
+      { name: "google-site-verification", content: "i5jxo704YcAqxr3yj71WKUIJm711TpgYOCBdxWn_Z3I" },
       { property: "og:title", content: "miumi ♡ — your little friendship world" },
       { property: "og:description", content: "Friendship, fun and little discoveries ♡" },
       { property: "og:type", content: "website" },
