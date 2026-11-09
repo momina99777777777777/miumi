@@ -1,0 +1,3 @@
+[build]
+  # nitro's netlify preset writes static client assets to dist/ (the SSR function lives in .netlify/functions-internal)
+  publish = "dist"
