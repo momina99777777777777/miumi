@@ -1298,3 +1298,20 @@ button:hover::after {
     transform: translateY(0) scale(1);
   }
 }
+.dear-you-listen {
+  display: inline-block;
+  margin: 16px auto;
+  padding: 12px 24px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #ff9dcc, #c99bff);
+  color: white;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(201, 155, 255, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dear-you-listen:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 10px 24px rgba(201, 155, 255, 0.5);
+}
