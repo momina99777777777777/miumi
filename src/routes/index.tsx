@@ -307,10 +307,13 @@ const [opening, setOpening] = useState(false);
 </div>
             <h3>A little surprise is waiting!</h3>
             <p>Open your mystery box to discover today's quiz.</p>
-            <Button className="hero-cta" onClick={() => {
-  setOpening(true);
-  window.setTimeout(() => setOpened(true), 800);
-}}
+                        <Button
+              className="hero-cta"
+              onClick={() => {
+                setOpening(true);
+                window.setTimeout(() => setOpened(true), 800);
+              }}
+            >
               Open my mystery box ✨
             </Button>
           </div>
