@@ -535,8 +535,64 @@ function DearYou() {
   const [message, setMessage] = useState("");
   const [theme, setTheme] = useState("pink");
 
+  const [status, setStatus] = useState("");
+  const [receivedCard, setReceivedCard] = useState<any>(null);
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const savedCard = params.get("dear-you");
+
+  if (savedCard) {
+    try {
+      setReceivedCard(JSON.parse(savedCard));
+    } catch {
+      setStatus("This dedication link is invalid. 💗");
+    }
+  }
+}, []);
+
+  async function createCard() {
+    if (!to.trim() || !song.trim() || !message.trim()) {
+      setStatus("Please fill in the recipient, song and message! 💗");
+      return;
+    }
+
+    const dedication = {
+      to,
+      from,
+      song,
+      artist,
+      message,
+      theme,
+    };
+
+    const shareUrl = new URL(window.location.href);
+    shareUrl.searchParams.set(
+      "dear-you",
+      JSON.stringify(dedication)
+    );
+
+    try {
+      await navigator.clipboard.writeText(shareUrl.toString());
+      setStatus("Your dedication link has been copied! 💌");
+    } catch {
+      setStatus("Couldn't copy the link. Please try again!");
+    }
+  }
+
   return (
     <section className="dear-you">
+  {receivedCard ? (
+    <div className={`dear-you-preview dear-theme-${receivedCard.theme}`}>
+      <span>♡ A LITTLE GIFT FOR YOU ♡</span>
+      <h3>Dear, {receivedCard.to}...</h3>
+      <div>🎵</div>
+      <h2>{receivedCard.song}</h2>
+      <p>{receivedCard.artist}</p>
+      <p>{receivedCard.message}</p>
+      <small>With love, {receivedCard.from} ♡</small>
+    </div>
+  ) : (
       <div className="dear-you-heading">
         <span>💌 🎧 ✨</span>
         <p>A SONG, A FEELING, A LITTLE MESSAGE</p>
@@ -600,14 +656,14 @@ function DearYou() {
           <p>{message || "Your beautiful message will appear here..."}</p>
           <small>With love, {from || "Someone"} ♡</small>
         </div>
+<button type="button" onClick={createCard}>
+  Create my card 💌
+</button>
 
-        <button
-          type="button"
-          onClick={() => alert("Your dedication card is coming soon! 💗")}
-        >
-          Create my card 💌
-        </button>
+{status && <p className="dear-you-status">{status}</p>}
+      
       </div>
+    )}
     </section>
   );
 }
