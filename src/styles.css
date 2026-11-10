@@ -499,3 +499,32 @@
   60% { transform: scale(1.35) rotate(12deg); }
   100% { transform: scale(0.8) rotate(0); opacity: 0; }
 }
+/* MIUMI virtual pet magic 🧸 */
+
+.miumi-pet {
+  display: inline-block;
+  font-size: 85px;
+  cursor: pointer;
+  animation: pet-bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 10px 15px rgba(255, 130, 190, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.miumi-pet:hover {
+  transform: scale(1.2) rotate(-8deg);
+}
+
+@keyframes pet-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.miumi-pet-happy {
+  animation: pet-happy 0.5s ease-in-out;
+}
+
+@keyframes pet-happy {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35) rotate(12deg); }
+  100% { transform: scale(1); }
+}
