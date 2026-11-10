@@ -846,27 +846,123 @@ const [selectedArticle, setSelectedArticle] = useState<number | null>(null);
 
             <div className="journal-reading-decoration">🌷 ✨ 💌</div>
 
-            <h3>A little introduction</h3>
-            <p>
-              The most beautiful moments in life are often made from
-              little things. A thoughtful message, a kind word or
-              spending time together can make someone's day special.
-            </p>
+           {selectedArticle === 0 ? (
+  <>
+    <h3>A little introduction 🌷</h3>
+    <p>
+      Friendship is built through small moments of kindness,
+      trust and understanding. You don't need expensive gifts
+      or grand gestures to make someone feel special.
+    </p>
 
-            <h3>Little things that matter</h3>
-            <ul>
-              <li>Remember the little details people share with you.</li>
-              <li>Check in on your friends and ask how their day went.</li>
-              <li>Celebrate their achievements, big or small.</li>
-              <li>Listen when someone needs to talk.</li>
-              <li>Make time for laughter and meaningful conversations.</li>
-            </ul>
+    <h3>Little things that matter</h3>
+    <ul>
+      <li>Remember the little details your friends share.</li>
+      <li>Check in and ask how their day went.</li>
+      <li>Celebrate their achievements.</li>
+      <li>Listen without judging.</li>
+      <li>Make time for meaningful conversations.</li>
+    </ul>
 
-            <h3>One little challenge ♡</h3>
-            <p>
-              Send someone a kind message today. It doesn't need
-              to be long. A few sincere words can mean a lot.
-            </p>
+    <h3>One little challenge ♡</h3>
+    <p>
+      Send a friend a kind message today. A few sincere
+      words can make an ordinary day brighter.
+    </p>
+  </>
+) : selectedArticle === 1 ? (
+  <>
+    <h3>A fresh beginning 🎀</h3>
+    <p>
+      Starting college can feel exciting and unfamiliar.
+      Remember that you don't have to figure everything
+      out on your first day. Give yourself time.
+    </p>
+
+    <h3>Make your college experience special</h3>
+    <ul>
+      <li>Introduce yourself to someone new.</li>
+      <li>Keep track of assignments and important dates.</li>
+      <li>Join activities that genuinely interest you.</li>
+      <li>Ask questions whenever you need help.</li>
+      <li>Make time for studies, rest and hobbies.</li>
+    </ul>
+
+    <h3>Your little reminder ♡</h3>
+    <p>
+      You belong in every room where you are learning
+      and growing. You don't need to be perfect to begin.
+    </p>
+  </>
+) : selectedArticle === 2 ? (
+  <>
+    <h3>Let's start a conversation 💌</h3>
+    <p>
+      Sometimes the best conversations begin with
+      unexpected questions. Try these with your best friend!
+    </p>
+
+    <h3>25 questions to ask</h3>
+    <ul>
+      <li>What is your happiest childhood memory?</li>
+      <li>What's your dream travel destination?</li>
+      <li>What always makes you laugh?</li>
+      <li>What's your favourite comfort food?</li>
+      <li>Which fictional world would you visit?</li>
+      <li>What's your dream career?</li>
+      <li>What's one skill you'd love to learn?</li>
+      <li>What song describes your mood today?</li>
+      <li>What's your favourite season?</li>
+      <li>What's your funniest memory?</li>
+      <li>What's one thing on your bucket list?</li>
+      <li>Which movie could you watch again and again?</li>
+      <li>What makes you feel appreciated?</li>
+      <li>What's your favourite way to relax?</li>
+      <li>What's something you're proud of?</li>
+      <li>What would your perfect weekend look like?</li>
+      <li>Which animal would you choose as a pet?</li>
+      <li>What's your favourite childhood game?</li>
+      <li>What's one thing you want to try this year?</li>
+      <li>Who inspires you?</li>
+      <li>What's your favourite little tradition?</li>
+      <li>What's something people misunderstand about you?</li>
+      <li>What makes a friendship meaningful?</li>
+      <li>What's one thing you're looking forward to?</li>
+      <li>What's one memory you'd love to make together?</li>
+    </ul>
+
+    <h3>One little challenge ♡</h3>
+    <p>
+      Pick five questions and take turns answering them.
+      No rushing — enjoy the conversation!
+    </p>
+  </>
+) : (
+  <>
+    <h3>Growing at your own pace 🦋</h3>
+    <p>
+      Self-growth isn't about becoming someone else.
+      It's about discovering your strengths, learning
+      from experiences and becoming more comfortable
+      with who you are.
+    </p>
+
+    <h3>Small steps towards confidence</h3>
+    <ul>
+      <li>Try something new, even if it feels unfamiliar.</li>
+      <li>Celebrate progress instead of chasing perfection.</li>
+      <li>Learn to say no respectfully.</li>
+      <li>Spend time on hobbies you enjoy.</li>
+      <li>Be kind to yourself when you make mistakes.</li>
+    </ul>
+
+    <h3>A little reminder ♡</h3>
+    <p>
+      You don't have to compare your journey with anyone
+      else's. Every small step forward counts.
+    </p>
+  </>
+)}
           </div>
         </div>
       ) : (
