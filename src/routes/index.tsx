@@ -792,7 +792,80 @@ function MiumiBunny() {
     </section>
   );
 }
+function MiumiJournal() {
+  const articles = [
+    {
+      category: "FRIENDSHIP",
+      title: "Little Things That Make Friendships Special",
+      description: "Simple ways to make your favourite people feel appreciated.",
+      emoji: "🌷",
+      color: "pink",
+      read: "4 min read",
+    },
+    {
+      category: "COLLEGE LIFE",
+      title: "Your Guide to a Fresh College Start",
+      description: "Making friends, finding confidence and enjoying new beginnings.",
+      emoji: "🎀",
+      color: "lavender",
+      read: "5 min read",
+    },
+    {
+      category: "FUN LISTS",
+      title: "25 Questions to Ask Your Best Friend",
+      description: "Cute, funny and meaningful questions for your next conversation.",
+      emoji: "💌",
+      color: "peach",
+      read: "3 min read",
+    },
+    {
+      category: "SELF GROWTH",
+      title: "A Little Reminder to Believe in Yourself",
+      description: "Small steps towards becoming a more confident you.",
+      emoji: "🦋",
+      color: "mint",
+      read: "4 min read",
+    },
+  ];
 
+  return (
+    <section className="miumi-journal">
+      <div className="journal-hero">
+        <span className="journal-sparkle">✦ a little corner of inspiration ✦</span>
+        <h2>MIUMI's Little Journal</h2>
+        <p>Stories, little ideas and lovely things to make your days brighter.</p>
+        <span className="journal-decoration">🌸 🧸 🌷</span>
+      </div>
+
+      <div className="journal-heading">
+        <div>
+          <span>THE LITTLE LIBRARY</span>
+          <h3>Something lovely to read</h3>
+        </div>
+        <span className="journal-flower">✿</span>
+      </div>
+
+      <div className="journal-grid">
+        {articles.map((article, index) => (
+          <article className={`journal-card ${article.color}`} key={index}>
+            <div className="journal-card-top">
+              <span>{article.category}</span>
+              <span className="journal-emoji">{article.emoji}</span>
+            </div>
+            <h3>{article.title}</h3>
+            <p>{article.description}</p>
+            <div className="journal-card-bottom">
+              <span>♡ {article.read}</span>
+              <span>Coming soon ✨</span>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p className="journal-footer">made with a little magic and lots of love ♡</p>
+    </section>
+  );
+}
 function HomePage({
   daily,
   dailyAnswer,
