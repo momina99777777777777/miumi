@@ -479,6 +479,7 @@ function HomePage({
           <span className="art-caption">a little sweetness<br />for you & your bestie</span>
         </div>
       </section>
+            <Wonderland />
             <section className="section-block text-center">
         <p className="eyebrow">your tiny new friend ♡</p>
         <h2>Meet your little MIUMI pet! 🧸</h2>
