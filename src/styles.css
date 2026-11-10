@@ -528,3 +528,246 @@
   50% { transform: scale(1.35) rotate(12deg); }
   100% { transform: scale(1); }
 }
+/* MIUMI DREAMY MAGIC MAKEOVER ✨ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.quiz-card,
+.welcome-hero {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.quiz-card:hover {
+  transform: translateY(-8px) rotate(-1deg);
+  box-shadow: 0 18px 40px rgba(255, 125, 190, 0.22);
+}
+
+button {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+button:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 8px 25px rgba(255, 110, 180, 0.35);
+}
+
+button:active {
+  transform: scale(0.94);
+}
+
+.quiz-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-card::before {
+  content: "✧";
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  color: #ff9acb;
+  font-size: 25px;
+  animation: miu-twinkle 2s ease-in-out infinite;
+}
+
+.welcome-hero h1 {
+  animation: miu-title 3s ease-in-out infinite;
+}
+
+@keyframes miu-twinkle {
+  0%, 100% { opacity: 0.35; transform: rotate(0deg) scale(0.8); }
+  50% { opacity: 1; transform: rotate(35deg) scale(1.3); }
+}
+
+@keyframes miu-title {
+  0%, 100% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 18px rgba(255, 140, 200, 0.45); }
+}
+
+/* ==========================================
+   MIUMI ULTIMATE MAGICAL MAKEOVER ✨
+   ========================================== */
+
+/* DREAMY BACKGROUND */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 10% 15%, rgba(255, 182, 218, 0.16), transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(204, 180, 255, 0.16), transparent 30%);
+}
+
+/* GLOSSY 3D CARDS */
+.quiz-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 10px 25px rgba(210, 130, 180, 0.12),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+
+.quiz-card:hover {
+  transform: translateY(-10px) rotateX(3deg) rotateY(-3deg);
+  box-shadow:
+    0 22px 40px rgba(230, 120, 180, 0.23),
+    0 0 20px rgba(255, 190, 225, 0.3);
+}
+
+.quiz-card::after {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: -50%;
+  width: 50%;
+  height: 300%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: left 0.8s ease;
+  pointer-events: none;
+}
+
+.quiz-card:hover::after {
+  left: 130%;
+}
+
+/* MAGICAL BUTTONS */
+button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+button:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 10px 25px rgba(255, 110, 180, 0.3);
+}
+
+button:active {
+  transform: scale(0.94);
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+button:hover::after {
+  left: 140%;
+}
+
+/* FLOATING BUNNY */
+.miumi-pet {
+  filter: drop-shadow(0 12px 18px rgba(255, 120, 190, 0.35));
+  transition: filter 0.3s ease;
+}
+
+.miumi-pet:hover {
+  filter: drop-shadow(0 0 25px rgba(255, 120, 200, 0.8));
+}
+
+/* MYSTERY BOX GLOW */
+.mystery-box-3d {
+  filter: drop-shadow(0 8px 15px rgba(255, 130, 190, 0.25));
+}
+
+.mystery-box-3d:hover {
+  filter: drop-shadow(0 0 25px rgba(255, 130, 210, 0.8));
+}
+
+/* SPARKLING HEADINGS */
+.welcome-hero h1 {
+  animation: miu-heading-glow 3s ease-in-out infinite;
+}
+
+@keyframes miu-heading-glow {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    text-shadow: 0 0 18px rgba(255, 130, 200, 0.5);
+  }
+}
+
+/* FLOATING DECORATION */
+.art-spark {
+  animation: miu-spark-float 3s ease-in-out infinite;
+}
+
+.art-spark-two {
+  animation-delay: 1s;
+}
+
+@keyframes miu-spark-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-13px) rotate(20deg);
+  }
+}
+
+/* GENTLE PAGE ENTRANCE */
+.page-enter {
+  animation: miu-page-enter 0.9s ease both;
+}
+
+@keyframes miu-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* PRETTY SCROLLBAR */
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#ffb2d8, #c9a7ff);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff3fa;
+}
+
+/* ACCESSIBILITY: REDUCE MOTION */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
