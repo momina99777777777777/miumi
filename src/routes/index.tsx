@@ -527,6 +527,90 @@ const [roomTheme, setRoomTheme] = useState("pink");
     </section>
   );
 }
+function DearYou() {
+  const [to, setTo] = useState("");
+  const [from, setFrom] = useState("");
+  const [song, setSong] = useState("");
+  const [artist, setArtist] = useState("");
+  const [message, setMessage] = useState("");
+  const [theme, setTheme] = useState("pink");
+
+  return (
+    <section className="dear-you">
+      <div className="dear-you-heading">
+        <span>💌 🎧 ✨</span>
+        <p>A SONG, A FEELING, A LITTLE MESSAGE</p>
+        <h2>Dear, You ♡</h2>
+        <p>Turn a special song into a little gift for someone.</p>
+      </div>
+
+      <div className="dear-you-form">
+        <label>Who is this for?</label>
+        <input
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+          placeholder="Your friend's nickname"
+        />
+
+        <label>Your nickname</label>
+        <input
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+          placeholder="From..."
+        />
+
+        <label>Song title</label>
+        <input
+          value={song}
+          onChange={(e) => setSong(e.target.value)}
+          placeholder="A song that reminds you of them"
+        />
+
+        <label>Artist</label>
+        <input
+          value={artist}
+          onChange={(e) => setArtist(e.target.value)}
+          placeholder="Artist name"
+        />
+
+        <label>Your message</label>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Write a little something..."
+          rows={4}
+        />
+
+        <label>Choose your card colour</label>
+        <select
+          value={theme}
+          onChange={(e) => setTheme(e.target.value)}
+        >
+          <option value="pink">Pink Dream 🎀</option>
+          <option value="purple">Lavender 💜</option>
+          <option value="blue">Cloud Blue 🩵</option>
+        </select>
+
+        <div className={`dear-you-preview dear-theme-${theme}`}>
+          <span>♡ A LITTLE GIFT FOR YOU ♡</span>
+          <h3>Dear, {to || "Someone Special"}...</h3>
+          <div>🎵</div>
+          <h2>{song || "Your favourite song"}</h2>
+          <p>{artist || "Artist name"}</p>
+          <p>{message || "Your beautiful message will appear here..."}</p>
+          <small>With love, {from || "Someone"} ♡</small>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => alert("Your dedication card is coming soon! 💗")}
+        >
+          Create my card 💌
+        </button>
+      </div>
+    </section>
+  );
+}
 
 function HomePage({
   daily,
