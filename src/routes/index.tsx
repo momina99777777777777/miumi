@@ -290,6 +290,7 @@ function HomePage({
         </div>
         <p className="daily-footnote">{dailyAnswer ? "Your answer is as lovely as you are ♡" : "Pick the one that feels like you ♡"}</p>
       </section>
+      
             <section className="section-block friendship-corner">
         <div className="section-heading">
           <div>
@@ -317,6 +318,36 @@ function HomePage({
           <article className="quiz-card quiz-card-mint">
             <h3>Respect differences</h3>
             <p>Good friends don't have to agree on everything. Respect and understanding help friendships grow.</p>
+          </article>
+        </div>
+      </section>
+            <section className="section-block friendship-fun">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">a little something to explore</p>
+            <h2>Friendship Facts & Fun ♡</h2>
+          </div>
+        </div>
+
+        <div className="quiz-grid">
+          <article className="quiz-card quiz-card-rose">
+            <h3>💌 A little kindness</h3>
+            <p>Small acts of kindness can make friendships feel stronger and more meaningful.</p>
+          </article>
+
+          <article className="quiz-card quiz-card-lilac">
+            <h3>✨ Did you know?</h3>
+            <p>Shared experiences, from little adventures to funny memories, can bring friends closer.</p>
+          </article>
+
+          <article className="quiz-card quiz-card-peach">
+            <h3>🌷 Conversation starter</h3>
+            <p>If we could travel anywhere together, where would we go?</p>
+          </article>
+
+          <article className="quiz-card quiz-card-mint">
+            <h3>🧸 Bestie question</h3>
+            <p>What's one memory with your friend that always makes you smile?</p>
           </article>
         </div>
       </section>
