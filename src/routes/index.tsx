@@ -592,7 +592,8 @@ useEffect(() => {
       <p>{receivedCard.message}</p>
       <small>With love, {receivedCard.from} ♡</small>
     </div>
-  ) : (
+   ) : (
+    <>
       <div className="dear-you-heading">
         <span>💌 🎧 ✨</span>
         <p>A SONG, A FEELING, A LITTLE MESSAGE</p>
@@ -662,7 +663,8 @@ useEffect(() => {
 
 {status && <p className="dear-you-status">{status}</p>}
       
-      </div>
+         </div>
+    </>
     )}
     </section>
   );
