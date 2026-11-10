@@ -459,3 +459,43 @@
     transform: translate(-50%, -160px) scale(0.7) rotate(-20deg);
   }
 }
+/* MIUMI 3D mystery box magic 🎁 */
+
+.mystery-box-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  animation: mystery-float 3s ease-in-out infinite;
+}
+
+.mystery-box-3d .mystery-gift {
+  display: inline-block;
+  font-size: 75px;
+  cursor: pointer;
+  filter: drop-shadow(0 12px 12px rgba(220, 90, 160, 0.3));
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.mystery-box-3d:hover .mystery-gift {
+  transform: rotateY(20deg) rotateX(-10deg) scale(1.15);
+  filter: drop-shadow(0 0 25px #ff9ed2);
+}
+
+.mystery-box-3d.opening .mystery-gift {
+  animation: mystery-open 0.8s ease-in-out;
+}
+
+@keyframes mystery-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes mystery-open {
+  0% { transform: scale(1) rotate(0); }
+  30% { transform: scale(1.2) rotate(-12deg); }
+  60% { transform: scale(1.35) rotate(12deg); }
+  100% { transform: scale(0.8) rotate(0); opacity: 0; }
+}
