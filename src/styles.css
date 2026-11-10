@@ -1315,3 +1315,252 @@ button:hover::after {
   transform: translateY(-4px) scale(1.04);
   box-shadow: 0 10px 24px rgba(201, 155, 255, 0.5);
 }
+
+/* MIUMI BUNNY CREATOR */
+
+.miumi-bunny {
+  margin: 65px auto;
+  padding: 45px 25px;
+  max-width: 1100px;
+  border-radius: 35px;
+  background: linear-gradient(145deg, #fff0f7, #f4edff, #fff8f0);
+  box-shadow: 0 20px 60px rgba(190, 145, 190, 0.15);
+  overflow: hidden;
+}
+
+.bunny-heading {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.bunny-heading span {
+  color: #c17cae;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.bunny-heading h2 {
+  color: #925c91;
+  font-size: clamp(25px, 4vw, 38px);
+  margin: 12px 0;
+}
+
+.bunny-heading p {
+  color: #a58ba5;
+}
+
+.bunny-creator {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+  align-items: center;
+}
+
+.bunny-stage {
+  min-height: 390px;
+  border-radius: 30px;
+  background: radial-gradient(circle at 50% 35%, #ffffff, #f6eaff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.bunny-character {
+  width: 185px;
+  height: 195px;
+  border-radius: 48% 48% 43% 43%;
+  position: relative;
+  margin-top: 55px;
+  box-shadow:
+    inset -15px -18px 25px rgba(150, 90, 130, 0.16),
+    inset 12px 12px 25px rgba(255,255,255,0.85),
+    0 22px 35px rgba(150, 110, 160, 0.2);
+  animation: bunny-float 3s ease-in-out infinite;
+  transition: background 0.3s ease;
+}
+
+.bunny-ear {
+  position: absolute;
+  width: 65px;
+  height: 135px;
+  border-radius: 50%;
+  top: -95px;
+  background: inherit;
+  box-shadow:
+    inset -8px -8px 15px rgba(150, 90, 130, 0.13),
+    inset 7px 7px 12px rgba(255,255,255,0.7);
+}
+
+.bunny-ear-left {
+  left: 20px;
+  transform: rotate(-15deg);
+}
+
+.bunny-ear-right {
+  right: 20px;
+  transform: rotate(15deg);
+}
+
+.bunny-face {
+  position: absolute;
+  inset: 0;
+}
+
+.bunny-eye {
+  position: absolute;
+  top: 78px;
+  color: #65415b;
+  font-size: 19px;
+  text-shadow: 0 2px 2px rgba(0,0,0,0.15);
+}
+
+.bunny-eye-left {
+  left: 48px;
+}
+
+.bunny-eye-right {
+  right: 48px;
+}
+
+.bunny-cheek {
+  position: absolute;
+  top: 105px;
+  width: 25px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ff8eae;
+  filter: blur(2px);
+}
+
+.bunny-cheek-left {
+  left: 25px;
+}
+
+.bunny-cheek-right {
+  right: 25px;
+}
+
+.bunny-nose {
+  position: absolute;
+  top: 104px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e77b9e;
+  font-size: 17px;
+}
+
+.bunny-accessory {
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 43px;
+  filter: drop-shadow(0 5px 5px rgba(100,50,100,0.15));
+  z-index: 3;
+}
+
+.bunny-shadow {
+  width: 150px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(150, 110, 170, 0.16);
+  filter: blur(8px);
+  margin-top: 12px;
+}
+
+.bunny-name {
+  color: #966c9a;
+  font-weight: 900;
+  font-size: 22px;
+  margin-top: 14px;
+}
+
+.bunny-options {
+  padding: 28px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 12px 30px rgba(180,140,190,0.1);
+}
+
+.bunny-options label {
+  display: block;
+  color: #946a91;
+  font-weight: 800;
+  margin: 18px 0 10px;
+}
+
+.bunny-options input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  border: 2px solid #f0d9ee;
+  background: white;
+  color: #875f83;
+  outline: none;
+}
+
+.bunny-color-options,
+.bunny-accessory-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bunny-color-options button {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 3px 10px rgba(100,70,100,0.15);
+  cursor: pointer;
+}
+
+.bunny-accessory-options button {
+  width: 55px;
+  height: 50px;
+  border: 2px solid #f0d9ee;
+  border-radius: 15px;
+  background: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.bunny-color-options button.selected,
+.bunny-accessory-options button.selected {
+  outline: 3px solid #c88bc2;
+  transform: scale(1.08);
+}
+
+.bunny-hint {
+  margin-top: 25px;
+  color: #b18bb0;
+  text-align: center;
+  font-size: 13px;
+}
+
+@keyframes bunny-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-13px) rotate(2deg);
+  }
+}
+
+@media (max-width: 700px) {
+  .bunny-creator {
+    grid-template-columns: 1fr;
+  }
+
+  .bunny-stage {
+    min-height: 350px;
+  }
+
+  .miumi-bunny {
+    padding: 30px 16px;
+  }
+}
