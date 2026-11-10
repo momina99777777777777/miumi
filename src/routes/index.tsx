@@ -364,6 +364,23 @@ function HomePage({
           <span className="art-caption">a little sweetness<br />for you & your bestie</span>
         </div>
       </section>
+            <section className="section-block text-center">
+        <p className="eyebrow">your tiny new friend ♡</p>
+        <h2>Meet your little MIUMI pet! 🧸</h2>
+
+        <div
+          className="miumi-pet"
+          onClick={(event) => {
+            event.currentTarget.classList.remove("miumi-pet-happy");
+            void event.currentTarget.offsetWidth;
+            event.currentTarget.classList.add("miumi-pet-happy");
+          }}
+        >
+          🐰
+        </div>
+
+        <p>Tap your bunny to make it happy! 💗</p>
+      </section>
 
       <section className="section-block quiz-section">
         <div className="section-heading">
