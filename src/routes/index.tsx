@@ -689,6 +689,7 @@ useEffect(() => {
 }
 
 function MiumiBunny() {
+  <MiumiJournal />
   const [bunnyColor, setBunnyColor] = useState("pink");
   const [bunnyName, setBunnyName] = useState("Mochi");
   const [accessory, setAccessory] = useState("bow");
