@@ -1205,6 +1205,7 @@ function HomePage({
       <DearYou />
       <MiumiBunny />
       <MiumiJournal />
+      <MiumiScrapbook />
             <Wonderland />
             <section className="section-block text-center">
         <p className="eyebrow">your tiny new friend ♡</p>
