@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  Check,https://github.com/momina99777777777777/miumi/tree/main/src/routes
+  Check,
   ChevronLeft,
   Clock3,
   Heart,
@@ -226,19 +226,36 @@ function MiumiHome() {
     </main>
   );
 }
-
-function NavButton({ active, icon, label, onClick }: { active: boolean; icon: ReactNode; label: string; onClick: () => void }) {
+function NavButton({
+  active,
+  icon,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <Button variant="ghost" className={`nav-button${active ? " nav-button-active" : ""}`} onClick={onClick} aria-current={active ? "page" : undefined}>
-      {icon}<span>{label}</span>
+    <Button
+      variant="ghost"
+      className={`nav-button${active ? " nav-button-active" : ""}`}
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+    >
+      {icon}
+      <span>{label}</span>
     </Button>
   );
+}
+
 function MysteryBox({
   quizzes,
   onStart,
 }: {
-  quizzes: typeof quizzes;
-  onStart: (quiz: (typeof quizzes)[number]) => void;
+  quizzes: QuizDefinition[];
+  onStart: (quiz: QuizDefinition) => void;
 }) {
   const [opened, setOpened] = useState(false);
 
@@ -263,125 +280,16 @@ function MysteryBox({
             <div className="text-5xl mb-4">🎁</div>
             <h3>A little surprise is waiting!</h3>
             <p>Open your mystery box to discover today's quiz.</p>
-            <Button
-              className="hero-cta"
-              onClick={() => setOpened(true)}
-            >
-              Open my mystery box ✨
-            </Button>
-          </div>
-        ) : mystery ? (
-          <div className="text-center">
-            <div className="text-5xl mb-4">💗</div>
-            <h3>{mystery.title}</h3>
-            <p>A mystery quiz has been picked just for today!</p>
-            <Button
-              className="hero-cta"
-              onClick={() => onStart(mystery)}
-            >
-              Play mystery quiz 💗
-            </Button>
-          </div>
-        ) : (
-          <p>No quizzes available right now. Come back soon!</p>
-        )}
-      </article>
-    </section>
-  );
-}
-  const [opened, setOpened] = useState(false);
-
-  const today = new Date();
-  const dayNumber = Math.floor(
-    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) /
-      86400000
-  );
-
-  const mystery = mysteryQuizzes[dayNumber % mysteryQuizzes.length];
-
-  return (
-    <section className="section-block">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">psst... there's a surprise inside</p>
-          <h2>Mystery Quiz Box 🎁</h2>
-        </div>
-      </div>
-
-      <article className="quiz-card quiz-card-rose">
-        {!opened ? (
-          <div className="text-center">
-            <div className="text-5xl mb-4">🎁</div>
-            <h3>A little surprise is waiting for you!</h3>
-            <p>Open your mystery box to discover today's special quiz.</p>
             <Button className="hero-cta" onClick={() => setOpened(true)}>
               Open my mystery box ✨
             </Button>
           </div>
-        ) : (
-          <div className="text-center">
-            <div className="text-5xl mb-4">{mystery.emoji}</div>
-            <h3>{mystery.title}</h3>
-            <p>{mystery.description}</p>
-            <Button
-              className="hero-cta"
-              onClick={() => {
-                window.location.href = mystery.link;
-              }}
-            >
-              Play mystery quiz 💗
-            </Button>
-          </div>
-        )}
-      </article>
-    </section>
-  );
-}function MysteryBox({
-  quizzes,
-  onStart,
-}: {
-  quizzes: typeof quizzes;
-  onStart: (quiz: (typeof quizzes)[number]) => void;
-}) {
-  const [opened, setOpened] = useState(false);
-
-  const mysteryIndex = quizzes.length
-    ? Math.floor(Date.now() / 86400000) % quizzes.length
-    : 0;
-
-  const mystery = quizzes[mysteryIndex];
-
-  return (
-    <section className="section-block">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">psst... there's a surprise inside</p>
-          <h2>Mystery Quiz Box 🎁</h2>
-        </div>
-      </div>
-
-      <article className="quiz-card quiz-card-rose">
-        {!opened ? (
-          <div className="text-center">
-            <div className="text-5xl mb-4">🎁</div>
-            <h3>A little surprise is waiting!</h3>
-            <p>Open your mystery box to discover today's quiz.</p>
-            <Button
-              className="hero-cta"
-              onClick={() => setOpened(true)}
-            >
-              Open my mystery box ✨
-            </Button>
-          </div>
         ) : mystery ? (
           <div className="text-center">
             <div className="text-5xl mb-4">💗</div>
             <h3>{mystery.title}</h3>
             <p>A mystery quiz has been picked just for today!</p>
-            <Button
-              className="hero-cta"
-              onClick={() => onStart(mystery)}
-            >
+            <Button className="hero-cta" onClick={() => onStart(mystery)}>
               Play mystery quiz 💗
             </Button>
           </div>
@@ -392,6 +300,7 @@ function MysteryBox({
     </section>
   );
 }
+
 function HomePage({
   daily,
   dailyAnswer,
