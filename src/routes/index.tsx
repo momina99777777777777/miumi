@@ -827,9 +827,50 @@ function MiumiJournal() {
       read: "4 min read",
     },
   ];
-
+const [selectedArticle, setSelectedArticle] = useState<number | null>(null);
   return (
     <section className="miumi-journal">
+      {selectedArticle !== null ? (
+        <div className="journal-reading">
+          <button
+            className="journal-back"
+            onClick={() => setSelectedArticle(null)}
+          >
+            ← Back to Journal
+          </button>
+
+          <div className="journal-reading-content">
+            <span>{articles[selectedArticle].category}</span>
+            <h2>{articles[selectedArticle].title}</h2>
+            <p>{articles[selectedArticle].description}</p>
+
+            <div className="journal-reading-decoration">🌷 ✨ 💌</div>
+
+            <h3>A little introduction</h3>
+            <p>
+              The most beautiful moments in life are often made from
+              little things. A thoughtful message, a kind word or
+              spending time together can make someone's day special.
+            </p>
+
+            <h3>Little things that matter</h3>
+            <ul>
+              <li>Remember the little details people share with you.</li>
+              <li>Check in on your friends and ask how their day went.</li>
+              <li>Celebrate their achievements, big or small.</li>
+              <li>Listen when someone needs to talk.</li>
+              <li>Make time for laughter and meaningful conversations.</li>
+            </ul>
+
+            <h3>One little challenge ♡</h3>
+            <p>
+              Send someone a kind message today. It doesn't need
+              to be long. A few sincere words can mean a lot.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
       <div className="journal-hero">
         <span className="journal-sparkle">✦ a little corner of inspiration ✦</span>
         <h2>MIUMI's Little Journal</h2>
@@ -847,7 +888,13 @@ function MiumiJournal() {
 
       <div className="journal-grid">
         {articles.map((article, index) => (
-          <article className={`journal-card ${article.color}`} key={index}>
+          <article
+  className={`journal-card ${article.color}`}
+  key={index}
+  onClick={() => setSelectedArticle(index)}
+  role="button"
+  tabIndex={0}
+>
             <div className="journal-card-top">
               <span>{article.category}</span>
               <span className="journal-emoji">{article.emoji}</span>
@@ -863,6 +910,8 @@ function MiumiJournal() {
       </div>
 
       <p className="journal-footer">made with a little magic and lots of love ♡</p>
+                  </>
+      )}
     </section>
   );
 }
