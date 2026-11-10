@@ -432,3 +432,30 @@
     color: var(--color-foreground);
   }
 }
+/* MIUMI magical click effects ✨ */
+
+.magic-click-particle {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  font-size: 25px;
+  animation: miumi-magic-float 1.2s ease-out forwards;
+  filter: drop-shadow(0 0 8px rgba(255, 130, 190, 0.7));
+}
+
+@keyframes miumi-magic-float {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -100px) scale(1.4) rotate(25deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -160px) scale(0.7) rotate(-20deg);
+  }
+}
