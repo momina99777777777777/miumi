@@ -531,6 +531,7 @@ function DearYou() {
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [song, setSong] = useState("");
+  const [songUrl, setSongUrl] = useState("");
   const [artist, setArtist] = useState("");
   const [message, setMessage] = useState("");
   const [theme, setTheme] = useState("pink");
@@ -557,14 +558,15 @@ useEffect(() => {
       return;
     }
 
-    const dedication = {
-      to,
-      from,
-      song,
-      artist,
-      message,
-      theme,
-    };
+  const dedication = {
+  to,
+  from,
+  song,
+  artist,
+  songUrl,
+  message,
+  theme,
+};
 
     const shareUrl = new URL(window.location.href);
     shareUrl.searchParams.set(
@@ -588,8 +590,20 @@ useEffect(() => {
       <h3>Dear, {receivedCard.to}...</h3>
       <div>🎵</div>
       <h2>{receivedCard.song}</h2>
-      <p>{receivedCard.artist}</p>
-      <p>{receivedCard.message}</p>
+<p>{receivedCard.artist}</p>
+
+{receivedCard.songUrl && (
+  <a
+    href={receivedCard.songUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="dear-you-listen"
+  >
+    🎧 Listen to this song
+  </a>
+)}
+
+<p>{receivedCard.message}</p>
       <small>With love, {receivedCard.from} ♡</small>
     </div>
    ) : (
@@ -622,7 +636,11 @@ useEffect(() => {
           onChange={(e) => setSong(e.target.value)}
           placeholder="A song that reminds you of them"
         />
-
+<input
+  value={songUrl}
+  onChange={(e) => setSongUrl(e.target.value)}
+  placeholder="Spotify or YouTube song link (optional)"
+/>
         <label>Artist</label>
         <input
           value={artist}
