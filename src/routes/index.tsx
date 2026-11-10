@@ -340,6 +340,8 @@ function Wonderland() {
   const [flowers, setFlowers] = useState(0);
   const [treasureFound, setTreasureFound] = useState(false);
   const [stickers, setStickers] = useState<string[]>([]);
+  const [roomDecor, setRoomDecor] = useState<string[]>([]);
+const [roomTheme, setRoomTheme] = useState("pink");
 
   const worlds = [
     { id: "pet", emoji: "🐰", name: "Pet Paradise", description: "Visit your tiny fluffy friend!" },
@@ -411,27 +413,73 @@ function Wonderland() {
               <h3>🏡 My Little Room</h3>
               <p>Welcome to your tiny dream bedroom!</p>
 
-              <div className="little-room">
+              
+              <div className={`little-room room-theme-${roomTheme}`}>
                 <div className="room-window">🌙 ✨</div>
                 <div className="room-lamp">💡</div>
                 <div className="room-bed">🛏️</div>
                 <div className="room-rug">🧸</div>
                 <div className="room-plant">🪴</div>
+
+                {roomDecor.includes("teddy") && (
+                  <div className="room-extra room-extra-teddy">🧸</div>
+                )}
+
+                {roomDecor.includes("flowers") && (
+                  <div className="room-extra room-extra-flowers">🌸</div>
+                )}
+
+                {roomDecor.includes("stars") && (
+                  <div className="room-extra room-extra-stars">✨ ⭐ ✨</div>
+                )}
               </div>
 
               <p>Choose decorations for your room!</p>
+              
+              <p>Choose your dream room colour! 🎨</p>
 
               <div className="room-decorations">
-                <button onClick={() => { setStars(stars + 1); collectSticker("Cozy Room"); }}>
+                <button onClick={() => setRoomTheme("pink")}>
+                  🎀 Pink Dream
+                </button>
+
+                <button onClick={() => setRoomTheme("purple")}>
+                  💜 Lavender
+                </button>
+
+                <button onClick={() => setRoomTheme("blue")}>
+                  🩵 Cloud Blue
+                </button>
+              </div>
+
+
+              
+              <div className="room-decorations">
+                <button onClick={() => {
+                  setRoomDecor([...roomDecor, "teddy"]);
+                  setStars(stars + 1);
+                  collectSticker("Teddy Collector");
+                }}>
                   🧸 Add teddy
                 </button>
-                <button onClick={() => { setStars(stars + 1); collectSticker("Dreamy Room"); }}>
+
+                <button onClick={() => {
+                  setRoomDecor([...roomDecor, "flowers"]);
+                  setStars(stars + 1);
+                  collectSticker("Flower Lover");
+                }}>
                   🌸 Add flowers
                 </button>
-                <button onClick={() => { setStars(stars + 1); collectSticker("Starry Room"); }}>
+
+                <button onClick={() => {
+                  setRoomDecor([...roomDecor, "stars"]);
+                  setStars(stars + 1);
+                  collectSticker("Star Collector");
+                }}>
                   ⭐ Add stars
                 </button>
               </div>
+
             </>
           )}
 
