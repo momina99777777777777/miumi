@@ -334,6 +334,121 @@ const [opening, setOpening] = useState(false);
   );
 }
 
+function Wonderland() {
+  const [activeWorld, setActiveWorld] = useState("home");
+  const [stars, setStars] = useState(0);
+  const [flowers, setFlowers] = useState(0);
+  const [treasureFound, setTreasureFound] = useState(false);
+  const [stickers, setStickers] = useState<string[]>([]);
+
+  const worlds = [
+    { id: "pet", emoji: "🐰", name: "Pet Paradise", description: "Visit your tiny fluffy friend!" },
+    { id: "garden", emoji: "🌷", name: "Magic Garden", description: "Grow a garden full of magic!" },
+    { id: "treasure", emoji: "💎", name: "Treasure Hunt", description: "Find a hidden surprise!" },
+    { id: "stickers", emoji: "🎀", name: "Sticker World", description: "Collect your cute rewards!" },
+  ];
+
+  function collectSticker(name: string) {
+    setStickers((current) =>
+      current.includes(name) ? current : [...current, name]
+    );
+  }
+
+  return (
+    <section className="wonderland-world">
+      <div className="wonderland-sky">
+        <span className="wonderland-star star-one">✦</span>
+        <span className="wonderland-star star-two">✧</span>
+        <span className="wonderland-star star-three">✦</span>
+
+        <p className="wonderland-label">✧ a magical place made for you ✧</p>
+        <h2>Welcome to MIUMI Wonderland! 🏰</h2>
+        <p>Explore little worlds, collect stars and discover surprises.</p>
+
+        <div className="wonderland-score">⭐ {stars} magical stars</div>
+      </div>
+
+      {activeWorld === "home" ? (
+        <div className="wonderland-doors">
+          {worlds.map((world) => (
+            <button
+              key={world.id}
+              className="wonderland-door"
+              onClick={() => setActiveWorld(world.id)}
+            >
+              <span className="wonderland-door-emoji">{world.emoji}</span>
+              <strong>{world.name}</strong>
+              <span>{world.description}</span>
+              <small>Enter world ✨</small>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="wonderland-adventure">
+          <button
+            className="wonderland-back"
+            onClick={() => setActiveWorld("home")}
+          >
+            ← Back to Wonderland
+          </button>
+
+          {activeWorld === "pet" && (
+            <>
+              <h3>🐰 Pet Paradise</h3>
+              <div className="wonderland-big-emoji">🐰</div>
+              <p>Your bunny is waiting for you!</p>
+              <button onClick={() => { setStars(stars + 1); collectSticker("Bunny Bestie"); }}>
+                Give bunny a treat 🥕
+              </button>
+              <p>Feed your bunny to earn a star!</p>
+            </>
+          )}
+
+          {activeWorld === "garden" && (
+            <>
+              <h3>🌷 Magic Garden</h3>
+              <div className="wonderland-big-emoji">
+                {flowers === 0 ? "🌱" : "🌸".repeat(Math.min(flowers, 8))}
+              </div>
+              <p>Your garden has {flowers} flowers!</p>
+              <button onClick={() => { setFlowers(flowers + 1); setStars(stars + 1); collectSticker("Flower Fairy"); }}>
+                Plant a magical flower 🌷
+              </button>
+            </>
+          )}
+
+          {activeWorld === "treasure" && (
+            <>
+              <h3>💎 Treasure Hunt</h3>
+              <div className="wonderland-big-emoji">
+                {treasureFound ? "👑" : "🎁"}
+              </div>
+              <p>{treasureFound ? "You found the royal treasure!" : "A secret treasure is hiding here..."}</p>
+              {!treasureFound && (
+                <button onClick={() => { setTreasureFound(true); setStars(stars + 5); collectSticker("Treasure Explorer"); }}>
+                  Open the mystery treasure 🎁
+                </button>
+              )}
+            </>
+          )}
+
+          {activeWorld === "stickers" && (
+            <>
+              <h3>🎀 Sticker Collection</h3>
+              <div className="wonderland-stickers">
+                {stickers.length === 0
+                  ? "Your collection is waiting for its first sticker!"
+                  : stickers.map((sticker) => <span key={sticker}>✨ {sticker}</span>)}
+              </div>
+              <p>Explore the other worlds to earn stickers!</p>
+            </>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function HomePage({
   daily,
   dailyAnswer,
