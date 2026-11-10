@@ -1276,3 +1276,25 @@ button:hover::after {
     padding: 20px 15px;
   }
 }
+.dear-you-status {
+  margin-top: 18px;
+  text-align: center;
+  color: #a36c9e;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.dear-you-preview {
+  animation: dear-card-arrive 0.7s ease both;
+}
+
+@keyframes dear-card-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
