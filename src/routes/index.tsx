@@ -283,7 +283,7 @@ function MysteryBox({
   onStart: (quiz: QuizDefinition) => void;
 }) {
   const [opened, setOpened] = useState(false);
-
+const [opening, setOpening] = useState(false);
   const mysteryIndex = quizzes.length
     ? Math.floor(Date.now() / 86400000) % quizzes.length
     : 0;
@@ -302,10 +302,15 @@ function MysteryBox({
       <article className="quiz-card quiz-card-rose">
         {!opened ? (
           <div className="text-center">
-            <div className="text-5xl mb-4">🎁</div>
+            <div className={`mystery-box-3d${opening ? " opening" : ""}`}>
+  <div className="mystery-gift">🎁</div>
+</div>
             <h3>A little surprise is waiting!</h3>
             <p>Open your mystery box to discover today's quiz.</p>
-            <Button className="hero-cta" onClick={() => setOpened(true)}>
+            <Button className="hero-cta" onClick={() => {
+  setOpening(true);
+  window.setTimeout(() => setOpened(true), 800);
+}}
               Open my mystery box ✨
             </Button>
           </div>
