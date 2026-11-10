@@ -343,6 +343,7 @@ function Wonderland() {
 
   const worlds = [
     { id: "pet", emoji: "🐰", name: "Pet Paradise", description: "Visit your tiny fluffy friend!" },
+    { id: "room", emoji: "🏡", name: "My Little Room", description: "Decorate your magical bedroom!" },
     { id: "garden", emoji: "🌷", name: "Magic Garden", description: "Grow a garden full of magic!" },
     { id: "treasure", emoji: "💎", name: "Treasure Hunt", description: "Find a hidden surprise!" },
     { id: "stickers", emoji: "🎀", name: "Sticker World", description: "Collect your cute rewards!" },
@@ -401,6 +402,36 @@ function Wonderland() {
                 Give bunny a treat 🥕
               </button>
               <p>Feed your bunny to earn a star!</p>
+            </>
+          )}
+          
+
+          {activeWorld === "room" && (
+            <>
+              <h3>🏡 My Little Room</h3>
+              <p>Welcome to your tiny dream bedroom!</p>
+
+              <div className="little-room">
+                <div className="room-window">🌙 ✨</div>
+                <div className="room-lamp">💡</div>
+                <div className="room-bed">🛏️</div>
+                <div className="room-rug">🧸</div>
+                <div className="room-plant">🪴</div>
+              </div>
+
+              <p>Choose decorations for your room!</p>
+
+              <div className="room-decorations">
+                <button onClick={() => { setStars(stars + 1); collectSticker("Cozy Room"); }}>
+                  🧸 Add teddy
+                </button>
+                <button onClick={() => { setStars(stars + 1); collectSticker("Dreamy Room"); }}>
+                  🌸 Add flowers
+                </button>
+                <button onClick={() => { setStars(stars + 1); collectSticker("Starry Room"); }}>
+                  ⭐ Add stars
+                </button>
+              </div>
             </>
           )}
 
