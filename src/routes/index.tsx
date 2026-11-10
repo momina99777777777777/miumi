@@ -689,7 +689,6 @@ useEffect(() => {
 }
 
 function MiumiBunny() {
-  <MiumiJournal />
   const [bunnyColor, setBunnyColor] = useState("pink");
   const [bunnyName, setBunnyName] = useState("Mochi");
   const [accessory, setAccessory] = useState("bow");
@@ -899,6 +898,7 @@ function HomePage({
       </section>
       <DearYou />
       <MiumiBunny />
+      <MiumiJournal />
             <Wonderland />
             <section className="section-block text-center">
         <p className="eyebrow">your tiny new friend ♡</p>
