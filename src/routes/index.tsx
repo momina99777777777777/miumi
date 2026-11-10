@@ -290,7 +290,14 @@ function HomePage({
         </div>
         <p className="daily-footnote">{dailyAnswer ? "Your answer is as lovely as you are ♡" : "Pick the one that feels like you ♡"}</p>
       </section>
-      <footer className="page-footer">a soft little corner of the internet <span>♡</span></footer>
+      <footer className="page-footer">
+  <p>a soft little corner of the internet <span>♡</span></p>
+  <div style={{ display: "flex", justifyContent: "center", gap: "18px", flexWrap: "wrap", marginTop: "14px" }}>
+    <a href="/about.html">About Us</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/contact.html">Contact Us</a>
+  </div>
+</footer>
     </div>
   );
 }
