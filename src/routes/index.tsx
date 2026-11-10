@@ -59,6 +59,31 @@ const dailyQuestions = [
 const quizById = (id: QuizId | null) => quizzes.find((quiz) => quiz.id === id) ?? null;
 
 function MiumiHome() {
+    useEffect(() => {
+    const handleMagicClick = (event: MouseEvent) => {
+      const particles = ["💗", "✨", "🌸", "⭐", "🦋"];
+
+      const particle = document.createElement("span");
+      particle.className = "magic-click-particle";
+      particle.textContent =
+        particles[Math.floor(Math.random() * particles.length)];
+
+      particle.style.left = `${event.clientX}px`;
+      particle.style.top = `${event.clientY}px`;
+
+      document.body.appendChild(particle);
+
+      window.setTimeout(() => {
+        particle.remove();
+      }, 1200);
+    };
+
+    window.addEventListener("click", handleMagicClick);
+
+    return () => {
+      window.removeEventListener("click", handleMagicClick);
+    };
+  }, []);
   const [page, setPage] = useState<Page>("home");
   const [activeQuizId, setActiveQuizId] = useState<QuizId | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
