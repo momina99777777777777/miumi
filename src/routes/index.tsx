@@ -351,6 +351,33 @@ function HomePage({
           </article>
         </div>
       </section>
+            <section className="section-block friendship-question">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">a question for you & your bestie</p>
+            <h2>Today's Question to Share ♡</h2>
+          </div>
+        </div>
+
+        <article className="quiz-card quiz-card-rose">
+          <span className="quiz-emoji">💌</span>
+          <h3>{daily.prompt}</h3>
+          <p>Ask your bestie and see what they say!</p>
+          <Button
+            className="hero-cta"
+            onClick={() => {
+              const message = `Today's question from miumi ♡: ${daily.prompt}`;
+              if (navigator.share) {
+                void navigator.share({ title: "miumi ♡", text: message });
+              } else {
+                void navigator.clipboard.writeText(message);
+              }
+            }}
+          >
+            <Share2 size={16} /> Share with a friend
+          </Button>
+        </article>
+      </section>
       <footer className="page-footer">
   <p>a soft little corner of the internet <span>♡</span></p>
   <div style={{ display: "flex", justifyContent: "center", gap: "18px", flexWrap: "wrap", marginTop: "14px" }}>
