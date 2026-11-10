@@ -290,6 +290,36 @@ function HomePage({
         </div>
         <p className="daily-footnote">{dailyAnswer ? "Your answer is as lovely as you are ♡" : "Pick the one that feels like you ♡"}</p>
       </section>
+            <section className="section-block friendship-corner">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">little notes for the heart</p>
+            <h2>The Friendship Corner ♡</h2>
+          </div>
+        </div>
+
+        <div className="quiz-grid">
+          <article className="quiz-card quiz-card-rose">
+            <h3>Listen with kindness</h3>
+            <p>Sometimes being a good friend simply means listening without judging or interrupting.</p>
+          </article>
+
+          <article className="quiz-card quiz-card-lilac">
+            <h3>Celebrate little wins</h3>
+            <p>Be happy for your friends, whether they achieve something big or make a small step forward.</p>
+          </article>
+
+          <article className="quiz-card quiz-card-peach">
+            <h3>Make time for each other</h3>
+            <p>A thoughtful message or a little catch-up can remind someone that they matter.</p>
+          </article>
+
+          <article className="quiz-card quiz-card-mint">
+            <h3>Respect differences</h3>
+            <p>Good friends don't have to agree on everything. Respect and understanding help friendships grow.</p>
+          </article>
+        </div>
+      </section>
       <footer className="page-footer">
   <p>a soft little corner of the internet <span>♡</span></p>
   <div style={{ display: "flex", justifyContent: "center", gap: "18px", flexWrap: "wrap", marginTop: "14px" }}>
