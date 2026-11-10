@@ -1125,3 +1125,154 @@ button:hover::after {
     transform: scale(1.2);
   }
 }
+/* 💌 DEAR, YOU */
+
+.dear-you {
+  max-width: 950px;
+  margin: 65px auto;
+  padding: 45px 25px;
+  border-radius: 35px;
+  background: linear-gradient(135deg, #fff0f7, #f2eaff, #fff8fc);
+  box-shadow: 0 20px 60px rgba(190, 130, 180, 0.18);
+  text-align: center;
+}
+
+.dear-you-heading > span {
+  font-size: 42px;
+}
+
+.dear-you-heading > p:first-of-type {
+  color: #bd80a8;
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.dear-you-heading h2 {
+  color: #a36c9e;
+  font-size: clamp(35px, 6vw, 55px);
+  margin: 12px 0;
+}
+
+.dear-you-heading p:last-child {
+  color: #9c83a1;
+}
+
+.dear-you-form {
+  max-width: 580px;
+  margin: 35px auto 0;
+  padding: 30px;
+  border: 1px solid white;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.78);
+  text-align: left;
+}
+
+.dear-you-form label {
+  display: block;
+  margin: 18px 0 8px;
+  color: #9c6d9e;
+  font-weight: bold;
+}
+
+.dear-you-form input,
+.dear-you-form textarea,
+.dear-you-form select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #f0d7eb;
+  border-radius: 15px;
+  background: #fffaff;
+  color: #805d83;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.dear-you-form input:focus,
+.dear-you-form textarea:focus {
+  border-color: #d69bc9;
+  box-shadow: 0 0 0 3px #f9e5f4;
+}
+
+.dear-you-preview {
+  margin: 30px 0;
+  padding: 35px 20px;
+  border: 5px solid white;
+  border-radius: 28px;
+  text-align: center;
+  color: #956b94;
+  box-shadow: 0 12px 30px rgba(170,110,170,0.15);
+  overflow-wrap: anywhere;
+}
+
+.dear-theme-pink {
+  background: linear-gradient(145deg, #ffe0ef, #fff5fb);
+}
+
+.dear-theme-purple {
+  background: linear-gradient(145deg, #e5d8ff, #f8efff);
+}
+
+.dear-theme-blue {
+  background: linear-gradient(145deg, #d9f0ff, #f2faff);
+}
+
+.dear-you-preview > span {
+  letter-spacing: 3px;
+  font-size: 11px;
+}
+
+.dear-you-preview > div {
+  margin: 20px;
+  font-size: 55px;
+  animation: dear-float 2s ease-in-out infinite;
+}
+
+.dear-you-preview h3 {
+  font-size: 25px;
+}
+
+.dear-you-preview h2 {
+  font-size: 27px;
+}
+
+.dear-you-preview small {
+  display: block;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.dear-you-form > button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #f5a9d2, #c9a8f5);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dear-you-form > button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px #e8c4e8;
+}
+
+@keyframes dear-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 600px) {
+  .dear-you {
+    padding: 25px 12px;
+  }
+
+  .dear-you-form {
+    padding: 20px 15px;
+  }
+}
