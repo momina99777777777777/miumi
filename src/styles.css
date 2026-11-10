@@ -957,3 +957,91 @@ button:hover::after {
     padding: 20px 12px;
   }
 }
+
+/* 🏡 MIUMI LITTLE DREAM ROOM */
+
+.little-room {
+  position: relative;
+  max-width: 650px;
+  height: 320px;
+  margin: 25px auto;
+  overflow: hidden;
+  border: 7px solid #fff;
+  border-radius: 25px;
+  background:
+    linear-gradient(to bottom, #e8d9ff 0%, #fff0f8 72%, #d8b4a0 72%, #c99d91 100%);
+  box-shadow: 0 15px 35px rgba(170, 110, 180, 0.2);
+}
+
+.room-window {
+  position: absolute;
+  top: 25px;
+  left: 12%;
+  width: 110px;
+  height: 115px;
+  display: grid;
+  place-items: center;
+  border: 7px solid white;
+  border-radius: 50% 50% 12px 12px;
+  background: linear-gradient(#a9c9ff, #f9c9e8);
+  font-size: 30px;
+  box-shadow: 0 0 20px #fff;
+}
+
+.room-lamp {
+  position: absolute;
+  top: 25px;
+  right: 17%;
+  font-size: 45px;
+  animation: room-glow 2s infinite alternate;
+}
+
+.room-bed {
+  position: absolute;
+  bottom: 35px;
+  right: 12%;
+  font-size: 95px;
+  filter: drop-shadow(0 8px 8px #b989a9);
+}
+
+.room-rug {
+  position: absolute;
+  bottom: 8px;
+  left: 34%;
+  font-size: 65px;
+}
+
+.room-plant {
+  position: absolute;
+  bottom: 30px;
+  left: 12%;
+  font-size: 50px;
+}
+
+@keyframes room-glow {
+  from { filter: drop-shadow(0 0 3px #fff); }
+  to { filter: drop-shadow(0 0 15px #ffb4df); }
+}
+
+.room-decorations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.room-decorations button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ffc6e5, #d9c2ff);
+  color: #895d91;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(190, 130, 190, 0.2);
+}
+
+.room-decorations button:hover {
+  transform: translateY(-5px) scale(1.05);
+}
