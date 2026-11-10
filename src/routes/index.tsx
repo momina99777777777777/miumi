@@ -1011,6 +1011,167 @@ const [selectedArticle, setSelectedArticle] = useState<number | null>(null);
     </section>
   );
 }
+function MiumiScrapbook() {
+  const [title, setTitle] = useState("Our Little Memories");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [memory, setMemory] = useState("");
+  const [theme, setTheme] = useState("pink");
+  const [decoration, setDecoration] = useState("🎀");
+
+  const themes: Record<string, string> = {
+    pink: "pink",
+    lavender: "lavender",
+    peach: "peach",
+    mint: "mint",
+  };
+
+  const createScrapbook = () => {
+    const book = {
+      title,
+      from,
+      to,
+      memory,
+      theme,
+      decoration,
+    };
+
+    const url = new URL(window.location.href);
+    url.searchParams.set(
+      "scrapbook",
+      btoa(encodeURIComponent(JSON.stringify(book)))
+    );
+
+    navigator.clipboard.writeText(url.toString())
+      .then(() => alert("Your scrapbook link has been copied! 💗"))
+      .catch(() => alert("Please copy the scrapbook link from your browser address bar."));
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const sharedBook = params.get("scrapbook");
+
+  let receivedBook: typeof bookPlaceholder | null = null;
+
+  const bookPlaceholder = {
+    title: "",
+    from: "",
+    to: "",
+    memory: "",
+    theme: "pink",
+    decoration: "🎀",
+  };
+
+  try {
+    if (sharedBook) {
+      receivedBook = JSON.parse(
+        decodeURIComponent(atob(sharedBook))
+      );
+    }
+  } catch {
+    receivedBook = null;
+  }
+
+  if (receivedBook) {
+    return (
+      <section className={`miumi-scrapbook ${themes[receivedBook.theme] || "pink"}`}>
+        <div className="scrapbook-page">
+          <div className="scrapbook-decoration">{receivedBook.decoration}</div>
+          <p className="scrapbook-label">A LITTLE BOOK OF MEMORIES</p>
+          <h2>{receivedBook.title}</h2>
+          <div className="scrapbook-heart">♡</div>
+          <p className="scrapbook-names">
+            Made by {receivedBook.from || "Someone special"}
+            <br />
+            For {receivedBook.to || "Someone lovely"}
+          </p>
+          <div className="scrapbook-memory">
+            <h3>Our special memory</h3>
+            <p>{receivedBook.memory}</p>
+          </div>
+          <p className="scrapbook-ending">some moments deserve their own little book ♡</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="miumi-scrapbook">
+      <div className="scrapbook-intro">
+        <span>✦ YOUR LITTLE MEMORY STUDIO ✦</span>
+        <h2>MIUMI Scrapbook Studio</h2>
+        <p>Turn your favourite memories into a little digital keepsake.</p>
+      </div>
+
+      <div className="scrapbook-editor">
+        <div className="scrapbook-form">
+          <label>Scrapbook title</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} />
+
+          <label>Your name</label>
+          <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="Made by..." />
+
+          <label>Friend's name</label>
+          <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="For someone special..." />
+
+          <label>Your favourite memory</label>
+          <textarea
+            value={memory}
+            onChange={(e) => setMemory(e.target.value)}
+            placeholder="Write a little memory here..."
+            rows={5}
+          />
+
+          <label>Choose a theme</label>
+          <div className="scrapbook-themes">
+            {Object.keys(themes).map((item) => (
+              <button
+                key={item}
+                className={theme === item ? "selected" : ""}
+                onClick={() => setTheme(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <label>Choose a decoration</label>
+          <div className="scrapbook-decorations">
+            {["🎀", "🌷", "🦋", "💗", "⭐", "🧸"].map((item) => (
+              <button
+                key={item}
+                className={decoration === item ? "selected" : ""}
+                onClick={() => setDecoration(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="scrapbook-create"
+            disabled={!memory.trim()}
+            onClick={createScrapbook}
+          >
+            Create & Share My Scrapbook ♡
+          </button>
+        </div>
+
+        <div className={`scrapbook-preview ${theme}`}>
+          <span className="preview-decoration">{decoration}</span>
+          <small>A LITTLE BOOK OF MEMORIES</small>
+          <h3>{title || "Our Little Memories"}</h3>
+          <div className="preview-heart">♡</div>
+          <p>{from || "Your name"} & {to || "Your favourite person"}</p>
+          <div className="preview-memory">
+            {memory || "Your favourite memory will appear here..."}
+          </div>
+          <span className="preview-footer">made with love ♡</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HomePage({
   daily,
   dailyAnswer,
