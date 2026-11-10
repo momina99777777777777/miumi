@@ -233,8 +233,110 @@ function NavButton({ active, icon, label, onClick }: { active: boolean; icon: Re
       {icon}<span>{label}</span>
     </Button>
   );
-}
+function MysteryBox({
+  quizzes,
+  onStart,
+}: {
+  quizzes: typeof quizzes;
+  onStart: (quiz: (typeof quizzes)[number]) => void;
+}) {
+  const [opened, setOpened] = useState(false);
 
+  const mysteryIndex = quizzes.length
+    ? Math.floor(Date.now() / 86400000) % quizzes.length
+    : 0;
+
+  const mystery = quizzes[mysteryIndex];
+
+  return (
+    <section className="section-block">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">psst... there's a surprise inside</p>
+          <h2>Mystery Quiz Box 🎁</h2>
+        </div>
+      </div>
+
+      <article className="quiz-card quiz-card-rose">
+        {!opened ? (
+          <div className="text-center">
+            <div className="text-5xl mb-4">🎁</div>
+            <h3>A little surprise is waiting!</h3>
+            <p>Open your mystery box to discover today's quiz.</p>
+            <Button
+              className="hero-cta"
+              onClick={() => setOpened(true)}
+            >
+              Open my mystery box ✨
+            </Button>
+          </div>
+        ) : mystery ? (
+          <div className="text-center">
+            <div className="text-5xl mb-4">💗</div>
+            <h3>{mystery.title}</h3>
+            <p>A mystery quiz has been picked just for today!</p>
+            <Button
+              className="hero-cta"
+              onClick={() => onStart(mystery)}
+            >
+              Play mystery quiz 💗
+            </Button>
+          </div>
+        ) : (
+          <p>No quizzes available right now. Come back soon!</p>
+        )}
+      </article>
+    </section>
+  );
+}
+  const [opened, setOpened] = useState(false);
+
+  const today = new Date();
+  const dayNumber = Math.floor(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) /
+      86400000
+  );
+
+  const mystery = mysteryQuizzes[dayNumber % mysteryQuizzes.length];
+
+  return (
+    <section className="section-block">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">psst... there's a surprise inside</p>
+          <h2>Mystery Quiz Box 🎁</h2>
+        </div>
+      </div>
+
+      <article className="quiz-card quiz-card-rose">
+        {!opened ? (
+          <div className="text-center">
+            <div className="text-5xl mb-4">🎁</div>
+            <h3>A little surprise is waiting for you!</h3>
+            <p>Open your mystery box to discover today's special quiz.</p>
+            <Button className="hero-cta" onClick={() => setOpened(true)}>
+              Open my mystery box ✨
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <div className="text-5xl mb-4">{mystery.emoji}</div>
+            <h3>{mystery.title}</h3>
+            <p>{mystery.description}</p>
+            <Button
+              className="hero-cta"
+              onClick={() => {
+                window.location.href = mystery.link;
+              }}
+            >
+              Play mystery quiz 💗
+            </Button>
+          </div>
+        )}
+      </article>
+    </section>
+  );
+}
 function HomePage({
   daily,
   dailyAnswer,
@@ -275,6 +377,7 @@ function HomePage({
           {quizzes.map((definition, index) => <QuizCard key={definition.id} quiz={definition} index={index} onStart={() => onStart(definition)} />)}
         </div>
       </section>
+      <MysteryBox quizzes={quizzes} onStart={onStart} />
 
       <section className="daily-section">
         <div className="daily-left">
