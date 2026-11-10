@@ -642,6 +642,7 @@ function HomePage({
           <span className="art-caption">a little sweetness<br />for you & your bestie</span>
         </div>
       </section>
+      <DearYou />
             <Wonderland />
             <section className="section-block text-center">
         <p className="eyebrow">your tiny new friend ♡</p>
