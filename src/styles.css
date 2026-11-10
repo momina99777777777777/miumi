@@ -771,3 +771,189 @@ button:hover::after {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ✨ MIUMI WONDERLAND ✨ */
+
+.wonderland-world {
+  position: relative;
+  margin: 55px auto;
+  padding: 35px 22px;
+  max-width: 1100px;
+  overflow: hidden;
+  border-radius: 35px;
+  background:
+    radial-gradient(circle at 10% 10%, #ffe1f2, transparent 35%),
+    radial-gradient(circle at 90% 90%, #e8ddff, transparent 35%),
+    linear-gradient(135deg, #fff7fc, #f5edff);
+  box-shadow: 0 20px 55px rgba(180, 120, 190, 0.18);
+  text-align: center;
+}
+
+.wonderland-sky {
+  position: relative;
+  padding: 35px 10px;
+}
+
+.wonderland-label {
+  color: #bc78ad;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.wonderland-sky h2 {
+  color: #9c65a8;
+  font-size: clamp(27px, 5vw, 43px);
+  margin: 15px 0;
+}
+
+.wonderland-sky p {
+  color: #977b9c;
+}
+
+.wonderland-score {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 22px;
+  border-radius: 30px;
+  background: white;
+  color: #bd78a8;
+  box-shadow: 0 5px 20px #eac9e9;
+  font-weight: bold;
+}
+
+.wonderland-star {
+  position: absolute;
+  color: #e6a9d5;
+  font-size: 30px;
+  animation: wonderland-twinkle 2s ease-in-out infinite;
+}
+
+.star-one { top: 5px; left: 12%; }
+.star-two { top: 45px; right: 13%; animation-delay: 0.7s; }
+.star-three { bottom: 0; left: 25%; animation-delay: 1.2s; }
+
+@keyframes wonderland-twinkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.8) rotate(0); }
+  50% { opacity: 1; transform: scale(1.4) rotate(25deg); }
+}
+
+.wonderland-doors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 20px auto;
+  max-width: 850px;
+}
+
+.wonderland-door {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: 210px;
+  padding: 25px 15px;
+  border: 1px solid white;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #956b9e;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(180, 120, 190, 0.12);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.wonderland-door:hover {
+  transform: translateY(-9px) scale(1.03);
+  box-shadow: 0 18px 35px rgba(200, 130, 190, 0.25);
+}
+
+.wonderland-door-emoji {
+  font-size: 48px;
+  animation: wonderland-float 3s ease-in-out infinite;
+}
+
+.wonderland-door strong {
+  font-size: 19px;
+}
+
+.wonderland-door span:not(.wonderland-door-emoji) {
+  font-size: 13px;
+}
+
+.wonderland-door small {
+  padding: 8px 15px;
+  border-radius: 20px;
+  background: #ffe5f3;
+  color: #b76e9c;
+  font-weight: bold;
+}
+
+@keyframes wonderland-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+.wonderland-adventure {
+  max-width: 700px;
+  min-height: 300px;
+  margin: 15px auto;
+  padding: 30px 20px;
+  border: 1px solid white;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #956b9e;
+  box-shadow: 0 12px 30px rgba(180, 120, 190, 0.13);
+}
+
+.wonderland-adventure h3 {
+  color: #aa72aa;
+  font-size: 27px;
+}
+
+.wonderland-big-emoji {
+  margin: 25px 0;
+  font-size: 75px;
+  animation: wonderland-float 2s ease-in-out infinite;
+}
+
+.wonderland-adventure button {
+  margin: 10px;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #f8b9dc, #d7b8ff);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 7px 18px rgba(190, 130, 190, 0.2);
+}
+
+.wonderland-adventure .wonderland-back {
+  background: #f5e8f7;
+  color: #9c72a5;
+}
+
+.wonderland-stickers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.wonderland-stickers span {
+  padding: 12px 17px;
+  border-radius: 20px;
+  background: #fff0f8;
+  color: #ae72a0;
+}
+
+@media (max-width: 600px) {
+  .wonderland-doors {
+    grid-template-columns: 1fr;
+  }
+
+  .wonderland-world {
+    padding: 20px 12px;
+  }
+}
