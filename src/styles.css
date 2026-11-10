@@ -1832,3 +1832,233 @@ button:hover::after {
     padding: 22px;
   }
 }
+/* MIUMI SCRAPBOOK STUDIO */
+
+.miumi-scrapbook {
+  margin: 45px auto;
+  padding: 35px 20px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #fff0f6, #f4edff, #fff8ee);
+  color: #674b68;
+}
+
+.scrapbook-intro {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.scrapbook-intro > span,
+.scrapbook-label {
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #bd83ae;
+}
+
+.scrapbook-intro h2 {
+  font-size: clamp(27px, 5vw, 42px);
+  margin: 12px 0;
+}
+
+.scrapbook-editor {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  max-width: 1050px;
+  margin: auto;
+}
+
+.scrapbook-form,
+.scrapbook-preview,
+.scrapbook-page {
+  padding: 28px;
+  border-radius: 25px;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 12px 35px rgba(157, 105, 155, .12);
+}
+
+.scrapbook-form {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.scrapbook-form label {
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.scrapbook-form input,
+.scrapbook-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #eedbea;
+  border-radius: 13px;
+  padding: 13px;
+  background: #fffafd;
+  color: #674b68;
+  font: inherit;
+  outline: none;
+}
+
+.scrapbook-form input:focus,
+.scrapbook-form textarea:focus {
+  border-color: #d69ac8;
+  box-shadow: 0 0 0 3px #f8e8f5;
+}
+
+.scrapbook-themes,
+.scrapbook-decorations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.scrapbook-themes button,
+.scrapbook-decorations button {
+  border: 1px solid #ead7e8;
+  border-radius: 12px;
+  padding: 9px 13px;
+  background: #fff8fc;
+  color: #805e7b;
+  cursor: pointer;
+}
+
+.scrapbook-decorations button {
+  font-size: 21px;
+}
+
+.scrapbook-themes button.selected,
+.scrapbook-decorations button.selected {
+  border: 2px solid #cf91c0;
+  background: #fbe9f6;
+}
+
+.scrapbook-create {
+  margin-top: 12px;
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(100deg, #e8a9d2, #c5a9ef);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.scrapbook-create:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px #d9b2d4;
+}
+
+.scrapbook-create:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.scrapbook-preview,
+.scrapbook-page {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 420px;
+  box-sizing: border-box;
+  border: 2px dashed #e7c4df;
+  background: linear-gradient(145deg, #fff5fa, #f8f1ff);
+}
+
+.scrapbook-preview.lavender,
+.miumi-scrapbook.lavender .scrapbook-page {
+  background: linear-gradient(145deg, #f2eaff, #fff5fc);
+}
+
+.scrapbook-preview.peach,
+.miumi-scrapbook.peach .scrapbook-page {
+  background: linear-gradient(145deg, #fff0e6, #fff8f1);
+}
+
+.scrapbook-preview.mint,
+.miumi-scrapbook.mint .scrapbook-page {
+  background: linear-gradient(145deg, #eafff4, #f6fff9);
+}
+
+.preview-decoration,
+.scrapbook-decoration {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.scrapbook-preview small {
+  letter-spacing: 3px;
+  font-size: 10px;
+  color: #bd83ae;
+  font-weight: 800;
+}
+
+.scrapbook-preview h3,
+.scrapbook-page h2 {
+  font-family: Georgia, serif;
+  font-size: 30px;
+  margin: 18px 0;
+  overflow-wrap: anywhere;
+}
+
+.preview-heart,
+.scrapbook-heart {
+  font-size: 45px;
+  color: #df8fbd;
+}
+
+.scrapbook-preview p,
+.scrapbook-names {
+  line-height: 1.8;
+}
+
+.preview-memory,
+.scrapbook-memory {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 17px;
+  background: rgba(255,255,255,.7);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.preview-footer,
+.scrapbook-ending {
+  margin-top: 25px;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.scrapbook-reading {
+  max-width: 650px;
+  margin: auto;
+}
+
+.scrapbook-page {
+  max-width: 650px;
+  margin: auto;
+}
+
+.scrapbook-memory h3 {
+  margin-top: 0;
+}
+
+@media (max-width: 700px) {
+  .scrapbook-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .scrapbook-form,
+  .scrapbook-preview,
+  .scrapbook-page {
+    padding: 20px;
+  }
+}
