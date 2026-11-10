@@ -1564,3 +1564,181 @@ button:hover::after {
     padding: 30px 16px;
   }
 }
+/* MIUMI LITTLE JOURNAL */
+
+.miumi-journal {
+  margin: 65px auto;
+  padding: 35px 22px;
+  max-width: 1100px;
+  border-radius: 32px;
+  background: linear-gradient(145deg, #fff7fc, #fff0f7, #f7f1ff);
+  color: #63445e;
+  overflow: hidden;
+}
+
+.journal-hero {
+  text-align: center;
+  padding: 65px 20px;
+  border-radius: 27px;
+  background:
+    radial-gradient(circle at 15% 20%, #ffffff 0 3px, transparent 4px),
+    radial-gradient(circle at 85% 75%, #ffffff 0 4px, transparent 5px),
+    linear-gradient(135deg, #ffd9eb, #eadbff, #ffe5dc);
+}
+
+.journal-sparkle {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #98658c;
+  text-transform: uppercase;
+}
+
+.journal-hero h2 {
+  margin: 18px 0 12px;
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 6vw, 54px);
+  color: #794b76;
+  text-shadow: 2px 3px 0 #ffffff;
+}
+
+.journal-hero p {
+  max-width: 470px;
+  margin: auto;
+  line-height: 1.8;
+  color: #805f7b;
+}
+
+.journal-decoration {
+  display: block;
+  margin-top: 24px;
+  font-size: 28px;
+  letter-spacing: 12px;
+}
+
+.journal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 42px 5px 22px;
+}
+
+.journal-heading span:first-child {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #b47ca8;
+  font-weight: 800;
+}
+
+.journal-heading h3 {
+  margin: 8px 0 0;
+  font-family: Georgia, serif;
+  font-size: 27px;
+  color: #784f73;
+}
+
+.journal-flower {
+  font-size: 42px;
+  color: #d99ac4;
+}
+
+.journal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.journal-card {
+  padding: 25px;
+  min-height: 205px;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 23px;
+  box-shadow: 0 9px 25px rgba(128, 83, 130, .08);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.journal-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(128, 83, 130, .14);
+}
+
+.journal-card.pink {
+  background: linear-gradient(135deg, #ffe2ef, #fff5fa);
+}
+
+.journal-card.lavender {
+  background: linear-gradient(135deg, #e9e0ff, #faf7ff);
+}
+
+.journal-card.peach {
+  background: linear-gradient(135deg, #ffe8dc, #fff8f2);
+}
+
+.journal-card.mint {
+  background: linear-gradient(135deg, #ddf5e9, #f6fff9);
+}
+
+.journal-card-top,
+.journal-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.journal-card-top > span:first-child {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 800;
+  color: #986d91;
+}
+
+.journal-emoji {
+  font-size: 29px;
+}
+
+.journal-card h3 {
+  margin: 20px 0 9px;
+  font-family: Georgia, serif;
+  font-size: 21px;
+  line-height: 1.35;
+  color: #76516f;
+}
+
+.journal-card p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #886f83;
+}
+
+.journal-card-bottom {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(150, 105, 145, .15);
+  font-size: 11px;
+  color: #a1769a;
+}
+
+.journal-footer {
+  text-align: center;
+  margin: 35px 0 5px;
+  font-family: Georgia, serif;
+  color: #b17fa7;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .miumi-journal {
+    padding: 18px 12px;
+  }
+
+  .journal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .journal-hero {
+    padding: 45px 15px;
+  }
+
+  .journal-card {
+    min-height: auto;
+  }
+}
