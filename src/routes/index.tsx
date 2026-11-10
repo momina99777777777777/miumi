@@ -688,6 +688,111 @@ useEffect(() => {
   );
 }
 
+function MiumiBunny() {
+  const [bunnyColor, setBunnyColor] = useState("pink");
+  const [bunnyName, setBunnyName] = useState("Mochi");
+  const [accessory, setAccessory] = useState("bow");
+
+  const colors: Record<string, string> = {
+    pink: "#ffb8d2",
+    lavender: "#cdb8ff",
+    cream: "#ffe5b5",
+    mint: "#aee9d3",
+    blue: "#afdfff",
+  };
+
+  return (
+    <section className="miumi-bunny">
+      <div className="bunny-heading">
+        <span>🐰 YOUR LITTLE COMPANION</span>
+        <h2>Meet your MIUMI Bunny!</h2>
+        <p>Create a little character that's completely yours ♡</p>
+      </div>
+
+      <div className="bunny-creator">
+        <div className="bunny-stage">
+          <div
+            className="bunny-character"
+            style={{ background: colors[bunnyColor] }}
+          >
+            <div className="bunny-ear bunny-ear-left" />
+            <div className="bunny-ear bunny-ear-right" />
+
+            <div className="bunny-face">
+              <span className="bunny-eye bunny-eye-left">●</span>
+              <span className="bunny-eye bunny-eye-right">●</span>
+              <span className="bunny-cheek bunny-cheek-left" />
+              <span className="bunny-cheek bunny-cheek-right" />
+              <span className="bunny-nose">♥</span>
+            </div>
+
+            {accessory === "bow" && (
+              <div className="bunny-accessory">🎀</div>
+            )}
+            {accessory === "crown" && (
+              <div className="bunny-accessory">👑</div>
+            )}
+            {accessory === "flower" && (
+              <div className="bunny-accessory">🌸</div>
+            )}
+            {accessory === "none" && null}
+          </div>
+
+          <div className="bunny-shadow" />
+          <p className="bunny-name">{bunnyName || "Your Bunny"} ♡</p>
+        </div>
+
+        <div className="bunny-options">
+          <label>Name your bunny</label>
+          <input
+            value={bunnyName}
+            onChange={(e) => setBunnyName(e.target.value)}
+            placeholder="Enter a cute name..."
+            maxLength={18}
+          />
+
+          <label>Choose a colour</label>
+          <div className="bunny-color-options">
+            {Object.keys(colors).map((color) => (
+              <button
+                key={color}
+                type="button"
+                className={bunnyColor === color ? "selected" : ""}
+                style={{ background: colors[color] }}
+                onClick={() => setBunnyColor(color)}
+                aria-label={color}
+              />
+            ))}
+          </div>
+
+          <label>Choose an accessory</label>
+          <div className="bunny-accessory-options">
+            {[
+              ["bow", "🎀"],
+              ["crown", "👑"],
+              ["flower", "🌸"],
+              ["none", "♡"],
+            ].map(([item, emoji]) => (
+              <button
+                key={item}
+                type="button"
+                className={accessory === item ? "selected" : ""}
+                onClick={() => setAccessory(item)}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+
+          <p className="bunny-hint">
+            Your little friend is waiting for you! ✨
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HomePage({
   daily,
   dailyAnswer,
