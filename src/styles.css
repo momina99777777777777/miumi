@@ -1045,3 +1045,83 @@ button:hover::after {
 .room-decorations button:hover {
   transform: translateY(-5px) scale(1.05);
 }
+
+/* ✨ ROOM CUSTOMISATION ✨ */
+
+.room-theme-pink {
+  background: linear-gradient(
+    to bottom,
+    #f6d9ef 0%,
+    #fff0f8 72%,
+    #d8b4a0 72%,
+    #c99d91 100%
+  );
+}
+
+.room-theme-purple {
+  background: linear-gradient(
+    to bottom,
+    #dfd1ff 0%,
+    #f5eaff 72%,
+    #c5b2df 72%,
+    #a995c5 100%
+  );
+}
+
+.room-theme-blue {
+  background: linear-gradient(
+    to bottom,
+    #cceaff 0%,
+    #effaff 72%,
+    #b4d3e5 72%,
+    #91b9d1 100%
+  );
+}
+
+.room-extra {
+  position: absolute;
+  z-index: 2;
+  animation: room-item-appear 0.6s ease both;
+  filter: drop-shadow(0 5px 8px rgba(180, 110, 170, 0.3));
+}
+
+.room-extra-teddy {
+  bottom: 100px;
+  right: 35%;
+  font-size: 48px;
+}
+
+.room-extra-flowers {
+  top: 150px;
+  left: 28%;
+  font-size: 42px;
+}
+
+.room-extra-stars {
+  top: 35px;
+  right: 30%;
+  font-size: 25px;
+  animation: room-star-twinkle 1.5s infinite alternate;
+}
+
+@keyframes room-item-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes room-star-twinkle {
+  from {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
