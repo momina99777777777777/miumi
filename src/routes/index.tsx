@@ -1631,35 +1631,119 @@ function QuizResultPage({
     : result.correct >= 3
       ? "Such a sweet connection! Your bestie knows you so well."
       : "Aww, a few more little chats and you'll know each other even better.";
+
   const isThisOrThat = result.quizId === "this-or-that";
-  const pickedAnswers = useMemo(() => quiz.questions.map((question, index) => question.options[result.answers[index]]), [quiz, result]);
+
+  const pickedAnswers = useMemo(
+    () => quiz.questions.map((question, index) => question.options[result.answers[index]]),
+    [quiz, result]
+  );
+
   return (
-    <section className="result-page page-enter">
-      <div className="result-confetti" aria-hidden="true">✧　♡　✿　˚　✧</div>
-      <div className="result-seal">{personality ? personality.emoji : isThisOrThat ? "🍓" : "🎀"}</div>
-      <p className="eyebrow">your little result is here</p>
-      {personality ? <h1>{personality.name}</h1> : isThisOrThat ? <h1>Your lovely little picks</h1> : <h1>{result.correct} out of {result.total}!</h1>}
-      <p className="result-description">{personality?.note ?? (isThisOrThat ? "A handful of little choices, all very you." : scoreMessage)}</p>
-      {!isThisOrThat && !personality && (
-        <div className="score-display"><strong>{Math.round((result.correct / result.total) * 100)}<small>%</small></strong><span>bestie magic</span></div>
-      )}
-      {isThisOrThat ? (
-        <div className="picked-list">
-          {pickedAnswers.map((option, index) => option && <div className="picked-row" key={`${index}-${option.label}`}><span className="picked-label">{quiz.questions[index]?.prompt}</span><span className="picked-choice">{option.emoji} {option.label}</span></div>)}
+    <section className="result-page result-postcard-page page-enter">
+      <div className="result-decoration result-decoration-one">✿</div>
+      <div className="result-decoration result-decoration-two">✧</div>
+      <div className="result-decoration result-decoration-three">♡</div>
+
+      <div className="result-postcard">
+        <div className="result-top-note">
+          <span>MIUMI POST OFFICE</span>
+          <span>♡ A LITTLE MEMORY ♡</span>
         </div>
-      ) : personality ? (
-        <div className="personality-card"><span>{personality.emoji}</span><p>Keep being your one-of-a-kind, lovely self.</p><div>♡　✧　♡</div></div>
-      ) : (
-        <div className="score-hearts" aria-label={`${result.correct} correct answers`}>{Array.from({ length: result.total }, (_, index) => <Heart key={index} size={22} fill={index < result.correct ? "currentColor" : "none"} />)}</div>
-      )}
-      <div className="result-actions">
-        <Button className="result-share" onClick={onShare}><Share2 size={17} /> Share your result</Button>
-        <Button variant="outline" className="result-restart" onClick={onRestart}><RotateCcw size={16} /> Play again</Button>
+
+        <div className="result-seal">
+          {personality ? personality.emoji : isThisOrThat ? "🍓" : "🎀"}
+        </div>
+
+        <p className="eyebrow">YOUR LITTLE RESULT IS HERE</p>
+
+        {personality ? (
+          <h1>{personality.name}</h1>
+        ) : isThisOrThat ? (
+          <h1>Your lovely little picks</h1>
+        ) : (
+          <h1>{result.correct} out of {result.total}!</h1>
+        )}
+
+        <p className="result-description">
+          {personality?.note ?? (isThisOrThat
+            ? "A handful of little choices, all very you."
+            : scoreMessage)}
+        </p>
+
+        {!isThisOrThat && !personality && (
+          <div className="score-display">
+            <strong>
+              {Math.round((result.correct / result.total) * 100)}
+              <small>%</small>
+            </strong>
+            <span>bestie magic</span>
+          </div>
+        )}
+
+        <div className="result-divider">
+          <span>✧</span>
+          <span></span>
+          <span>♡</span>
+        </div>
+
+        {isThisOrThat ? (
+          <div className="picked-list">
+            {pickedAnswers.map((option, index) => option && (
+              <div className="picked-row" key={`${index}-${option.label}`}>
+                <span className="picked-label">
+                  {quiz.questions[index]?.prompt}
+                </span>
+                <span className="picked-choice">
+                  {option.emoji} {option.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : personality ? (
+          <div className="personality-card">
+            <span>{personality.emoji}</span>
+            <p>Keep being your one-of-a-kind, lovely self.</p>
+            <div>♡　✧　♡</div>
+          </div>
+        ) : (
+          <div
+            className="score-hearts"
+            aria-label={`${result.correct} correct answers`}
+          >
+            {Array.from({ length: result.total }, (_, index) => (
+              <Heart
+                key={index}
+                size={22}
+                fill={index < result.correct ? "currentColor" : "none"}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="result-postcard-footer">
+          <span>made with a little love</span>
+          <span>୨୧</span>
+        </div>
       </div>
-      <Button variant="ghost" className="result-more" onClick={onQuizzes}>Explore more quizzes <ArrowRight size={15} /></Button>
+
+      <div className="result-actions">
+        <Button className="result-share" onClick={onShare}>
+          <Share2 size={17} /> Share your result
+        </Button>
+
+        <Button variant="outline" className="result-restart" onClick={onRestart}>
+          <RotateCcw size={16} /> Play again
+        </Button>
+      </div>
+
+      <Button variant="ghost" className="result-more" onClick={onQuizzes}>
+        Explore more quizzes <ArrowRight size={15} />
+      </Button>
     </section>
   );
 }
+
 
 function ResultsPage({
   history,
