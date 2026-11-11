@@ -79,54 +79,56 @@
   --color-peach: var(--peach);
   --color-mint: var(--mint);
   --color-gold: var(--gold);
-  --font-sans: "DM Sans", sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Nunito", sans-serif;
+--font-display: "Zen Maru Gothic", sans-serif;
+--font-handwritten: "Caveat", cursive;
 }
 
+
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.988 0.016 20);
-  --foreground: oklch(0.35 0.062 8);
-  --card: oklch(0.999 0.004 60);
-  --card-foreground: oklch(0.35 0.062 8);
-  --popover: oklch(0.999 0.004 60);
-  --popover-foreground: oklch(0.35 0.062 8);
-  --primary: oklch(0.72 0.135 4);
-  --primary-foreground: oklch(0.999 0.004 60);
-  --secondary: oklch(0.951 0.04 11);
-  --secondary-foreground: oklch(0.45 0.085 7);
-  --muted: oklch(0.969 0.022 25);
-  --muted-foreground: oklch(0.56 0.042 8);
-  --accent: oklch(0.951 0.04 11);
-  --accent-foreground: oklch(0.45 0.085 7);
+  --radius: 0.75rem;
+  --background: oklch(0.992 0.008 240);
+  --foreground: oklch(0.34 0.035 255);
+  --card: oklch(0.999 0.003 240);
+  --card-foreground: oklch(0.34 0.035 255);
+  --popover: oklch(0.999 0.003 240);
+  --popover-foreground: oklch(0.34 0.035 255);
+  --primary: oklch(0.78 0.075 245);
+  --primary-foreground: oklch(0.30 0.045 255);
+  --secondary: oklch(0.94 0.045 350);
+  --secondary-foreground: oklch(0.43 0.055 350);
+  --muted: oklch(0.965 0.018 245);
+  --muted-foreground: oklch(0.55 0.035 255);
+  --accent: oklch(0.93 0.045 245);
+  --accent-foreground: oklch(0.38 0.055 255);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.91 0.031 13);
-  --input: oklch(0.91 0.031 13);
-  --ring: oklch(0.76 0.105 3);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.018 22);
-  --sidebar-foreground: oklch(0.35 0.062 8);
-  --sidebar-primary: oklch(0.72 0.135 4);
-  --sidebar-primary-foreground: oklch(0.999 0.004 60);
-  --sidebar-accent: oklch(0.951 0.04 11);
-  --sidebar-accent-foreground: oklch(0.45 0.085 7);
-  --sidebar-border: oklch(0.91 0.031 13);
-  --sidebar-ring: oklch(0.76 0.105 3);
-  --rose: oklch(0.72 0.135 4);
-  --rose-deep: oklch(0.52 0.14 5);
-  --rose-soft: oklch(0.95 0.055 8);
-  --blush: oklch(0.932 0.052 9);
-  --cream: oklch(0.987 0.018 73);
-  --lilac: oklch(0.94 0.047 311);
-  --peach: oklch(0.953 0.056 43);
-  --mint: oklch(0.946 0.058 164);
-  --gold: oklch(0.78 0.105 78);
-  --shadow-soft: 0 12px 32px oklch(0.56 0.08 8 / 9%);
+  --border: oklch(0.91 0.025 245);
+  --input: oklch(0.91 0.025 245);
+  --ring: oklch(0.76 0.075 245);
+  --chart-1: oklch(0.78 0.075 245);
+  --chart-2: oklch(0.79 0.075 350);
+  --chart-3: oklch(0.75 0.065 300);
+  --chart-4: oklch(0.82 0.08 175);
+  --chart-5: oklch(0.82 0.09 75);
+  --sidebar: oklch(0.978 0.018 245);
+  --sidebar-foreground: oklch(0.34 0.035 255);
+  --sidebar-primary: oklch(0.78 0.075 245);
+  --sidebar-primary-foreground: oklch(0.30 0.045 255);
+  --sidebar-accent: oklch(0.94 0.045 350);
+  --sidebar-accent-foreground: oklch(0.43 0.055 350);
+  --sidebar-border: oklch(0.91 0.025 245);
+  --sidebar-ring: oklch(0.76 0.075 245);
+  --rose: oklch(0.79 0.075 350);
+  --rose-deep: oklch(0.55 0.09 350);
+  --rose-soft: oklch(0.95 0.045 350);
+  --blush: oklch(0.94 0.045 350);
+  --cream: oklch(0.992 0.008 240);
+  --lilac: oklch(0.94 0.035 285);
+  --peach: oklch(0.96 0.045 55);
+  --mint: oklch(0.95 0.045 175);
+  --gold: oklch(0.82 0.09 85);
+  --shadow-soft: 0 12px 32px oklch(0.55 0.045 245 / 9%);
 }
 
 .dark {
@@ -427,10 +429,23 @@
     border-color: var(--color-border);
   }
 
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-  }
+body {
+  background-color: #FDFEFF;
+  color: var(--color-foreground);
+  font-family: "Nunito", sans-serif;
+  background-image:
+    radial-gradient(ellipse at 12% 8%, rgba(200, 224, 242, 0.22), transparent 35%),
+    radial-gradient(ellipse at 90% 85%, rgba(243, 198, 215, 0.18), transparent 35%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Zen Maru Gothic", sans-serif;
+}
+
+.handwritten {
+  font-family: "Caveat", cursive;
+}
 }
 /* MIUMI magical click effects ✨ */
 
