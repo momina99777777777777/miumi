@@ -788,10 +788,13 @@ body {
   background-color: #FDFEFF;
   color: var(--color-foreground);
   font-family: "Nunito", sans-serif;
-  background-image:
-    radial-gradient(ellipse at 12% 8%, rgba(200, 224, 242, 0.22), transparent 35%),
-    radial-gradient(ellipse at 90% 85%, rgba(243, 198, 215, 0.18), transparent 35%);
-  background-attachment: fixed;
+background-image:
+  linear-gradient(rgba(253, 254, 255, 0.35), rgba(253, 254, 255, 0.35)),
+  url("/miumi-background.png");
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
 }
 
 h1, h2, h3, h4 {
