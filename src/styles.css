@@ -974,8 +974,12 @@ html {
 
 body {
   background-image:
-    radial-gradient(circle at 10% 15%, rgba(255, 182, 218, 0.16), transparent 30%),
-    radial-gradient(circle at 90% 80%, rgba(204, 180, 255, 0.16), transparent 30%);
+    linear-gradient(rgba(253, 254, 255, 0.15), rgba(253, 254, 255, 0.15)),
+    url("/a_wide_dreamy_pastel_watercolor_illustration_back.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 /* GLOSSY 3D CARDS */
