@@ -310,24 +310,78 @@ function MiumiHome() {
               </section>
             )}
 
-            {page === "dedicate" && (
-              <section className="feature-page">
-                <div className="feature-hero">
-                  <span className="feature-emoji">💌</span>
-                  <p className="eyebrow">MADE WITH A LITTLE LOVE</p>
-                  <h1>Create & Dedicate</h1>
-                  <p>Make something special for someone who makes life brighter.</p>
-                </div>
-                <div className="feature-card">
-                  <span>🎀</span>
-                  <h2>Personalised dedications</h2>
-                  <p>Create sweet messages and shareable dedication cards.</p>
-                  <button onClick={() => setNotice("Your dedication studio is coming soon ♡")}>
-                    Coming soon ♡
-                  </button>
-                </div>
-              </section>
-            )}
+            
+{page === "dedicate" && (
+  <section className="feature-page dedicate-page page-enter">
+    <div className="feature-hero dedicate-hero">
+      <span className="feature-emoji">💌</span>
+      <p className="eyebrow">MADE WITH A LITTLE LOVE</p>
+      <h1>Create & Dedicate</h1>
+      <p>
+        Little words can make someone's whole day.
+        Create something lovely for someone special.
+      </p>
+      <span className="dedicate-handwriting">a little note, a lot of love ♡</span>
+    </div>
+
+    <div className="dedicate-studio">
+      <div className="dedicate-studio-heading">
+        <div>
+          <p className="garden-overline">YOUR LITTLE CREATIVE CORNER</p>
+          <h2>A letter waiting to bloom</h2>
+        </div>
+        <span>୨୧</span>
+      </div>
+
+      <div className="dedicate-preview">
+        <div className="dedicate-paper">
+          <div className="dedicate-stamp">✿<small>MIUMI</small></div>
+          <p className="dedicate-paper-label">A LITTLE LETTER FOR YOU</p>
+          <h3>Dear someone special,</h3>
+          <p className="dedicate-paper-message">
+            You make ordinary days feel a little more magical.
+            Here's a tiny reminder that you are appreciated.
+          </p>
+          <p className="dedicate-paper-sign">with love, ♡</p>
+          <span className="dedicate-paper-flower">✿</span>
+        </div>
+        <div className="dedicate-preview-caption">
+          <span>♡</span> imagine your own little message here
+        </div>
+      </div>
+
+      <div className="dedicate-features">
+        <div className="dedicate-feature">
+          <span>✉️</span>
+          <h3>Sweet letters</h3>
+          <p>Write something heartfelt and meaningful.</p>
+        </div>
+        <div className="dedicate-feature">
+          <span>🎀</span>
+          <h3>Pretty cards</h3>
+          <p>Turn little messages into lovely keepsakes.</p>
+        </div>
+        <div className="dedicate-feature">
+          <span>🌷</span>
+          <h3>Made for someone</h3>
+          <p>Celebrate friendships and special moments.</p>
+        </div>
+      </div>
+
+      <div className="dedicate-coming">
+        <span className="dedicate-coming-icon">🧸</span>
+        <div>
+          <p className="garden-overline">A LITTLE SOMETHING IS COMING</p>
+          <h2>Your dedication studio is on its way!</h2>
+          <p>We're preparing a lovely little space for your words and memories.</p>
+          <button onClick={() => setNotice("Your dedication studio is coming soon ♡")}>
+            Coming soon <span>♡</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
 
             {page === "games" && (
               <section className="feature-page">
