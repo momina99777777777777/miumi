@@ -1496,25 +1496,78 @@ function QuizCard({ quiz, index, onStart }: { quiz: QuizDefinition; index: numbe
   );
 }
 
+
 function QuizCatalog({ onStart }: { onStart: (definition: QuizDefinition) => void }) {
   return (
-    <section className="catalog-page page-enter">
-      <p className="eyebrow"><span className="eyebrow-flower">✿</span> pick a little adventure</p>
-      <h1 className="page-title">The quiz garden</h1>
-      <p className="page-intro">A few sweet questions can make a lovely memory.</p>
-      <div className="catalog-list">
+    <section className="quiz-garden page-enter">
+      <div className="quiz-garden-hero">
+        <span className="garden-decoration garden-flower">✿</span>
+        <span className="garden-decoration garden-star">✧</span>
+        <span className="garden-decoration garden-heart">♡</span>
+
+        <p className="eyebrow">
+          <span className="eyebrow-flower">✿</span> YOUR LITTLE QUIZ COLLECTION
+        </p>
+
+        <h1 className="page-title">
+          The quiz <span>garden</span>
+        </h1>
+
+        <p className="page-intro">
+          Little questions, lovely discoveries, and memories waiting to bloom.
+        </p>
+
+        <div className="garden-bottom-note">
+          ✧ choose a little adventure ✧
+        </div>
+      </div>
+
+      <div className="garden-section-heading">
+        <div>
+          <p className="garden-overline">A LITTLE SOMETHING FOR YOU</p>
+          <h2>Find your next favorite</h2>
+        </div>
+        <span className="garden-bow">୨୧</span>
+      </div>
+
+      <div className="catalog-list quiz-garden-list">
         {quizzes.map((quiz, index) => (
-          <article className="catalog-item" key={quiz.id}>
-            <span className={`catalog-emoji catalog-color-${index}`}>{quiz.emoji}</span>
-            <div className="catalog-copy"><h2>{quiz.title}</h2><p>{quiz.subtitle}</p><span><Clock3 size={13} /> {quiz.duration}</span></div>
-            <Button variant="outline" className="catalog-start" onClick={() => onStart(quiz)}>Play <ArrowRight size={15} /></Button>
+          <article className="catalog-item garden-quiz-card" key={quiz.id}>
+            <div className={`catalog-emoji catalog-color-${index}`}>
+              {quiz.emoji}
+            </div>
+
+            <div className="catalog-copy garden-quiz-copy">
+              <span className="garden-quiz-number">
+                LITTLE ADVENTURE {String(index + 1).padStart(2, "0")}
+              </span>
+              <h2>{quiz.title}</h2>
+              <p>{quiz.subtitle}</p>
+              <span className="garden-duration">
+                <Clock3 size={13} /> {quiz.duration}
+              </span>
+            </div>
+
+            <Button
+              variant="outline"
+              className="catalog-start garden-play-button"
+              onClick={() => onStart(quiz)}
+            >
+              Play <ArrowRight size={15} />
+            </Button>
           </article>
         ))}
       </div>
-      <div className="catalog-note"><span>୨୧</span> Pick your favorite, pass the phone, and make a little memory. <span>♡</span></div>
+
+      <div className="catalog-note garden-closing-note">
+        <span>୨୧</span>
+        Pick your favorite, pass the phone, and make a little memory.
+        <span>♡</span>
+      </div>
     </section>
   );
 }
+
 
 function QuizPlayer({
   quiz,
