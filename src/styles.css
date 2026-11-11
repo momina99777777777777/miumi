@@ -388,21 +388,34 @@
 .quiz-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 
 .quiz-card {
+  position: relative;
   min-height: 185px;
-  padding: 20px 18px 16px;
+  padding: 22px 20px 18px;
+  overflow: hidden;
   border: 1px solid #E5EDF7;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #FFFFFF, #F8FBFF);
+  border-radius: 23px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F5FAFF 100%);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 5px 18px rgba(145, 174, 205, 0.07);
-  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 7px 22px rgba(145, 174, 205, 0.09);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+.quiz-card::after {
+  content: "✧";
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  color: #D9B8C9;
+  font-size: 23px;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 .quiz-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(145, 174, 205, 0.13);
-  border-color: #D7E6F4;
+  box-shadow: 0 15px 30px rgba(145, 174, 205, 0.14);
+  border-color: #D5E4F2;
 }
 
 .quiz-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
