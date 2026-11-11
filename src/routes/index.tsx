@@ -3,8 +3,10 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowRight,
   Check,
-  ChevronLeft,
+   ChevronLeft,
   Clock3,
+  Gamepad2,
+  Gift,
   Heart,
   House,
   RotateCcw,
@@ -37,7 +39,15 @@ export const Route = createFileRoute("/")({
   component: MiumiHome,
 });
 
-type Page = "home" | "quizzes" | "results" | "play" | "quiz-result";
+type Page =
+  | "home"
+  | "quizzes"
+  | "results"
+  | "play"
+  | "quiz-result"
+  | "friendship"
+  | "dedicate"
+  | "games";
 type CompletedQuiz = {
   quizId: QuizId;
   answers: number[];
@@ -199,12 +209,54 @@ function MiumiHome() {
         </header>
 
         <div className="app-layout">
-          <aside className="side-nav" aria-label="Main navigation">
-            <NavButton active={page === "home"} icon={<House />} label="Home" onClick={() => navigate("home")} />
-            <NavButton active={page === "quizzes" || page === "play"} icon={<Sparkles />} label="Quizzes" onClick={() => navigate("quizzes")} />
-            <NavButton active={page === "results" || page === "quiz-result"} icon={<Trophy />} label="My results" onClick={() => navigate("results")} />
-            <div className="nav-little-note">made with<br /><span>♡ for besties ♡</span></div>
-          </aside>
+         <aside className="side-nav" aria-label="Main navigation">
+  <NavButton
+    active={page === "home"}
+    icon={<House />}
+    label="Home"
+    onClick={() => navigate("home")}
+  />
+
+  <NavButton
+    active={page === "quizzes" || page === "play"}
+    icon={<Sparkles />}
+    label="Quizzes"
+    onClick={() => navigate("quizzes")}
+  />
+
+  <NavButton
+    active={page === "results" || page === "quiz-result"}
+    icon={<Trophy />}
+    label="My results"
+    onClick={() => navigate("results")}
+  />
+
+  <NavButton
+    active={page === "friendship"}
+    icon={<Heart />}
+    label="Friendship Universe"
+    onClick={() => navigate("friendship")}
+  />
+
+  <NavButton
+    active={page === "dedicate"}
+    icon={<Gift />}
+    label="Create & Dedicate"
+    onClick={() => navigate("dedicate")}
+  />
+
+  <NavButton
+    active={page === "games"}
+    icon={<Gamepad2 />}
+    label="Mini Games"
+    onClick={() => navigate("games")}
+  />
+
+  <div className="nav-little-note">
+    made with<br />
+    <span>♡ for besties ♡</span>
+  </div>
+</aside>
 
           <div className="content-column" key={page}>
             {page === "home" && (
@@ -237,15 +289,75 @@ function MiumiHome() {
                 onShare={() => shareResult(completedResult)}
                 onQuizzes={() => navigate("quizzes")}
               />
+                       )}
+
+            {page === "friendship" && (
+              <section className="feature-page">
+                <div className="feature-hero">
+                  <span className="feature-emoji">💗</span>
+                  <p className="eyebrow">A LITTLE WORLD OF CONNECTION</p>
+                  <h1>Friendship Universe</h1>
+                  <p>Every friendship has its own little magic. Discover yours!</p>
+                </div>
+                <div className="feature-card">
+                  <span>✨</span>
+                  <h2>Friendship identities</h2>
+                  <p>Discover the kind of friendship you share through fun questions.</p>
+                  <button onClick={() => navigate("quizzes")}>
+                    Explore quizzes →
+                  </button>
+                </div>
+              </section>
+            )}
+
+            {page === "dedicate" && (
+              <section className="feature-page">
+                <div className="feature-hero">
+                  <span className="feature-emoji">💌</span>
+                  <p className="eyebrow">MADE WITH A LITTLE LOVE</p>
+                  <h1>Create & Dedicate</h1>
+                  <p>Make something special for someone who makes life brighter.</p>
+                </div>
+                <div className="feature-card">
+                  <span>🎀</span>
+                  <h2>Personalised dedications</h2>
+                  <p>Create sweet messages and shareable dedication cards.</p>
+                  <button onClick={() => setNotice("Your dedication studio is coming soon ♡")}>
+                    Coming soon ♡
+                  </button>
+                </div>
+              </section>
+            )}
+
+            {page === "games" && (
+              <section className="feature-page">
+                <div className="feature-hero">
+                  <span className="feature-emoji">🎮</span>
+                  <p className="eyebrow">A TINY BREAK FROM EVERYTHING</p>
+                  <h1>Mini Games</h1>
+                  <p>Little games, unexpected surprises and lots of fun.</p>
+                </div>
+                <div className="feature-card">
+                  <span>🌷</span>
+                  <h2>Coming to your wonderland</h2>
+                  <p>We're preparing some playful little games for you.</p>
+                  <button onClick={() => setNotice("More little games are coming soon ♡")}>
+                    Stay tuned ♡
+                  </button>
+                </div>
+              </section>
             )}
           </div>
         </div>
 
-        <nav className="mobile-nav" aria-label="Main navigation">
-          <NavButton active={page === "home"} icon={<House />} label="Home" onClick={() => navigate("home")} />
-          <NavButton active={page === "quizzes" || page === "play"} icon={<Sparkles />} label="Quizzes" onClick={() => navigate("quizzes")} />
-          <NavButton active={page === "results" || page === "quiz-result"} icon={<Trophy />} label="Results" onClick={() => navigate("results")} />
-        </nav>
+       <nav className="mobile-nav" aria-label="Main navigation">
+  <NavButton active={page === "home"} icon={<House />} label="Home" onClick={() => navigate("home")} />
+  <NavButton active={page === "quizzes" || page === "play"} icon={<Sparkles />} label="Quizzes" onClick={() => navigate("quizzes")} />
+  <NavButton active={page === "results" || page === "quiz-result"} icon={<Trophy />} label="Results" onClick={() => navigate("results")} />
+  <NavButton active={page === "friendship"} icon={<Heart />} label="Friends" onClick={() => navigate("friendship")} />
+  <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
+  <NavButton active={page === "games"} icon={<Gamepad2 />} label="Games" onClick={() => navigate("games")} />
+</nav>
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
