@@ -383,24 +383,79 @@ function MiumiHome() {
   </section>
 )}
 
-            {page === "games" && (
-              <section className="feature-page">
-                <div className="feature-hero">
-                  <span className="feature-emoji">🎮</span>
-                  <p className="eyebrow">A TINY BREAK FROM EVERYTHING</p>
-                  <h1>Mini Games</h1>
-                  <p>Little games, unexpected surprises and lots of fun.</p>
-                </div>
-                <div className="feature-card">
-                  <span>🌷</span>
-                  <h2>Coming to your wonderland</h2>
-                  <p>We're preparing some playful little games for you.</p>
-                  <button onClick={() => setNotice("More little games are coming soon ♡")}>
-                    Stay tuned ♡
-                  </button>
-                </div>
-              </section>
-            )}
+           
+{page === "games" && (
+  <section className="feature-page mini-games-page page-enter">
+    <div className="feature-hero games-hero">
+      <span className="feature-emoji">🎮</span>
+      <p className="eyebrow">A TINY BREAK FROM EVERYTHING</p>
+      <h1>Mini Games</h1>
+      <p>
+        A little playtime, a little laughter, and a whole lot of happy moments.
+      </p>
+      <span className="games-handwriting">ready, set, play! ♡</span>
+    </div>
+
+    <div className="games-section-heading">
+      <div>
+        <p className="garden-overline">YOUR LITTLE PLAYGROUND</p>
+        <h2>Choose your next adventure</h2>
+      </div>
+      <span>✧</span>
+    </div>
+
+    <div className="games-grid">
+      <div className="game-preview-card game-card-blue">
+        <span className="game-preview-icon">🧩</span>
+        <span className="game-preview-tag">COMING SOON</span>
+        <h3>Little Puzzles</h3>
+        <p>Put the little pieces together and discover the picture.</p>
+        <span className="game-card-decoration">✧</span>
+      </div>
+
+      <div className="game-preview-card game-card-pink">
+        <span className="game-preview-icon">🧠</span>
+        <span className="game-preview-tag">COMING SOON</span>
+        <h3>Memory Match</h3>
+        <p>Find matching pairs and give your memory a tiny workout.</p>
+        <span className="game-card-decoration">♡</span>
+      </div>
+
+      <div className="game-preview-card game-card-lilac">
+        <span className="game-preview-icon">🍓</span>
+        <span className="game-preview-tag">COMING SOON</span>
+        <h3>Sweet Choices</h3>
+        <p>Make fun little choices and see where your imagination goes.</p>
+        <span className="game-card-decoration">✿</span>
+      </div>
+
+      <div className="game-preview-card game-card-cream">
+        <span className="game-preview-icon">🎯</span>
+        <span className="game-preview-tag">COMING SOON</span>
+        <h3>Daily Challenge</h3>
+        <p>A fresh tiny challenge to brighten up your day.</p>
+        <span className="game-card-decoration">✧</span>
+      </div>
+    </div>
+
+    <div className="games-coming-note">
+      <span className="games-coming-emoji">🧸</span>
+      <div>
+        <p className="garden-overline">A LITTLE SURPRISE IS BREWING</p>
+        <h2>Our tiny arcade is getting ready!</h2>
+        <p>We're collecting fun little games for your wonderland.</p>
+        <button onClick={() => setNotice("More little games are coming soon ♡")}>
+          Stay tuned <span>♡</span>
+        </button>
+      </div>
+    </div>
+
+    <div className="games-footer-note">
+      <span>୨୧</span> little breaks make lovely memories <span>୨୧</span>
+    </div>
+  </section>
+)}
+
           </div>
         </div>
 
