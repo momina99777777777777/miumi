@@ -175,8 +175,12 @@
   0%, 100% { transform: translateY(0) rotate(-3deg); }
   50% { transform: translateY(-7px) rotate(2deg); }
 }
-
-.miumi-app { min-height: 100vh; color: var(--foreground); background: radial-gradient(ellipse at 76% 0%, oklch(0.975 0.036 7 / 72%), transparent 30rem), var(--background); font-family: var(--font-sans); }
+.miumi-app {
+  min-height: 100vh;
+  color: var(--foreground);
+  background: transparent;
+  font-family: var(--font-sans);
+}
 .page-wrap { max-width: 1240px; margin: 0 auto; padding: 0 44px 42px; }
 .topbar { height: 78px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid color-mix(in oklab, var(--rose) 13%, transparent); }
 .wordmark { background: none; border: 0; padding: 0; color: var(--rose-deep); font-family: var(--font-display); font-weight: 700; font-size: 25px; cursor: pointer; }
