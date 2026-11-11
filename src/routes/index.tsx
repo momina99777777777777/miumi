@@ -1307,12 +1307,29 @@ function HomePage({
           <Button className="hero-cta" onClick={onBrowse}>Find a little quiz <ArrowRight /></Button>
           <span className="hero-doodle" aria-hidden="true">˚₊‧꒰ა ♡ ໒꒱ ‧₊˚</span>
         </div>
-        <div className="hero-art-wrap">
-          <span className="art-spark art-spark-one">✧</span>
-          <span className="art-spark art-spark-two">♡</span>
-          
-          <span className="art-caption">a little sweetness<br />for you & your bestie</span>
-        </div>
+       <div className="hero-art-wrap">
+  <span className="art-spark art-spark-one">✧</span>
+  <span className="art-spark art-spark-two">♡</span>
+
+  <div className="sky-cloud cloud-one">☁</div>
+  <div className="sky-cloud cloud-two">☁</div>
+
+  <div className="postcard">
+    <div className="postcard-stamp">♡</div>
+    <div className="postcard-flower">✿</div>
+    <div className="postcard-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div className="postcard-message">hello, lovely!</div>
+    <div className="postcard-envelope">✉</div>
+  </div>
+
+  <span className="art-caption">
+    a little sweetness<br />for you & your bestie
+  </span>
+</div>
       </section>
       <DearYou />
       <MiumiBunny />
