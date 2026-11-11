@@ -3691,3 +3691,236 @@ button:hover::after {
     font-size: 16px;
   }
 }
+/* =================================
+   MIUMI — LITTLE PASTEL ARCADE
+================================= */
+
+.mini-games-page {
+  max-width: 1050px;
+}
+
+.games-hero {
+  background:
+    radial-gradient(circle at 12% 15%, rgba(200,224,242,.48), transparent 30%),
+    radial-gradient(circle at 90% 85%, rgba(243,198,215,.42), transparent 32%),
+    linear-gradient(135deg, #F7FBFF, #FFF8FB);
+}
+
+.games-handwriting {
+  display: block;
+  margin-top: 20px;
+  color: #B77D9C;
+  font-family: "Caveat", cursive;
+  font-size: 23px;
+}
+
+.games-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 35px 2px 20px;
+}
+
+.games-section-heading h2 {
+  margin: 0;
+  color: #526F91;
+  font-family: "Zen Maru Gothic", sans-serif;
+  font-size: 23px;
+}
+
+.games-section-heading > span {
+  color: #C58CA8;
+  font-size: 31px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.game-preview-card {
+  position: relative;
+  min-height: 205px;
+  padding: 25px;
+  overflow: hidden;
+  border: 1px solid #E5EDF7;
+  border-radius: 23px;
+  background: linear-gradient(145deg, #FFFFFF, #F2F8FD);
+  box-shadow: 0 8px 24px rgba(145,174,205,.09);
+  transition: transform .28s ease, box-shadow .28s ease;
+}
+
+.game-preview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(145,174,205,.15);
+}
+
+.game-card-blue {
+  background: linear-gradient(145deg, #FFFFFF, #EAF3FC);
+}
+
+.game-card-pink {
+  background: linear-gradient(145deg, #FFFFFF, #FFF0F6);
+  border-color: #F0DCE7;
+}
+
+.game-card-lilac {
+  background: linear-gradient(145deg, #FFFFFF, #F1F0FB);
+  border-color: #E3E0F2;
+}
+
+.game-card-cream {
+  background: linear-gradient(145deg, #FFFFFF, #FFF8ED);
+  border-color: #F0E7D7;
+}
+
+.game-preview-icon {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 35px;
+}
+
+.game-preview-tag {
+  display: inline-block;
+  padding: 5px 9px;
+  border: 1px solid #E5DCE8;
+  border-radius: 9px;
+  background: rgba(255,255,255,.7);
+  color: #B18AA2;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.game-preview-card h3 {
+  margin: 12px 0 7px;
+  color: #526F91;
+  font-family: "Zen Maru Gothic", sans-serif;
+  font-size: 18px;
+}
+
+.game-preview-card p {
+  max-width: 270px;
+  margin: 0;
+  color: #8496AA;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.game-card-decoration {
+  position: absolute;
+  right: 18px;
+  bottom: 13px;
+  color: rgba(183,125,156,.35);
+  font-size: 35px;
+}
+
+.games-coming-note {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 24px;
+  padding: 27px;
+  border: 1px solid #F0DCE7;
+  border-radius: 23px;
+  background: linear-gradient(135deg, #FFF8FB, #F4F9FF);
+}
+
+.games-coming-emoji {
+  flex-shrink: 0;
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: #F9EAF1;
+  font-size: 35px;
+}
+
+.games-coming-note h2 {
+  margin: 6px 0;
+  color: #526F91;
+  font-family: "Zen Maru Gothic", sans-serif;
+  font-size: 19px;
+}
+
+.games-coming-note p:not(.garden-overline) {
+  margin: 7px 0 14px;
+  color: #8496AA;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.games-coming-note button {
+  padding: 10px 17px;
+  border: 1px solid #E8C9D9;
+  border-radius: 13px;
+  background: #F9EAF1;
+  color: #A66F8B;
+  font-family: "Nunito", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.games-coming-note button:hover {
+  transform: translateY(-2px);
+  background: #F3DCE8;
+}
+
+.games-coming-note button span {
+  margin-left: 5px;
+}
+
+.games-footer-note {
+  margin-top: 25px;
+  color: #A77F9A;
+  font-family: "Caveat", cursive;
+  font-size: 20px;
+  text-align: center;
+}
+
+.games-footer-note span {
+  margin: 0 9px;
+  color: #C58CA8;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .mini-games-page {
+    padding: 18px 0;
+  }
+
+  .games-section-heading h2 {
+    font-size: 19px;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .game-preview-card {
+    min-height: 175px;
+    padding: 21px;
+  }
+
+  .games-coming-note {
+    align-items: flex-start;
+    gap: 13px;
+    padding: 19px 14px;
+  }
+
+  .games-coming-emoji {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 26px;
+  }
+
+  .games-coming-note h2 {
+    font-size: 16px;
+  }
+}
