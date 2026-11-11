@@ -419,7 +419,11 @@
 }
 
 .quiz-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
-.quiz-card-rose { background: var(--rose-soft); }
+.quiz-card-rose {
+  background: linear-gradient(145deg, #FFF8FB, #F9EDF4);
+  border-color: #F0DCE7;
+  box-shadow: 0 8px 24px rgba(183, 125, 156, 0.09);
+}
 .quiz-card-lilac { background: var(--lilac); }
 .quiz-card-peach { background: var(--peach); }
 .quiz-card-mint { background: var(--mint); }
@@ -831,10 +835,15 @@ h1, h2, h3, h4 {
 
 .mystery-box-3d .mystery-gift {
   display: inline-block;
-  font-size: 75px;
+  font-size: 82px;
   cursor: pointer;
-  filter: drop-shadow(0 12px 12px rgba(220, 90, 160, 0.3));
+  filter: drop-shadow(0 14px 13px rgba(183, 125, 156, 0.24));
   transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.mystery-box-3d .mystery-gift:hover {
+  transform: scale(1.1) rotate(-5deg);
+  filter: drop-shadow(0 18px 16px rgba(183, 125, 156, 0.30));
 }
 
 .mystery-box-3d:hover .mystery-gift {
