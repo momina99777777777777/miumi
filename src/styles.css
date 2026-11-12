@@ -4025,3 +4025,32 @@ button:hover::after {
   .playroom-controls { flex-direction:column-reverse; }
   .playroom-controls button { width:100%; }
 }
+
+
+/* Playroom results and round progress */
+.playroom-progress { height:5px; margin:13px 0 4px; overflow:hidden; border-radius:99px; background:#F0EDF3; }
+.playroom-progress > span { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#D9A9C2,#AFC9E8); transition:width .25s ease; }
+.playroom-results-card { padding:30px 23px; border:1px solid #EEE7EF; border-radius:27px; background:linear-gradient(145deg,#FFF5FA,#F1F6FF); text-align:center; }
+.playroom-results-sparkle { display:block; margin-bottom:12px; font-size:49px; }
+.playroom-results-card h1 { margin:8px 0; color:#637D9B; font:700 29px "Zen Maru Gothic",sans-serif; }
+.playroom-results-subtitle { max-width:360px; margin:0 auto; color:#8995A6; font-size:12px; line-height:1.7; }
+.playroom-results-stat { display:flex; flex-direction:column; gap:3px; width:116px; height:116px; align-items:center; justify-content:center; margin:22px auto; border:1px solid rgba(255,255,255,.9); border-radius:50%; background:rgba(255,255,255,.72); box-shadow:0 7px 22px rgba(104,119,150,.08); }
+.playroom-results-stat strong { color:#A57491; font:700 29px "Zen Maru Gothic",sans-serif; }
+.playroom-results-stat span { color:#9AA0AD; font-size:10px; }
+.playroom-result-highlight { display:flex; flex-direction:column; gap:6px; max-width:420px; margin:0 auto; padding:16px; border:1px solid rgba(255,255,255,.9); border-radius:17px; background:rgba(255,255,255,.68); }
+.playroom-result-highlight > span { color:#B18BA3; font-size:9px; font-weight:900; letter-spacing:1.2px; }
+.playroom-result-highlight strong { color:#667F9B; font:700 17px "Zen Maru Gothic",sans-serif; overflow-wrap:anywhere; }
+.playroom-result-highlight small { color:#929BAB; font-size:10px; line-height:1.6; }
+.playroom-results-history { margin-top:21px; padding:20px; border:1px solid #EEEAF1; border-radius:22px; background:#fff; }
+.playroom-results-history-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+.playroom-results-history-heading h2 { margin:0; color:#637D9B; font:700 17px "Zen Maru Gothic",sans-serif; }
+.playroom-results-history-heading span { color:#AD8BA2; font-size:10px; }
+.playroom-result-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-top:1px solid #F2EFF3; }
+.playroom-result-row > span { flex:0 0 25px; color:#C19BB1; font-size:10px; font-weight:900; }
+.playroom-result-row p { margin:0; color:#77869B; font-size:11px; line-height:1.6; overflow-wrap:anywhere; }
+.playroom-back-to-games { display:block; margin:17px auto 0; padding:8px 12px; border:0; background:transparent; color:#9B8297; font:700 11px "Nunito",sans-serif; cursor:pointer; }
+@media(max-width:640px) {
+  .playroom-results-card { padding:25px 16px; }
+  .playroom-results-card h1 { font-size:25px; }
+  .playroom-results-history { padding:15px; }
+}
