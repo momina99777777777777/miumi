@@ -538,7 +538,7 @@ function MiumiDuoPage({ onNotice }: { onNotice: (message: string) => void }) {
 
 
 type MuseumRoom = "Firsts" | "Inside jokes" | "Our eras" | "Future";
-type MuseumExhibit = { id: number; title: string; room: MuseumRoom; date: string; story: string; emoji: string; image?: string };
+type MuseumExhibit = { id: number; sourceId?: number; title: string; room: MuseumRoom; date: string; story: string; emoji: string; image?: string };
 const museumRooms: { name: MuseumRoom; emoji: string; description: string }[] = [
   { name: "Firsts", emoji: "🌷", description: "The beginnings and little milestones" },
   { name: "Inside jokes", emoji: "🤭", description: "The moments only you two understand" },
@@ -570,9 +570,9 @@ function MiumiMuseumPage({ onNotice }: { onNotice: (message: string) => void }) 
     try {
       const saved = window.localStorage.getItem("miumi-calendar-memories");
       const calendarItems = saved ? JSON.parse(saved) as { id: number; title: string; date: string; kind: string; note: string }[] : [];
-      const existing = new Set(exhibits.map((item) => "calendar-" + item.id));
-      const additions = calendarItems.filter((item) => !existing.has("calendar-" + item.id)).map((item) => ({
-        id: Date.now() + item.id, title: item.title, room: "Firsts" as MuseumRoom, date: item.date,
+      const existing = new Set(exhibits.map((item) => item.sourceId).filter((id): id is number => typeof id === "number"));
+      const additions = calendarItems.filter((item) => !existing.has(item.id)).map((item) => ({
+        id: Date.now() + item.id, sourceId: item.id, title: item.title, room: "Firsts" as MuseumRoom, date: item.date,
         story: [item.kind, item.note].filter(Boolean).join(" · "), emoji: "🗓️",
       }));
       if (!additions.length) { onNotice(calendarItems.length ? "Your calendar dates are already in the museum ♡" : "Add a date in Miumi Calendar first ♡"); return; }
