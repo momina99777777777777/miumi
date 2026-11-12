@@ -248,7 +248,7 @@ function MiumiHome() {
   <NavButton
     active={page === "games"}
     icon={<Gamepad2 />}
-    label="Mini Games"
+    label="Playroom"
     onClick={() => navigate("games")}
   />
 
@@ -384,77 +384,7 @@ function MiumiHome() {
 )}
 
            
-{page === "games" && (
-  <section className="feature-page mini-games-page page-enter">
-    <div className="feature-hero games-hero">
-      <span className="feature-emoji">🎮</span>
-      <p className="eyebrow">A TINY BREAK FROM EVERYTHING</p>
-      <h1>Mini Games</h1>
-      <p>
-        A little playtime, a little laughter, and a whole lot of happy moments.
-      </p>
-      <span className="games-handwriting">ready, set, play! ♡</span>
-    </div>
-
-    <div className="games-section-heading">
-      <div>
-        <p className="garden-overline">YOUR LITTLE PLAYGROUND</p>
-        <h2>Choose your next adventure</h2>
-      </div>
-      <span>✧</span>
-    </div>
-
-    <div className="games-grid">
-      <div className="game-preview-card game-card-blue">
-        <span className="game-preview-icon">🧩</span>
-        <span className="game-preview-tag">COMING SOON</span>
-        <h3>Little Puzzles</h3>
-        <p>Put the little pieces together and discover the picture.</p>
-        <span className="game-card-decoration">✧</span>
-      </div>
-
-      <div className="game-preview-card game-card-pink">
-        <span className="game-preview-icon">🧠</span>
-        <span className="game-preview-tag">COMING SOON</span>
-        <h3>Memory Match</h3>
-        <p>Find matching pairs and give your memory a tiny workout.</p>
-        <span className="game-card-decoration">♡</span>
-      </div>
-
-      <div className="game-preview-card game-card-lilac">
-        <span className="game-preview-icon">🍓</span>
-        <span className="game-preview-tag">COMING SOON</span>
-        <h3>Sweet Choices</h3>
-        <p>Make fun little choices and see where your imagination goes.</p>
-        <span className="game-card-decoration">✿</span>
-      </div>
-
-      <div className="game-preview-card game-card-cream">
-        <span className="game-preview-icon">🎯</span>
-        <span className="game-preview-tag">COMING SOON</span>
-        <h3>Daily Challenge</h3>
-        <p>A fresh tiny challenge to brighten up your day.</p>
-        <span className="game-card-decoration">✧</span>
-      </div>
-    </div>
-
-    <div className="games-coming-note">
-      <span className="games-coming-emoji">🧸</span>
-      <div>
-        <p className="garden-overline">A LITTLE SURPRISE IS BREWING</p>
-        <h2>Our tiny arcade is getting ready!</h2>
-        <p>We're collecting fun little games for your wonderland.</p>
-        <button onClick={() => setNotice("More little games are coming soon ♡")}>
-          Stay tuned <span>♡</span>
-        </button>
-      </div>
-    </div>
-
-    <div className="games-footer-note">
-      <span>୨୧</span> little breaks make lovely memories <span>୨୧</span>
-    </div>
-  </section>
-)}
+{page === "games" && <PlayroomPage />}
 
           </div>
         </div>
@@ -465,13 +395,243 @@ function MiumiHome() {
   <NavButton active={page === "results" || page === "quiz-result"} icon={<Trophy />} label="Results" onClick={() => navigate("results")} />
   <NavButton active={page === "friendship"} icon={<Heart />} label="Friends" onClick={() => navigate("friendship")} />
   <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
-  <NavButton active={page === "games"} icon={<Gamepad2 />} label="Games" onClick={() => navigate("games")} />
+  <NavButton active={page === "games"} icon={<Gamepad2 />} label="Playroom" onClick={() => navigate("games")} />
 </nav>
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
   );
 }
+
+type PlayroomGameId = "this-or-that" | "never-have-i-ever" | "truth-or-dare" | "two-truths";
+
+const playroomGames: { id: PlayroomGameId; title: string; emoji: string; description: string; color: string; categories: string[] }[] = [
+  { id: "this-or-that", title: "This or That", emoji: "🦋", description: "Two choices, one very-you answer.", color: "blue", categories: ["Everyday", "Aesthetic", "Dreams", "Friendship"] },
+  { id: "never-have-i-ever", title: "Never Have I Ever", emoji: "🙈", description: "Funny little things you may or may not have done.", color: "pink", categories: ["Everyday", "School", "Friendship", "Funny"] },
+  { id: "truth-or-dare", title: "Truth or Dare", emoji: "🎀", description: "Pick a truth or a harmless little challenge.", color: "lilac", categories: ["Funny", "Friendship", "Creative", "Chill"] },
+  { id: "two-truths", title: "Two Truths & One Lie", emoji: "🕵️", description: "Can everyone spot the made-up statement?", color: "peach", categories: ["Random Facts", "Everyday", "Animals"] },
+];
+
+const playroomDecks: Record<PlayroomGameId, Record<string, any[]>> = {
+  "this-or-that": {
+    Everyday: [
+      { prompt: "Your perfect little afternoon?", options: ["A cozy movie night 🍿", "A spontaneous outing 🌷"] },
+      { prompt: "Pick your everyday treat.", options: ["Iced coffee 🧋", "A fruity smoothie 🍓"] },
+      { prompt: "Which sounds more like you?", options: ["Plan everything 📖", "Go with the flow 🦋"] },
+      { prompt: "Choose your ideal weekend.", options: ["A quiet reset ☁️", "A day full of plans 🎉"] },
+    ],
+    Aesthetic: [
+      { prompt: "Choose your dreamy palette.", options: ["Blush pink 🎀", "Powder blue 🫧"] },
+      { prompt: "Which room would you pick?", options: ["Cozy cottage 🌷", "Modern city loft 🌃"] },
+      { prompt: "Your perfect weather?", options: ["Rainy and cozy 🌧️", "Sunny and breezy ☀️"] },
+    ],
+    Dreams: [
+      { prompt: "A dream trip?", options: ["A peaceful beach 🏝️", "A magical old city 🏰"] },
+      { prompt: "Choose a big adventure.", options: ["See the northern lights 🌌", "Explore a rainforest 🌿"] },
+      { prompt: "Your dream home?", options: ["A cottage by the sea 🐚", "A little apartment in Paris 🥐"] },
+    ],
+    Friendship: [
+      { prompt: "A perfect bestie hangout?", options: ["Deep talks at midnight 🌙", "Laughing until you cry 😂"] },
+      { prompt: "How do you show you care?", options: ["Thoughtful little gifts 🎁", "Being there whenever needed 💗"] },
+      { prompt: "Your favorite friend tradition?", options: ["Inside jokes 🤭", "Long catch-up calls ☎️"] },
+    ],
+  },
+  "never-have-i-ever": {
+    Everyday: [
+      { text: "Never have I ever stayed up way too late watching a series." },
+      { text: "Never have I ever forgotten why I walked into a room." },
+      { text: "Never have I ever waved back at someone who wasn't waving at me." },
+      { text: "Never have I ever laughed at a joke I didn't understand." },
+    ],
+    School: [
+      { text: "Never have I ever decorated my notes instead of studying." },
+      { text: "Never have I ever forgotten what I was about to say in class." },
+      { text: "Never have I ever packed my bag at the very last minute." },
+    ],
+    Friendship: [
+      { text: "Never have I ever made a playlist for a friend." },
+      { text: "Never have I ever laughed so hard with a friend that I couldn't speak." },
+      { text: "Never have I ever planned a surprise for someone." },
+    ],
+    Funny: [
+      { text: "Never have I ever walked into the wrong room confidently." },
+      { text: "Never have I ever practiced a conversation in my head first." },
+      { text: "Never have I ever sung the wrong lyrics with complete confidence." },
+    ],
+  },
+  "truth-or-dare": {
+    Funny: [
+      { type: "truth", text: "What's the funniest misunderstanding you've ever had?" },
+      { type: "dare", text: "Describe your day like a dramatic movie trailer." },
+      { type: "truth", text: "What's a tiny thing you take way too seriously?" },
+      { type: "dare", text: "Invent a silly name for the person to your left." },
+    ],
+    Friendship: [
+      { type: "truth", text: "What's one quality you appreciate most in a friend?" },
+      { type: "dare", text: "Give someone in the group a sincere, specific compliment." },
+      { type: "truth", text: "What's a favorite memory you share with a friend?" },
+    ],
+    Creative: [
+      { type: "truth", text: "If you could create anything, what would it be?" },
+      { type: "dare", text: "Draw a tiny animal in 20 seconds and show everyone." },
+      { type: "truth", text: "Which fictional world would you visit for one day?" },
+    ],
+    Chill: [
+      { type: "truth", text: "What's something small that always improves your mood?" },
+      { type: "dare", text: "Take three slow breaths and share one thing you're grateful for." },
+      { type: "truth", text: "What's a skill you'd love to learn?" },
+    ],
+  },
+  "two-truths": {
+    "Random Facts": [
+      { statements: ["Octopuses have three hearts.", "Honey can last for a very long time when stored well.", "Goldfish have a memory of only three seconds."], lie: 2, explanation: "Goldfish can remember things for much longer than three seconds." },
+      { statements: ["Bananas are berries in botanical terms.", "A group of flamingos is called a flamboyance.", "Penguins can fly long distances."], lie: 2, explanation: "Penguins are flightless birds." },
+      { statements: ["The Eiffel Tower can become slightly taller in hot weather.", "A day on Venus is longer than its year.", "The Moon makes its own light."], lie: 2, explanation: "The Moon reflects sunlight; it does not produce its own light." },
+    ],
+    Everyday: [
+      { statements: ["A week has seven days.", "A triangle has four sides.", "There are 60 minutes in an hour."], lie: 1, explanation: "A triangle has three sides." },
+      { statements: ["Water freezes at 0°C under standard conditions.", "The Sun is a star.", "Humans have five lungs."], lie: 2, explanation: "Humans normally have two lungs." },
+    ],
+    Animals: [
+      { statements: ["Dolphins are mammals.", "Butterflies taste using their feet.", "All snakes have legs."], lie: 2, explanation: "Snakes do not have legs." },
+      { statements: ["A baby kangaroo is called a joey.", "Bats are mammals.", "Polar bears live naturally in Antarctica."], lie: 2, explanation: "Polar bears live in the Arctic, not Antarctica." },
+    ],
+  },
+};
+
+function PlayroomPage() {
+  const [activeGame, setActiveGame] = useState<PlayroomGameId | null>(null);
+  const [mode, setMode] = useState("Solo");
+  const [category, setCategory] = useState("Everyday");
+  const [round, setRound] = useState(0);
+  const [seen, setSeen] = useState<number[]>([]);
+  const [choice, setChoice] = useState<number | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [score, setScore] = useState(0);
+  const [truthOrDare, setTruthOrDare] = useState<"truth" | "dare" | null>(null);
+  const [customStatements, setCustomStatements] = useState(["", "", ""]);
+  const [customLie, setCustomLie] = useState(0);
+  const [usingCustom, setUsingCustom] = useState(false);
+
+  const selectedGame = playroomGames.find((game) => game.id === activeGame);
+  const categories = selectedGame?.categories ?? [];
+  const deck = activeGame ? (playroomDecks[activeGame][category] ?? Object.values(playroomDecks[activeGame])[0] ?? []) : [];
+  const prompt = deck[round % Math.max(deck.length, 1)];
+
+  const startGame = (id: PlayroomGameId) => {
+    const game = playroomGames.find((item) => item.id === id);
+    setActiveGame(id);
+    setCategory(game?.categories[0] ?? "Everyday");
+    setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+  };
+  const nextPrompt = () => {
+    if (!deck.length) return;
+    const available = deck.map((_: unknown, index: number) => index).filter((index: number) => !seen.includes(index));
+    const next = available.length ? available[Math.floor(Math.random() * available.length)] : Math.floor(Math.random() * deck.length);
+    setSeen(available.length ? [...seen, next] : [next]);
+    setRound(next); setChoice(null); setRevealed(false); setTruthOrDare(null); setUsingCustom(false);
+  };
+  const changeCategory = (value: string) => {
+    setCategory(value); setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setUsingCustom(false);
+  };
+  const resetGame = () => {
+    setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+  };
+  const sharePrompt = async () => {
+    const text = selectedGame && prompt ? selectedGame.title + " on Miumi Playroom ♡ " + (prompt.text ?? prompt.prompt ?? prompt.statements?.join(" / ") ?? "") : "Come play on Miumi Playroom ♡";
+    try {
+      if (navigator.share) await navigator.share({ title: "Miumi Playroom", text });
+      else if (navigator.clipboard) await navigator.clipboard.writeText(text);
+    } catch { /* Sharing is optional. */ }
+  };
+  const submitCustomRound = () => {
+    if (customStatements.every((statement) => statement.trim().length > 0)) {
+      setUsingCustom(true); setChoice(null); setRevealed(false);
+    }
+  };
+
+  if (!activeGame || !selectedGame) {
+    return (
+      <section className="feature-page playroom-page page-enter">
+        <div className="feature-hero playroom-hero">
+          <span className="feature-emoji">🎀</span>
+          <p className="eyebrow">A LITTLE SPACE TO PLAY TOGETHER</p>
+          <h1>Miumi Playroom</h1>
+          <p>Pick a game, choose your vibe, and make a little memory.</p>
+          <span className="games-handwriting">little games, lovely company ♡</span>
+        </div>
+        <div className="playroom-intro-row"><div><p className="garden-overline">THE SOCIAL GAME COLLECTION</p><h2>What shall we play?</h2></div><span>୨୧</span></div>
+        <div className="playroom-game-grid">
+          {playroomGames.map((game) => (
+            <button type="button" className={"playroom-game-card playroom-" + game.color} key={game.id} onClick={() => startGame(game.id)}>
+              <span className="playroom-card-icon">{game.emoji}</span><span className="playroom-card-label">READY TO PLAY</span>
+              <strong>{game.title}</strong><span className="playroom-card-description">{game.description}</span>
+              <span className="playroom-card-link">Let's play <span>↗</span></span>
+            </button>
+          ))}
+        </div>
+        <div className="playroom-note"><span>🧸</span><div><strong>Your little hangout</strong><p>Play solo, pass the phone around, or take turns with your favorite people. No account needed.</p></div></div>
+        <p className="games-footer-note"><span>୨୧</span> little breaks make lovely memories <span>୨୧</span></p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="feature-page playroom-page page-enter">
+      <div className="playroom-topline">
+        <button type="button" className="playroom-back" onClick={() => setActiveGame(null)}>← All games</button>
+        <button type="button" className="playroom-reset" onClick={resetGame}>↻ Restart</button>
+      </div>
+      <div className="playroom-game-heading"><span>{selectedGame.emoji}</span><p className="garden-overline">MIUMI PLAYROOM</p><h1>{selectedGame.title}</h1><p>{selectedGame.description}</p></div>
+      <div className="playroom-settings">
+        <div className="playroom-setting"><label htmlFor="playroom-mode">Playing mode</label><select id="playroom-mode" value={mode} onChange={(event) => setMode(event.target.value)}><option>Solo</option><option>Friends</option><option>Couples</option><option>Group</option></select></div>
+        <div className="playroom-setting"><label htmlFor="playroom-category">Question pack</label><select id="playroom-category" value={category} onChange={(event) => changeCategory(event.target.value)}>{categories.map((item) => <option key={item}>{item}</option>)}</select></div>
+      </div>
+      <div className="playroom-mode-hint">{mode === "Solo" ? "A little you-time. Play at your own pace. ♡" : mode === "Couples" ? "Take turns together and see what you discover. 💌" : mode === "Friends" ? "Pass the phone to a friend after each turn. 👯" : "Gather everyone around and take turns. 🎉"}</div>
+      <div className="playroom-round-card" key={activeGame + "-" + category + "-" + round + "-" + usingCustom}>
+        <div className="playroom-round-meta"><span>ROUND {round + 1}</span><span>{selectedGame.emoji} A LITTLE ADVENTURE</span></div>
+        {activeGame === "this-or-that" && prompt && <>
+          <h2 className="playroom-question">{prompt.prompt}</h2>
+          <div className="playroom-choice-grid">{prompt.options.map((option: string, index: number) => <button type="button" key={option} className={"playroom-choice " + (choice === index ? "is-picked" : "")} onClick={() => setChoice(index)}><span className="playroom-choice-number">0{index + 1}</span><strong>{option}</strong>{choice === index && <span className="playroom-picked-mark">✓ Your pick</span>}</button>)}</div>
+          <p className="playroom-feedback">{choice === null ? "There are no wrong answers. Pick the one that feels like you. ♡" : "You picked " + prompt.options[choice] + ". Lovely choice! ♡"}</p>
+        </>}
+        {activeGame === "never-have-i-ever" && prompt && <>
+          <span className="playroom-big-emoji">🙈</span><h2 className="playroom-question">{prompt.text}</h2>
+          <div className="playroom-choice-grid">
+            <button type="button" className={"playroom-choice " + (choice === 0 ? "is-picked" : "")} onClick={() => setChoice(0)}><strong>I've done this ✋</strong>{choice === 0 && <span className="playroom-picked-mark">That's me!</span>}</button>
+            <button type="button" className={"playroom-choice " + (choice === 1 ? "is-picked" : "")} onClick={() => setChoice(1)}><strong>Never have I ever 🙅</strong>{choice === 1 && <span className="playroom-picked-mark">Not me!</span>}</button>
+          </div>
+          <p className="playroom-feedback">Share only what you're comfortable sharing. Passing is always okay. ♡</p>
+        </>}
+        {activeGame === "truth-or-dare" && prompt && <>
+          <div className="playroom-choice-grid playroom-truth-dare">
+            <button type="button" className={"playroom-choice " + (truthOrDare === "truth" ? "is-picked" : "")} onClick={() => { setTruthOrDare("truth"); setRevealed(true); }}><span className="playroom-big-emoji">💬</span><strong>Truth</strong><span>Answer a question</span></button>
+            <button type="button" className={"playroom-choice " + (truthOrDare === "dare" ? "is-picked" : "")} onClick={() => { setTruthOrDare("dare"); setRevealed(true); }}><span className="playroom-big-emoji">✨</span><strong>Dare</strong><span>Try a harmless challenge</span></button>
+          </div>
+          {revealed && truthOrDare && <div className="playroom-prompt-reveal"><span>{truthOrDare === "truth" ? "YOUR TRUTH" : "YOUR DARE"}</span><p>{prompt.type === truthOrDare ? prompt.text : (playroomDecks["truth-or-dare"][category].find((item: any) => item.type === truthOrDare)?.text ?? "Choose another round for a new prompt.")}</p></div>}
+          <p className="playroom-feedback">Keep it kind, comfortable and optional. You can always pass. ♡</p>
+        </>}
+        {activeGame === "two-truths" && prompt && <>
+          <h2 className="playroom-question">Which statement is the lie?</h2>
+          <div className="playroom-statement-list">{(usingCustom ? customStatements : prompt.statements).map((statement: string, index: number) => <button type="button" key={index + "-" + statement} className={"playroom-statement " + (choice === index ? "is-picked " : "") + (revealed && index === (usingCustom ? customLie : prompt.lie) ? "is-correct " : "") + (revealed && choice === index && index !== (usingCustom ? customLie : prompt.lie) ? "is-wrong" : "")} onClick={() => !revealed && setChoice(index)}><span>{index + 1}</span><strong>{statement}</strong>{revealed && index === (usingCustom ? customLie : prompt.lie) && <em>THE LIE</em>}</button>)}</div>
+          {!revealed ? <button type="button" className="playroom-primary-button" disabled={choice === null} onClick={() => { setRevealed(true); if (choice === (usingCustom ? customLie : prompt.lie)) setScore((value) => value + 1); }}>Reveal the answer ✨</button> : <div className="playroom-prompt-reveal"><span>{choice === (usingCustom ? customLie : prompt.lie) ? "YOU GOT IT! ♡" : "THE LIE WAS NUMBER " + ((usingCustom ? customLie : prompt.lie) + 1)}</span><p>{usingCustom ? "Nice round! Your friends made that one tricky." : prompt.explanation}</p></div>}
+          <p className="playroom-feedback">Correct guesses this session: {score}</p>
+          <div className="playroom-custom"><button type="button" className="playroom-custom-toggle" onClick={() => setUsingCustom((value) => !value)}>✎ Make your own round</button>
+            {usingCustom && <div className="playroom-custom-form"><p>Write three statements and choose which one is the lie.</p>
+              {customStatements.map((statement, index) => <input key={index} value={statement} onChange={(event) => setCustomStatements((values) => values.map((value, i) => i === index ? event.target.value : value))} placeholder={"Statement " + (index + 1)} maxLength={110} />)}
+              <label htmlFor="custom-lie">Which one is the lie?</label><select id="custom-lie" value={customLie} onChange={(event) => setCustomLie(Number(event.target.value))}><option value={0}>Statement 1</option><option value={1}>Statement 2</option><option value={2}>Statement 3</option></select>
+              <button type="button" className="playroom-primary-button" onClick={submitCustomRound} disabled={!customStatements.every((statement) => statement.trim())}>Use my round</button>
+            </div>}
+          </div>
+        </>}
+      </div>
+      <div className="playroom-controls"><button type="button" className="playroom-secondary-button" onClick={sharePrompt}>↗ Share prompt</button><button type="button" className="playroom-primary-button" onClick={nextPrompt}>Next round <span>→</span></button></div>
+      <p className="playroom-closing-note">୨୧ made for good company and gentle fun ♡</p>
+    </section>
+  );
+}
+
+
 function NavButton({
   active,
   icon,
