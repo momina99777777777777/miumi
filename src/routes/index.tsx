@@ -1167,7 +1167,11 @@ const changeCategory = (value: string) => {
         </>}
       </div>
       <div className="playroom-controls"><button type="button" className="playroom-secondary-button" onClick={sharePrompt}>↗ Share prompt</button>{roundNumber < totalRounds ? <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={nextPrompt}>Next round <span>→</span></button> : <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={finishGame}>See my results ✨</button>}</div>
-      <p className="playroom-closing-note">୨
+      <p className="playroom-closing-note">୨୧ made for good company and gentle fun ♡</p>
+    </section>
+  );
+}
+
 
 type BunnyLook = { colour: string; bow: string; outfit: string };
 const bunnyLooks: BunnyLook = { colour: "#F4BBD2", bow: "#C98BB7", outfit: "#F7E7F0" };
@@ -1267,12 +1271,6 @@ function MiumiBunnyGuide({ onNavigate }: { onNavigate: (page: Page) => void }) {
     </div>
   );
 }
-
-୧ made for good company and gentle fun ♡</p>
-    </section>
-  );
-}
-
 
 function NavButton({
   active,
