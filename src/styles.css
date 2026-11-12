@@ -3938,3 +3938,90 @@ button:hover::after {
     font-size: 16px;
   }
 }
+
+
+/* Miumi Playroom */
+.playroom-page { padding-bottom: 28px; }
+.playroom-hero { background: linear-gradient(135deg, #F7EAF2 0%, #EAF2FC 52%, #F7F0FF 100%); }
+.playroom-intro-row { display:flex; align-items:center; justify-content:space-between; margin:30px 2px 17px; }
+.playroom-intro-row h2 { margin:5px 0 0; color:#536F8F; font-family:"Zen Maru Gothic",sans-serif; font-size:22px; }
+.playroom-intro-row > span { color:#C18DAA; font-size:30px; }
+.playroom-game-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.playroom-game-card { position:relative; display:flex; flex-direction:column; align-items:flex-start; min-height:220px; padding:23px; border:1px solid rgba(255,255,255,.9); border-radius:25px; text-align:left; cursor:pointer; box-shadow:0 9px 24px rgba(91,113,145,.07); transition:transform .22s ease,box-shadow .22s ease; }
+.playroom-game-card:hover { transform:translateY(-4px); box-shadow:0 14px 30px rgba(91,113,145,.13); }
+.playroom-blue { background:linear-gradient(145deg,#E8F2FF,#F5F8FF); color:#58789D; }
+.playroom-pink { background:linear-gradient(145deg,#FCE8F1,#FFF5F8); color:#A66F8B; }
+.playroom-lilac { background:linear-gradient(145deg,#F0EAFE,#FAF7FF); color:#8270A5; }
+.playroom-peach { background:linear-gradient(145deg,#FFF0E3,#FFFAF4); color:#A67C5E; }
+.playroom-card-icon { font-size:37px; margin-bottom:14px; }
+.playroom-card-label { font-size:9px; letter-spacing:1.6px; font-weight:900; opacity:.68; }
+.playroom-game-card strong { margin:7px 0; font-family:"Zen Maru Gothic",sans-serif; font-size:20px; }
+.playroom-card-description { max-width:250px; color:#7D8DA1; font-size:12px; line-height:1.7; }
+.playroom-card-link { margin-top:auto; padding-top:15px; font-size:12px; font-weight:900; }
+.playroom-card-link span { margin-left:5px; }
+.playroom-note { display:flex; align-items:center; gap:15px; margin-top:22px; padding:19px 21px; border:1px solid #EAE7F0; border-radius:20px; background:rgba(255,255,255,.75); }
+.playroom-note > span { font-size:30px; }
+.playroom-note strong { color:#6D7890; font-size:13px; }
+.playroom-note p { margin:4px 0 0; color:#8B97A8; font-size:11px; line-height:1.7; }
+.playroom-topline { display:flex; align-items:center; justify-content:space-between; margin:0 0 18px; }
+.playroom-back,.playroom-reset,.playroom-custom-toggle { padding:8px 12px; border:1px solid #E8E5ED; border-radius:12px; background:#fff; color:#8A7896; font:700 12px "Nunito",sans-serif; cursor:pointer; }
+.playroom-game-heading { padding:24px 18px 21px; border-radius:25px; background:linear-gradient(135deg,#F8EAF2,#EDF3FF); text-align:center; }
+.playroom-game-heading > span { font-size:42px; }
+.playroom-game-heading .garden-overline { margin:8px 0 4px; }
+.playroom-game-heading h1 { margin:4px 0; color:#627D9D; font:700 29px "Zen Maru Gothic",sans-serif; }
+.playroom-game-heading p:last-child { margin:7px 0 0; color:#8997A9; font-size:12px; }
+.playroom-settings { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px; }
+.playroom-setting { display:flex; flex-direction:column; gap:7px; }
+.playroom-setting label,.playroom-custom-form label { color:#8992A3; font-size:10px; font-weight:900; letter-spacing:.7px; text-transform:uppercase; }
+.playroom-setting select,.playroom-custom-form select,.playroom-custom-form input { width:100%; min-width:0; padding:11px 12px; border:1px solid #E8E7EE; border-radius:12px; outline:none; background:#fff; color:#66768D; font:700 12px "Nunito",sans-serif; }
+.playroom-setting select:focus,.playroom-custom-form input:focus,.playroom-custom-form select:focus { border-color:#D5A9C1; box-shadow:0 0 0 3px rgba(213,169,193,.15); }
+.playroom-mode-hint { margin:12px 0 17px; padding:10px 13px; border-radius:12px; background:#F9F5F8; color:#9A8193; font-size:11px; text-align:center; }
+.playroom-round-card { padding:24px; border:1px solid #EEEAF1; border-radius:25px; background:rgba(255,255,255,.92); box-shadow:0 10px 28px rgba(89,102,130,.06); }
+.playroom-round-meta { display:flex; justify-content:space-between; gap:10px; color:#B18BA3; font-size:9px; font-weight:900; letter-spacing:1.2px; }
+.playroom-question { margin:27px 0 22px; color:#607995; font:700 22px/1.45 "Zen Maru Gothic",sans-serif; text-align:center; }
+.playroom-choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+.playroom-choice { position:relative; display:flex; min-height:145px; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:18px 13px; border:1.5px solid #E9EAF0; border-radius:20px; background:#F9FBFF; color:#71849E; font-family:"Nunito",sans-serif; cursor:pointer; transition:all .2s ease; }
+.playroom-choice:nth-child(2) { background:#FFF8FB; }
+.playroom-choice:hover { transform:translateY(-2px); border-color:#DDB9CD; }
+.playroom-choice.is-picked { border-color:#D5A1BC; background:#FBEFF5; box-shadow:0 5px 15px rgba(190,139,166,.12); color:#A36F8A; }
+.playroom-choice strong { font-size:14px; line-height:1.5; }
+.playroom-choice-number { color:#B7A5B4; font-size:9px; letter-spacing:1.5px; }
+.playroom-picked-mark { color:#A66F8B; font-size:10px; font-weight:900; }
+.playroom-feedback { margin:19px 0 0; color:#9AA1AF; font-size:11px; line-height:1.7; text-align:center; }
+.playroom-big-emoji { display:block; margin:5px auto 15px; font-size:43px; text-align:center; }
+.playroom-truth-dare .playroom-choice { min-height:160px; }
+.playroom-truth-dare .playroom-choice > span:last-child { color:#9B9EAD; font-size:11px; }
+.playroom-prompt-reveal { margin-top:17px; padding:17px; border:1px solid #F0DCE7; border-radius:17px; background:#FFF7FA; text-align:center; }
+.playroom-prompt-reveal > span { color:#B17E9B; font-size:9px; font-weight:900; letter-spacing:1.4px; }
+.playroom-prompt-reveal p { margin:8px 0 0; color:#697C96; font:700 15px/1.6 "Zen Maru Gothic",sans-serif; }
+.playroom-statement-list { display:flex; flex-direction:column; gap:10px; }
+.playroom-statement { display:flex; align-items:center; gap:12px; width:100%; padding:14px; border:1px solid #E9EAF0; border-radius:15px; background:#FAFBFE; color:#718098; text-align:left; cursor:pointer; }
+.playroom-statement > span { display:grid; flex:0 0 28px; width:28px; height:28px; place-items:center; border-radius:50%; background:#F1EAF2; color:#A27F9B; font-size:11px; font-weight:900; }
+.playroom-statement strong { flex:1; font-size:12px; line-height:1.6; }
+.playroom-statement em { color:#A16D87; font-size:8px; font-style:normal; font-weight:900; letter-spacing:.8px; }
+.playroom-statement.is-picked { border-color:#D5A1BC; background:#FFF6FA; }
+.playroom-statement.is-correct { border-color:#A8CDBB; background:#F2FAF5; }
+.playroom-statement.is-wrong { border-color:#E5B8B8; background:#FFF6F5; }
+.playroom-controls { display:flex; justify-content:space-between; gap:12px; margin-top:16px; }
+.playroom-primary-button,.playroom-secondary-button { padding:12px 17px; border:1px solid #E7D2DE; border-radius:13px; background:#F6E7EF; color:#9D6D87; font:900 12px "Nunito",sans-serif; cursor:pointer; transition:all .2s ease; }
+.playroom-primary-button:hover,.playroom-secondary-button:hover { transform:translateY(-1px); background:#F1DCE8; }
+.playroom-primary-button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+.playroom-secondary-button { border-color:#E8EAF0; background:#fff; color:#8290A3; }
+.playroom-custom { margin-top:19px; padding-top:15px; border-top:1px solid #F0EDF2; text-align:center; }
+.playroom-custom-form { display:flex; flex-direction:column; gap:9px; margin-top:12px; text-align:left; }
+.playroom-custom-form p { margin:0 0 3px; color:#8B91A1; font-size:11px; }
+.playroom-custom-form .playroom-primary-button { align-self:flex-start; }
+.playroom-closing-note { margin:22px 0 0; color:#B18BA3; font:18px "Caveat",cursive; text-align:center; }
+@media(max-width:640px) {
+  .playroom-game-grid { grid-template-columns:1fr; gap:12px; }
+  .playroom-game-card { min-height:185px; padding:20px; }
+  .playroom-intro-row h2 { font-size:19px; }
+  .playroom-round-card { padding:17px 14px; }
+  .playroom-question { font-size:19px; }
+  .playroom-choice-grid { gap:9px; }
+  .playroom-choice { min-height:135px; padding:14px 9px; }
+  .playroom-choice strong { font-size:12px; }
+  .playroom-round-meta { font-size:8px; }
+  .playroom-controls { flex-direction:column-reverse; }
+  .playroom-controls button { width:100%; }
+}
