@@ -7,9 +7,12 @@ import {
   Clock3,
   Gamepad2,
   Gift,
+  ImagePlus,
   Heart,
   House,
+  Printer,
   RotateCcw,
+  Trash2,
   Share2,
   Sparkles,
   Trophy,
@@ -47,7 +50,8 @@ type Page =
   | "quiz-result"
   | "friendship"
   | "dedicate"
-  | "games";
+  | "games"
+  | "photo-studio";
 type CompletedQuiz = {
   quizId: QuizId;
   answers: number[];
@@ -252,6 +256,13 @@ function MiumiHome() {
     onClick={() => navigate("games")}
   />
 
+  <NavButton
+    active={page === "photo-studio"}
+    icon={<ImagePlus />}
+    label="Photo Studio"
+    onClick={() => navigate("photo-studio")}
+  />
+
   <div className="nav-little-note">
     made with<br />
     <span>♡ for besties ♡</span>
@@ -385,6 +396,7 @@ function MiumiHome() {
 
            
 {page === "games" && <PlayroomPage />}
+            {page === "photo-studio" && <PhotoStudioPage onNotice={setNotice} />}
 
           </div>
         </div>
@@ -396,10 +408,162 @@ function MiumiHome() {
   <NavButton active={page === "friendship"} icon={<Heart />} label="Friends" onClick={() => navigate("friendship")} />
   <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
   <NavButton active={page === "games"} icon={<Gamepad2 />} label="Playroom" onClick={() => navigate("games")} />
+  <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
 </nav>
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
+  );
+}
+
+
+type PhotoCardFormat = "postcard" | "folded";
+type PhotoCardTemplate = "coquette" | "vintage" | "minimal" | "chaos" | "midnight" | "lavender";
+type StudioPhoto = { id: string; src: string; name: string };
+
+const photoTemplates: { id: PhotoCardTemplate; name: string; detail: string; className: string; emoji: string }[] = [
+  { id: "coquette", name: "Coquette Memories", detail: "Soft pink, bows & little hearts", className: "studio-coquette", emoji: "🎀" },
+  { id: "vintage", name: "Vintage Film", detail: "Warm tones & film-inspired frames", className: "studio-vintage", emoji: "📷" },
+  { id: "minimal", name: "Minimal Memories", detail: "Clean, calm & timeless", className: "studio-minimal", emoji: "🤍" },
+  { id: "chaos", name: "Cute Chaos", detail: "Playful stickers & happy colours", className: "studio-chaos", emoji: "🌈" },
+  { id: "midnight", name: "Midnight", detail: "Moody, dark & cinematic", className: "studio-midnight", emoji: "🌙" },
+  { id: "lavender", name: "Lavender Dreams", detail: "Dreamy lilac & delicate details", className: "studio-lavender", emoji: "🪻" },
+];
+
+function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) {
+  const [photos, setPhotos] = useState<StudioPhoto[]>([]);
+  const [format, setFormat] = useState<PhotoCardFormat>("postcard");
+  const [template, setTemplate] = useState<PhotoCardTemplate>("coquette");
+  const [customMode, setCustomMode] = useState(false);
+  const [title, setTitle] = useState("little moments, forever");
+  const [message, setMessage] = useState("Some memories deserve a place to stay. ♡");
+  const [from, setFrom] = useState("with love,");
+  const [accent, setAccent] = useState("#d99bb7");
+  const activeTemplate = photoTemplates.find((item) => item.id === template) ?? photoTemplates[0];
+
+  const addPhotos = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(event.target.files ?? []);
+    const imageFiles = selected.filter((file) => file.type.startsWith("image/"));
+    const remaining = Math.max(0, 6 - photos.length);
+    const accepted = imageFiles.slice(0, remaining);
+    if (selected.length !== imageFiles.length) onNotice("Please choose image files only ♡");
+    if (imageFiles.length > remaining) onNotice("You can add up to 6 photos in one card ♡");
+    if (!accepted.length) { event.target.value = ""; return; }
+
+    Promise.all(accepted.map((file) => new Promise<StudioPhoto>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        id: file.name + "-" + file.lastModified + "-" + Math.random().toString(36).slice(2),
+        src: String(reader.result),
+        name: file.name,
+      });
+      reader.onerror = () => reject(new Error("This photo could not be read."));
+      reader.readAsDataURL(file);
+    })))
+      .then((newPhotos) => {
+        setPhotos((previous) => [...previous, ...newPhotos].slice(0, 6));
+        onNotice(newPhotos.length + " photo" + (newPhotos.length === 1 ? "" : "s") + " added to your card ♡");
+      })
+      .catch(() => onNotice("One of those photos could not be opened. Please try another."));
+    event.target.value = "";
+  };
+
+  const removePhoto = (id: string) => setPhotos((previous) => previous.filter((photo) => photo.id !== id));
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character] ?? character);
+
+  const printCard = () => {
+    if (photos.length < 2) { onNotice("Add at least 2 photos before printing your card ♡"); return; }
+    const photoMarkup = photos.map((photo) => '<img src="' + photo.src + '" alt="" />').join("");
+    const safeTitle = escapeHtml(title || "A little memory");
+    const safeMessage = escapeHtml(message);
+    const safeFrom = escapeHtml(from);
+    const accentColor = customMode ? accent : "#d99bb7";
+    const cardClass = "print-" + template;
+    const pageMarkup = format === "postcard"
+      ? '<section class="print-page postcard ' + cardClass + '"><div class="print-photo-grid">' + photoMarkup + '</div><div class="print-copy"><p class="print-kicker">A LITTLE KEEPSAKE</p><h1>' + safeTitle + '</h1><p>' + safeMessage + '</p><small>' + safeFrom + '</small></div></section>'
+      : '<section class="print-page folded outside ' + cardClass + '"><div class="fold-panel fold-back"><span>♡</span><small>made with miumi</small></div><div class="fold-panel fold-front"><div class="print-photo-grid">' + photoMarkup + '</div><h1>' + safeTitle + '</h1><small>' + safeFrom + '</small></div></section><section class="print-page folded inside ' + cardClass + '"><div class="fold-panel"><h2>' + safeTitle + '</h2><p>' + safeMessage + '</p><small>♡</small></div><div class="fold-panel"><div class="print-photo-grid">' + photoMarkup + '</div></div></section>';
+
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) { onNotice("Please allow pop-ups to print your card ♡"); return; }
+    const styles = [
+      "@page{size:" + (format === "postcard" ? "A6 landscape" : "A5 landscape") + ";margin:0}",
+      "*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#665b65}",
+      ".print-page{width:" + (format === "postcard" ? "148mm" : "210mm") + ";height:" + (format === "postcard" ? "105mm" : "148mm") + ";page-break-after:always;overflow:hidden;background:#fff9fc}",
+      ".postcard{display:grid;grid-template-columns:55% 45%;padding:7mm;gap:5mm}",
+      ".print-photo-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;gap:2mm;min-height:0;overflow:hidden}",
+      ".print-photo-grid img{width:100%;height:100%;min-height:0;object-fit:cover;border-radius:2mm}",
+      ".print-copy{display:flex;flex-direction:column;justify-content:center;padding:3mm;border-left:1px solid " + accentColor + "}",
+      ".print-kicker{font-size:7pt;letter-spacing:2px;color:" + accentColor + "}h1{font-size:19pt;line-height:1.2;overflow-wrap:anywhere}",
+      ".print-copy p:not(.print-kicker){font-size:9pt;line-height:1.6}.print-copy small{margin-top:7mm;color:" + accentColor + "}",
+      ".folded{display:grid;grid-template-columns:1fr 1fr}.fold-panel{width:105mm;height:148mm;padding:10mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}",
+      ".fold-back{background:#fff9fc;color:" + accentColor + "}.fold-back span{font-size:35pt}.fold-back small{margin-top:5mm}",
+      ".fold-front{background:#fff3f8}.fold-front .print-photo-grid{width:82mm;height:82mm}.fold-front h1{margin:5mm 0 2mm;font-size:17pt}.fold-front small{color:" + accentColor + "}",
+      ".inside .fold-panel:first-child{background:#fffdfd}.inside .fold-panel:first-child h2{font-size:19pt;color:" + accentColor + "}.inside .fold-panel:first-child p{max-width:75mm;font-size:11pt;line-height:1.8}",
+      ".inside .fold-panel:last-child{background:#fff8fb}.inside .print-photo-grid{width:82mm;height:95mm}",
+      ".print-vintage{background:#f5ead9;color:#66503f}.print-minimal{background:#fff;color:#555}.print-chaos{background:#fff6e9;color:#8c6480}.print-midnight{background:#20202a;color:#f5eaf3}.print-lavender{background:#f4efff;color:#75618e}.print-coquette{background:#fff3f8;color:#8e6379}",
+      "@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}"
+    ].join("");
+    printWindow.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Miumi Photo Card</title><style>' + styles + '</style></head><body>' + pageMarkup + '<script>window.onload=()=>setTimeout(()=>window.print(),500);</script></body></html>');
+    printWindow.document.close();
+  };
+
+  return (
+    <section className="photo-studio-page page-enter">
+      <div className="feature-hero photo-studio-hero">
+        <span className="feature-emoji">📸</span><p className="eyebrow">YOUR LITTLE MEMORY MAKER</p>
+        <h1>Miumi Photo Studio</h1><p>Turn your favourite moments into a little card worth keeping.</p>
+        <span className="photo-studio-handwriting">a tiny keepsake, made by you ♡</span>
+      </div>
+      <div className="studio-workspace">
+        <div className="studio-section-heading"><div><p className="garden-overline">STEP 01 · YOUR PHOTOS</p><h2>Pick your little moments</h2></div><span>{photos.length}/6</span></div>
+        <label className={"studio-upload " + (photos.length >= 6 ? "is-full" : "")}>
+          <input type="file" accept="image/*" multiple disabled={photos.length >= 6} onChange={addPhotos} />
+          <span className="studio-upload-icon">＋</span><strong>{photos.length ? "Add more photos" : "Upload your photos"}</strong>
+          <small>Choose 2–6 photos · JPG, PNG or WEBP</small>
+        </label>
+        {photos.length > 0 && <div className="studio-uploaded-grid">{photos.map((photo, index) => (
+          <div className="studio-uploaded-photo" key={photo.id}><img src={photo.src} alt={photo.name} /><span>{index + 1}</span>
+            <button type="button" onClick={() => removePhoto(photo.id)} aria-label={"Remove " + photo.name}><Trash2 size={14} /></button>
+          </div>
+        ))}</div>}
+
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 02 · CARD SHAPE</p><h2>Choose your format</h2></div></div>
+        <div className="studio-format-grid">
+          <button type="button" className={"studio-format-option " + (format === "postcard" ? "is-selected" : "")} onClick={() => setFormat("postcard")}><span className="studio-format-art postcard-art">✉</span><strong>Postcard</strong><small>A6 · one-sided keepsake</small></button>
+          <button type="button" className={"studio-format-option " + (format === "folded" ? "is-selected" : "")} onClick={() => setFormat("folded")}><span className="studio-format-art folded-art">♡</span><strong>Folded card</strong><small>A5 landscape · folds to A6</small></button>
+        </div>
+
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 03 · THE LOOK</p><h2>Choose a template</h2></div></div>
+        <div className="studio-template-grid">{photoTemplates.map((item) => (
+          <button type="button" key={item.id} className={"studio-template-option " + (template === item.id ? "is-selected" : "")} onClick={() => setTemplate(item.id)}>
+            <span className={"studio-template-swatch " + item.className}>{item.emoji}</span><strong>{item.name}</strong><small>{item.detail}</small>
+          </button>
+        ))}</div>
+
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 04 · MAKE IT YOURS</p><h2>Add your words</h2></div>
+          <button type="button" className={"studio-custom-toggle " + (customMode ? "is-active" : "")} onClick={() => setCustomMode((value) => !value)}>{customMode ? "Customising ✓" : "Customise"}</button>
+        </div>
+        <div className="studio-fields">
+          <label>Card title<input value={title} maxLength={55} onChange={(event) => setTitle(event.target.value)} placeholder="A little memory..." /></label>
+          <label>Your message<textarea value={message} maxLength={180} onChange={(event) => setMessage(event.target.value)} rows={3} placeholder="Write a little note..." /></label>
+          <label>Sign-off<input value={from} maxLength={35} onChange={(event) => setFrom(event.target.value)} placeholder="With love," /></label>
+          {customMode && <label className="studio-colour-field">Accent colour<input type="color" value={accent} onChange={(event) => setAccent(event.target.value)} /></label>}
+        </div>
+
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">YOUR LIVE PREVIEW</p><h2>A card taking shape</h2></div></div>
+        <div className={"studio-live-card " + activeTemplate.className + (format === "folded" ? " is-folded" : "")} style={customMode ? { borderColor: accent } : undefined}>
+          <div className="studio-live-photos">{photos.length ? photos.map((photo) => <img src={photo.src} alt="" key={photo.id} />) : <div className="studio-empty-photo">♡<small>Your photos will appear here</small></div>}</div>
+          <div className="studio-live-copy"><span className="studio-live-kicker">A LITTLE KEEPSAKE</span><h3>{title || "A little memory"}</h3><p>{message || "Your message will appear here."}</p><small>{from || "with love,"}</small></div>
+          <span className="studio-live-decoration">୨୧</span>
+        </div>
+        <div className="studio-print-actions"><p>{photos.length < 2 ? "Add at least 2 photos to unlock printing." : photos.length + " photos ready · " + (format === "postcard" ? "A6 postcard" : "A5 folded card")}</p>
+          <button type="button" onClick={printCard} disabled={photos.length < 2}><Printer size={17} /> Print / Save as PDF</button>
+        </div>
+        <p className="studio-privacy-note">🔒 Your photos stay in this browser session. They aren't uploaded to Miumi.</p>
+      </div>
+    </section>
   );
 }
 
