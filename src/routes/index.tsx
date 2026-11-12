@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   ArrowRight,
   Check,
@@ -441,7 +441,7 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
   const [accent, setAccent] = useState("#d99bb7");
   const activeTemplate = photoTemplates.find((item) => item.id === template) ?? photoTemplates[0];
 
-  const addPhotos = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const addPhotos = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.target.files ?? []);
     const imageFiles = selected.filter((file) => file.type.startsWith("image/"));
     const remaining = Math.max(0, 6 - photos.length);
