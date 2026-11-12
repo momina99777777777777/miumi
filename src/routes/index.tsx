@@ -504,6 +504,10 @@ function PlayroomPage() {
   const [mode, setMode] = useState("Solo");
   const [category, setCategory] = useState("Everyday");
   const [round, setRound] = useState(0);
+  const [roundNumber, setRoundNumber] = useState(1);
+  const [responses, setResponses] = useState<string[]>([]);
+  const [finished, setFinished] = useState(false);
+  const totalRounds = 10;
   const [seen, setSeen] = useState<number[]>([]);
   const [choice, setChoice] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -522,20 +526,44 @@ function PlayroomPage() {
     const game = playroomGames.find((item) => item.id === id);
     setActiveGame(id);
     setCategory(game?.categories[0] ?? "Everyday");
-    setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+    setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+  };
+  const currentResponse = () => {
+    if (activeGame === "this-or-that" && prompt && choice !== null) return prompt.prompt + " — " + prompt.options[choice];
+    if (activeGame === "never-have-i-ever" && prompt && choice !== null) return prompt.text + " — " + (choice === 0 ? "I've done this" : "Never have I ever");
+    if (activeGame === "truth-or-dare" && prompt && truthOrDare) {
+      const chosenPrompt = prompt.type === truthOrDare ? prompt : playroomDecks["truth-or-dare"][category].find((item: any) => item.type === truthOrDare);
+      return truthOrDare.toUpperCase() + " — " + (chosenPrompt?.text ?? "");
+    }
+    if (activeGame === "two-truths" && prompt && choice !== null) return "Statement " + (choice + 1) + (choice === (usingCustom ? customLie : prompt.lie) ? " — correct" : " — incorrect");
+    return "";
+  };
+  const finishGame = () => {
+    const finalResponse = currentResponse();
+    setResponses(finalResponse ? [...responses, finalResponse] : responses);
+    setFinished(true);
   };
   const nextPrompt = () => {
-    if (!deck.length) return;
+    if (!deck.length || roundNumber >= totalRounds) return;
+    const finalResponse = currentResponse();
+    if (finalResponse) setResponses((previous) => [...previous, finalResponse]);
     const available = deck.map((_: unknown, index: number) => index).filter((index: number) => !seen.includes(index));
     const next = available.length ? available[Math.floor(Math.random() * available.length)] : Math.floor(Math.random() * deck.length);
     setSeen(available.length ? [...seen, next] : [next]);
-    setRound(next); setChoice(null); setRevealed(false); setTruthOrDare(null); setUsingCustom(false);
+    setRound(next); setRoundNumber((value) => value + 1); setChoice(null); setRevealed(false); setTruthOrDare(null); setUsingCustom(false);
   };
   const changeCategory = (value: string) => {
-    setCategory(value); setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setUsingCustom(false);
+    setCategory(value); setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setUsingCustom(false);
   };
   const resetGame = () => {
-    setRound(0); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+    setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+  };
+  const shareResult = async () => {
+    const summary = selectedGame?.title + " — Miumi Playroom ♡\n" + responses.join("\n") + (activeGame === "two-truths" ? "\nScore: " + score + "/" + totalRounds : "");
+    try {
+      if (navigator.share) await navigator.share({ title: "My Miumi Playroom result", text: summary });
+      else if (navigator.clipboard) await navigator.clipboard.writeText(summary);
+    } catch { /* Sharing is optional. */ }
   };
   const sharePrompt = async () => {
     const text = selectedGame && prompt ? selectedGame.title + " on Miumi Playroom ♡ " + (prompt.text ?? prompt.prompt ?? prompt.statements?.join(" / ") ?? "") : "Come play on Miumi Playroom ♡";
@@ -576,6 +604,59 @@ function PlayroomPage() {
     );
   }
 
+
+  if (finished && selectedGame) {
+    const chosenOptions = responses.filter((item) => item.includes(" — ")).map((item) => item.split(" — ")[1]);
+    const optionCounts = chosenOptions.reduce<Record<string, number>>((counts, option) => {
+      counts[option] = (counts[option] ?? 0) + 1;
+      return counts;
+    }, {});
+    const favoriteChoice = Object.entries(optionCounts).sort((a, b) => b[1] - a[1])[0];
+    const completedCount = responses.length;
+    const resultTitle = activeGame === "this-or-that"
+      ? "That's so you! ♡"
+      : activeGame === "never-have-i-ever"
+        ? "Your little life recap"
+        : activeGame === "truth-or-dare"
+          ? "You made it through!"
+          : score >= 8 ? "Incredible detective!" : score >= 5 ? "Sharp eyes!" : "Nice try, detective!";
+    return (
+      <section className="feature-page playroom-page page-enter">
+        <div className="playroom-results-card">
+          <span className="playroom-results-sparkle">{selectedGame.emoji}</span>
+          <p className="garden-overline">MIUMI PLAYROOM · RESULTS</p>
+          <h1>{resultTitle}</h1>
+          <p className="playroom-results-subtitle">You completed {completedCount} of {totalRounds} rounds of {selectedGame.title}.</p>
+          <div className="playroom-results-stat">
+            <strong>{activeGame === "two-truths" ? score + "/" + totalRounds : completedCount}</strong>
+            <span>{activeGame === "two-truths" ? "correct guesses" : "rounds played"}</span>
+          </div>
+          {activeGame === "this-or-that" && favoriteChoice && (
+            <div className="playroom-result-highlight"><span>YOUR MOST-PICKED ANSWER</span><strong>{favoriteChoice[0]}</strong><small>Chosen {favoriteChoice[1]} {favoriteChoice[1] === 1 ? "time" : "times"}</small></div>
+          )}
+          {activeGame === "never-have-i-ever" && (
+            <div className="playroom-result-highlight"><span>YOUR LITTLE RECAP</span><strong>{responses.filter((item) => item.endsWith("I've done this")).length} things you've tried</strong><small>Every round is a story to tell — only share what you want.</small></div>
+          )}
+          {activeGame === "truth-or-dare" && (
+            <div className="playroom-result-highlight"><span>YOUR PLAY STYLE</span><strong>{responses.filter((item) => item.startsWith("TRUTH")).length} truths · {responses.filter((item) => item.startsWith("DARE")).length} dares</strong><small>Thanks for bringing the fun and keeping it kind.</small></div>
+          )}
+          {activeGame === "two-truths" && (
+            <div className="playroom-result-highlight"><span>YOUR DETECTIVE SCORE</span><strong>{score >= 8 ? "Brilliant!" : score >= 5 ? "Well spotted!" : "Keep practising!"}</strong><small>{Math.round((score / totalRounds) * 100)}% correct this game</small></div>
+          )}
+        </div>
+        <div className="playroom-results-history">
+          <div className="playroom-results-history-heading"><h2>Your game recap</h2><span>{completedCount} rounds</span></div>
+          {responses.map((response, index) => <div className="playroom-result-row" key={index}><span>{String(index + 1).padStart(2, "0")}</span><p>{response}</p></div>)}
+        </div>
+        <div className="playroom-controls">
+          <button type="button" className="playroom-secondary-button" onClick={shareResult}>↗ Share result</button>
+          <button type="button" className="playroom-primary-button" onClick={() => startGame(activeGame)}>Play again ↻</button>
+        </div>
+        <button type="button" className="playroom-back-to-games" onClick={() => { setActiveGame(null); setFinished(false); }}>Back to all games</button>
+      </section>
+    );
+  }
+
   return (
     <section className="feature-page playroom-page page-enter">
       <div className="playroom-topline">
@@ -589,7 +670,7 @@ function PlayroomPage() {
       </div>
       <div className="playroom-mode-hint">{mode === "Solo" ? "A little you-time. Play at your own pace. ♡" : mode === "Couples" ? "Take turns together and see what you discover. 💌" : mode === "Friends" ? "Pass the phone to a friend after each turn. 👯" : "Gather everyone around and take turns. 🎉"}</div>
       <div className="playroom-round-card" key={activeGame + "-" + category + "-" + round + "-" + usingCustom}>
-        <div className="playroom-round-meta"><span>ROUND {round + 1}</span><span>{selectedGame.emoji} A LITTLE ADVENTURE</span></div>
+        <div className="playroom-round-meta"><span>ROUND {roundNumber} / {totalRounds}</span><span>{selectedGame.emoji} A LITTLE ADVENTURE</span></div><div className="playroom-progress"><span style={{ width: ((roundNumber / totalRounds) * 100) + "%" }} /></div>
         {activeGame === "this-or-that" && prompt && <>
           <h2 className="playroom-question">{prompt.prompt}</h2>
           <div className="playroom-choice-grid">{prompt.options.map((option: string, index: number) => <button type="button" key={option} className={"playroom-choice " + (choice === index ? "is-picked" : "")} onClick={() => setChoice(index)}><span className="playroom-choice-number">0{index + 1}</span><strong>{option}</strong>{choice === index && <span className="playroom-picked-mark">✓ Your pick</span>}</button>)}</div>
@@ -625,7 +706,7 @@ function PlayroomPage() {
           </div>
         </>}
       </div>
-      <div className="playroom-controls"><button type="button" className="playroom-secondary-button" onClick={sharePrompt}>↗ Share prompt</button><button type="button" className="playroom-primary-button" onClick={nextPrompt}>Next round <span>→</span></button></div>
+      <div className="playroom-controls"><button type="button" className="playroom-secondary-button" onClick={sharePrompt}>↗ Share prompt</button>{roundNumber < totalRounds ? <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={nextPrompt}>Next round <span>→</span></button> : <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={finishGame}>See my results ✨</button>}</div>
       <p className="playroom-closing-note">୨୧ made for good company and gentle fun ♡</p>
     </section>
   );
