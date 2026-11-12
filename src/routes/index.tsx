@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type CSSProperties } from "react";
 import {
   ArrowRight,
   Check,
@@ -428,7 +428,7 @@ function MiumiHome() {
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
 </nav>
-        <MiumiBunnyGuide currentPage={page} onNavigate={navigate} />
+        <MiumiBunnyGuide onNavigate={navigate} />
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
@@ -1172,7 +1172,7 @@ const changeCategory = (value: string) => {
 type BunnyLook = { colour: string; bow: string; outfit: string };
 const bunnyLooks: BunnyLook = { colour: "#F4BBD2", bow: "#C98BB7", outfit: "#F7E7F0" };
 
-function MiumiBunnyGuide({ currentPage, onNavigate }: { currentPage: Page; onNavigate: (page: Page) => void }) {
+function MiumiBunnyGuide({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const [open, setOpen] = useState(false);
   const [customising, setCustomising] = useState(false);
   const [look, setLook] = useState<BunnyLook>(() => {
@@ -1230,7 +1230,7 @@ function MiumiBunnyGuide({ currentPage, onNavigate }: { currentPage: Page; onNav
       {open && (
         <section className="miumi-bunny-chat" aria-label="Miumi Bunny guide">
           <div className="miumi-bunny-chat-head">
-            <div className="miumi-bunny-mini" style={{ "--bunny-colour": look.colour, "--bunny-bow": look.bow } as React.CSSProperties}>🐰</div>
+            <div className="miumi-bunny-mini" style={{ "--bunny-colour": look.colour, "--bunny-bow": look.bow } as CSSProperties}>🐰</div>
             <div><strong>Miumi Bunny</strong><small>Your little website guide ♡</small></div>
             <button type="button" aria-label="Close guide" onClick={() => setOpen(false)}>×</button>
           </div>
