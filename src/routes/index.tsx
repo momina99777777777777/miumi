@@ -18,6 +18,7 @@ import {
   Share2,
   Sparkles,
   Trophy,
+  Landmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -55,7 +56,8 @@ type Page =
   | "duo"
   | "dedicate"
   | "games"
-  | "photo-studio";
+  | "photo-studio"
+  | "museum";
 type CompletedQuiz = {
   quizId: QuizId;
   answers: number[];
@@ -270,6 +272,8 @@ function MiumiHome() {
     onClick={() => navigate("photo-studio")}
   />
 
+  <NavButton active={page === "museum"} icon={<Landmark />} label="Museum of Us" onClick={() => navigate("museum")} />
+
   <div className="nav-little-note">
     made with<br />
     <span>♡ for besties ♡</span>
@@ -407,6 +411,7 @@ function MiumiHome() {
            
 {page === "games" && <PlayroomPage />}
             {page === "photo-studio" && <PhotoStudioPage onNotice={setNotice} />}
+            {page === "museum" && <MiumiMuseumPage onNotice={setNotice} />}
 
           </div>
         </div>
@@ -421,6 +426,7 @@ function MiumiHome() {
   <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
   <NavButton active={page === "games"} icon={<Gamepad2 />} label="Playroom" onClick={() => navigate("games")} />
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
+  <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
 </nav>
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
@@ -526,6 +532,112 @@ function MiumiDuoPage({ onNotice }: { onNotice: (message: string) => void }) {
         <h2>{pair}</h2><p>{first.note} {second.note}</p><div className="miumi-duo-footer">different little worlds, one lovely friendship ♡</div>
         <div className="miumi-duo-actions"><button type="button" className="miumi-primary-button" onClick={share}>Share our duo ↗</button><button type="button" className="miumi-soft-button" onClick={restart}>Play again</button></div>
       </div>}
+    </section>
+  );
+}
+
+
+type MuseumRoom = "Firsts" | "Inside jokes" | "Our eras" | "Future";
+type MuseumExhibit = { id: number; title: string; room: MuseumRoom; date: string; story: string; emoji: string; image?: string };
+const museumRooms: { name: MuseumRoom; emoji: string; description: string }[] = [
+  { name: "Firsts", emoji: "🌷", description: "The beginnings and little milestones" },
+  { name: "Inside jokes", emoji: "🤭", description: "The moments only you two understand" },
+  { name: "Our eras", emoji: "🎞️", description: "The photos, phases and memories of each year" },
+  { name: "Future", emoji: "💌", description: "Wishes and notes for the days ahead" },
+];
+
+function MiumiMuseumPage({ onNotice }: { onNotice: (message: string) => void }) {
+  const [exhibits, setExhibits] = useState<MuseumExhibit[]>(() => {
+    try { const saved = window.localStorage.getItem("miumi-museum-exhibits"); return saved ? JSON.parse(saved) as MuseumExhibit[] : []; }
+    catch { return []; }
+  });
+  const [room, setRoom] = useState<MuseumRoom | "All">("All");
+  const [title, setTitle] = useState("");
+  const [selectedRoom, setSelectedRoom] = useState<MuseumRoom>("Firsts");
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [story, setStory] = useState("");
+  const [emoji, setEmoji] = useState("🌸");
+  const [image, setImage] = useState("");
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    try { window.localStorage.setItem("miumi-museum-exhibits", JSON.stringify(exhibits)); }
+    catch { onNotice("This browser is running low on storage. Try removing a large photo."); }
+  }, [exhibits]);
+
+  const visible = room === "All" ? exhibits : exhibits.filter((item) => item.room === room);
+  const importCalendar = () => {
+    try {
+      const saved = window.localStorage.getItem("miumi-calendar-memories");
+      const calendarItems = saved ? JSON.parse(saved) as { id: number; title: string; date: string; kind: string; note: string }[] : [];
+      const existing = new Set(exhibits.map((item) => "calendar-" + item.id));
+      const additions = calendarItems.filter((item) => !existing.has("calendar-" + item.id)).map((item) => ({
+        id: Date.now() + item.id, title: item.title, room: "Firsts" as MuseumRoom, date: item.date,
+        story: [item.kind, item.note].filter(Boolean).join(" · "), emoji: "🗓️",
+      }));
+      if (!additions.length) { onNotice(calendarItems.length ? "Your calendar dates are already in the museum ♡" : "Add a date in Miumi Calendar first ♡"); return; }
+      setExhibits((items) => [...items, ...additions].sort((a,b) => b.date.localeCompare(a.date)));
+      onNotice(additions.length + " calendar memories added to your museum ♡");
+    } catch { onNotice("Your calendar memories could not be imported."); }
+  };
+  const addExhibit = () => {
+    if (!title.trim()) { onNotice("Give your exhibit a little title first ♡"); return; }
+    setExhibits((items) => [{ id: Date.now(), title: title.trim(), room: selectedRoom, date, story: story.trim(), emoji, ...(image ? { image } : {}) }, ...items]);
+    setTitle(""); setStory(""); setImage(""); setEmoji("🌸"); setShowForm(false); onNotice("A new little exhibit has joined your museum ♡");
+  };
+  const shareMuseum = async () => {
+    const text = "Our Museum of Us ♡\\n" + exhibits.map((item) => item.emoji + " " + item.title + " · " + item.room + " · " + item.date).join("\\n");
+    try { if (navigator.share) await navigator.share({ title: "Miumi Museum of Us", text }); else { await navigator.clipboard.writeText(text); onNotice("Your museum guide was copied ♡"); } }
+    catch { onNotice("Sharing isn't available right now ♡"); }
+  };
+  return (
+    <section className="feature-page miumi-museum-page page-enter">
+      <div className="feature-hero miumi-museum-hero">
+        <span className="feature-emoji">🏛️</span>
+        <p className="eyebrow">A PLACE FOR YOUR LITTLE FOREVER MOMENTS</p>
+        <h1>Museum of Us</h1>
+        <p>Every friendship has a thousand tiny stories. Give each one a place to live.</p>
+        <span className="miumi-museum-script">curated by the two of you ♡</span>
+      </div>
+      <div className="miumi-museum-toolbar">
+        <div><p className="garden-overline">YOUR LITTLE COLLECTION</p><h2>{exhibits.length} {exhibits.length === 1 ? "memory" : "memories"} on display</h2></div>
+        <div className="miumi-museum-actions">
+          <button className="miumi-soft-button" type="button" onClick={importCalendar}>＋ Import calendar</button>
+          <button className="miumi-primary-button" type="button" onClick={() => setShowForm((value) => !value)}>＋ Add an exhibit</button>
+        </div>
+      </div>
+      {showForm && <div className="miumi-tool-panel miumi-museum-form">
+        <div className="miumi-tool-heading"><div><p className="garden-overline">A NEW PIECE OF YOUR STORY</p><h2>Create an exhibit</h2></div><span>✧</span></div>
+        <label>Exhibit title<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="The day we laughed for hours" maxLength={65} /></label>
+        <div className="miumi-museum-fields">
+          <label>Room<select value={selectedRoom} onChange={(event) => setSelectedRoom(event.target.value as MuseumRoom)}>{museumRooms.map((item) => <option key={item.name}>{item.name}</option>)}</select></label>
+          <label>Date<input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+          <label>Little symbol<input value={emoji} onChange={(event) => setEmoji(event.target.value.slice(0, 4))} maxLength={4} /></label>
+        </div>
+        <label>Tell the story<textarea value={story} onChange={(event) => setStory(event.target.value)} placeholder="What happened? Why does this moment matter?" maxLength={500} /></label>
+        <label className="miumi-museum-upload">Add a photo (optional)<input type="file" accept="image/*" onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (!file) return;
+          if (file.size > 900000) { onNotice("Choose a photo smaller than 900 KB so it can save on this device."); event.target.value = ""; return; }
+          const reader = new FileReader();
+          reader.onload = () => setImage(typeof reader.result === "string" ? reader.result : "");
+          reader.readAsDataURL(file);
+        }} /></label>
+        {image && <div className="miumi-museum-image-preview"><img src={image} alt="Exhibit preview" /><button type="button" onClick={() => setImage("")}>Remove photo</button></div>}
+        <div className="miumi-duo-actions"><button className="miumi-primary-button" type="button" onClick={addExhibit}>Place in the museum ♡</button><button className="miumi-soft-button" type="button" onClick={() => setShowForm(false)}>Cancel</button></div>
+      </div>}
+      <div className="miumi-museum-room-grid">
+        {museumRooms.map((item) => <button type="button" key={item.name} className={"miumi-museum-room " + (room === item.name ? "is-active" : "")} onClick={() => setRoom(room === item.name ? "All" : item.name)}>
+          <span>{item.emoji}</span><strong>{item.name}</strong><small>{item.description}</small><b>{exhibits.filter((memory) => memory.room === item.name).length} exhibits</b>
+        </button>)}
+      </div>
+      <div className="miumi-museum-gallery-heading"><div><p className="garden-overline">WANDER THROUGH YOUR STORY</p><h2>{room === "All" ? "All the little things" : room}</h2></div><button type="button" onClick={() => setRoom("All")}>View all ↗</button></div>
+      {visible.length ? <div className="miumi-museum-gallery">{visible.map((item) => <article className="miumi-museum-exhibit" key={item.id}>
+        {item.image ? <img className="miumi-museum-exhibit-image" src={item.image} alt={item.title} /> : <div className="miumi-museum-exhibit-art"><span>{item.emoji}</span><small>{item.room}</small></div>}
+        <div className="miumi-museum-exhibit-copy"><span>{item.room} · {item.date || "A timeless moment"}</span><h3>{item.title}</h3>{item.story && <p>{item.story}</p>}<button type="button" onClick={() => setExhibits((items) => items.filter((memory) => memory.id !== item.id))}>Remove exhibit ×</button></div>
+      </article>)}</div> : <div className="miumi-museum-empty"><span>🪞</span><h3>This room is waiting for its first story</h3><p>Add a memory or bring dates over from your Miumi Calendar.</p><button className="miumi-primary-button" type="button" onClick={() => { setSelectedRoom(room === "All" ? "Firsts" : room); setShowForm(true); }}>Create the first exhibit ♡</button></div>}
+      <div className="miumi-museum-bottom"><div><span>✦</span><h2>A little museum, made by you</h2><p>Your exhibits stay in this browser on this device. You can share a text guide or print your collection as a keepsake.</p></div><div className="miumi-duo-actions"><button className="miumi-soft-button" type="button" onClick={shareMuseum} disabled={!exhibits.length}>Share museum ↗</button><button className="miumi-primary-button" type="button" onClick={() => window.print()} disabled={!exhibits.length}>Print the collection ⎙</button></div></div>
+      <p className="miumi-local-note">Photos and exhibits are saved locally in this browser. They are not synced with another person's device yet. ♡</p>
     </section>
   );
 }
