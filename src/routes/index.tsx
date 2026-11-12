@@ -420,6 +420,19 @@ function MiumiHome() {
 type PhotoCardFormat = "postcard" | "folded";
 type PhotoCardTemplate = "coquette" | "vintage" | "minimal" | "chaos" | "midnight" | "lavender";
 type StudioPhoto = { id: string; src: string; name: string };
+type PhotoFilterId = "original" | "golden" | "film" | "noir" | "rose" | "dream" | "chrome" | "faded" | "sunset" | "flash";
+const photoFilters: { id: PhotoFilterId; name: string; vibe: string; css: string; emoji: string }[] = [
+  { id: "original", name: "Original", vibe: "True-to-life colour", css: "none", emoji: "✧" },
+  { id: "golden", name: "Golden Hour", vibe: "Warm sunlight glow", css: "sepia(.22) saturate(1.28) contrast(1.04) brightness(1.08)", emoji: "☀️" },
+  { id: "film", name: "1998 Film", vibe: "Nostalgic disposable camera", css: "sepia(.32) saturate(.82) contrast(.92) brightness(1.08)", emoji: "🎞️" },
+  { id: "noir", name: "Velvet Noir", vibe: "Deep black & white drama", css: "grayscale(1) contrast(1.28) brightness(.9)", emoji: "🖤" },
+  { id: "rose", name: "Rose Milk", vibe: "Soft rosy pink tint", css: "sepia(.12) saturate(1.12) hue-rotate(315deg) brightness(1.08) contrast(.94)", emoji: "🌸" },
+  { id: "dream", name: "Cloud Bloom", vibe: "Hazy, airy daydream", css: "brightness(1.16) saturate(.78) contrast(.82)", emoji: "☁️" },
+  { id: "chrome", name: "Chrome Flash", vibe: "Cool silver editorial", css: "grayscale(.58) contrast(1.24) brightness(1.08) saturate(.72)", emoji: "🪩" },
+  { id: "faded", name: "Memory Fade", vibe: "Washed-out old print", css: "sepia(.2) saturate(.7) contrast(.78) brightness(1.14)", emoji: "📼" },
+  { id: "sunset", name: "Peach Sunset", vibe: "Peachy pink evening tones", css: "sepia(.18) saturate(1.38) hue-rotate(338deg) brightness(1.05)", emoji: "🌅" },
+  { id: "flash", name: "Party Flash", vibe: "Bright direct-flash look", css: "contrast(1.2) saturate(1.22) brightness(1.12)", emoji: "💫" },
+];
 
 const photoTemplates: { id: PhotoCardTemplate; name: string; detail: string; className: string; emoji: string }[] = [
   { id: "coquette", name: "Coquette Memories", detail: "Soft pink, bows & little hearts", className: "studio-coquette", emoji: "🎀" },
@@ -434,12 +447,14 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
   const [photos, setPhotos] = useState<StudioPhoto[]>([]);
   const [format, setFormat] = useState<PhotoCardFormat>("postcard");
   const [template, setTemplate] = useState<PhotoCardTemplate>("coquette");
+  const [filter, setFilter] = useState<PhotoFilterId>("original");
   const [customMode, setCustomMode] = useState(false);
   const [title, setTitle] = useState("little moments, forever");
   const [message, setMessage] = useState("Some memories deserve a place to stay. ♡");
   const [from, setFrom] = useState("with love,");
   const [accent, setAccent] = useState("#d99bb7");
   const activeTemplate = photoTemplates.find((item) => item.id === template) ?? photoTemplates[0];
+  const activeFilter = photoFilters.find((item) => item.id === filter) ?? photoFilters[0];
 
   const addPhotos = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.target.files ?? []);
@@ -475,7 +490,7 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
 
   const printCard = () => {
     if (photos.length < 2) { onNotice("Add at least 2 photos before printing your card ♡"); return; }
-    const photoMarkup = photos.map((photo) => '<img src="' + photo.src + '" alt="" />').join("");
+    const photoMarkup = photos.map((photo) => '<img src="' + photo.src + '" alt="" style="filter:' + activeFilter.css + '" />').join("");
     const safeTitle = escapeHtml(title || "A little memory");
     const safeMessage = escapeHtml(message);
     const safeFrom = escapeHtml(from);
@@ -535,14 +550,23 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
           <button type="button" className={"studio-format-option " + (format === "folded" ? "is-selected" : "")} onClick={() => setFormat("folded")}><span className="studio-format-art folded-art">♡</span><strong>Folded card</strong><small>A5 landscape · folds to A6</small></button>
         </div>
 
-        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 03 · THE LOOK</p><h2>Choose a template</h2></div></div>
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 03 · THE CARD DESIGN</p><h2>Choose a template</h2></div></div>
         <div className="studio-template-grid">{photoTemplates.map((item) => (
           <button type="button" key={item.id} className={"studio-template-option " + (template === item.id ? "is-selected" : "")} onClick={() => setTemplate(item.id)}>
             <span className={"studio-template-swatch " + item.className}>{item.emoji}</span><strong>{item.name}</strong><small>{item.detail}</small>
           </button>
         ))}</div>
 
-        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 04 · MAKE IT YOURS</p><h2>Add your words</h2></div>
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 04 · PHOTO MAGIC</p><h2>Give your photos a feeling</h2></div><span className="studio-filter-count">{photoFilters.length} looks</span></div>
+        <div className="studio-filter-grid">{photoFilters.map((item) => (
+          <button type="button" key={item.id} className={"studio-filter-option " + (filter === item.id ? "is-selected" : "")} onClick={() => setFilter(item.id)}>
+            <span className="studio-filter-sample"><span className={"studio-filter-sample-art filter-art-" + item.id}>{item.emoji}</span></span>
+            <strong>{item.name}</strong><small>{item.vibe}</small>
+          </button>
+        ))}</div>
+        <p className="studio-filter-note">The selected look is applied to your preview and your printed card.</p>
+
+        <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">STEP 05 · MAKE IT YOURS</p><h2>Add your words</h2></div>
           <button type="button" className={"studio-custom-toggle " + (customMode ? "is-active" : "")} onClick={() => setCustomMode((value) => !value)}>{customMode ? "Customising ✓" : "Customise"}</button>
         </div>
         <div className="studio-fields">
@@ -554,7 +578,7 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
 
         <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">YOUR LIVE PREVIEW</p><h2>A card taking shape</h2></div></div>
         <div className={"studio-live-card " + activeTemplate.className + (format === "folded" ? " is-folded" : "")} style={customMode ? { borderColor: accent } : undefined}>
-          <div className="studio-live-photos">{photos.length ? photos.map((photo) => <img src={photo.src} alt="" key={photo.id} />) : <div className="studio-empty-photo">♡<small>Your photos will appear here</small></div>}</div>
+          <div className="studio-live-photos">{photos.length ? photos.map((photo) => <img src={photo.src} alt="" key={photo.id} style={{ filter: activeFilter.css }} />) : <div className="studio-empty-photo">♡<small>Your photos will appear here</small></div>}</div>
           <div className="studio-live-copy"><span className="studio-live-kicker">A LITTLE KEEPSAKE</span><h3>{title || "A little memory"}</h3><p>{message || "Your message will appear here."}</p><small>{from || "with love,"}</small></div>
           <span className="studio-live-decoration">୨୧</span>
         </div>
