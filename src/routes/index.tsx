@@ -428,6 +428,7 @@ function MiumiHome() {
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
 </nav>
+        <MiumiBunnyGuide currentPage={page} onNavigate={navigate} />
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
@@ -1166,7 +1167,108 @@ const changeCategory = (value: string) => {
         </>}
       </div>
       <div className="playroom-controls"><button type="button" className="playroom-secondary-button" onClick={sharePrompt}>↗ Share prompt</button>{roundNumber < totalRounds ? <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={nextPrompt}>Next round <span>→</span></button> : <button type="button" className="playroom-primary-button" disabled={activeGame === "two-truths" ? !revealed : activeGame === "truth-or-dare" ? !truthOrDare : choice === null} onClick={finishGame}>See my results ✨</button>}</div>
-      <p className="playroom-closing-note">୨୧ made for good company and gentle fun ♡</p>
+      <p className="playroom-closing-note">୨
+
+type BunnyLook = { colour: string; bow: string; outfit: string };
+const bunnyLooks: BunnyLook = { colour: "#F4BBD2", bow: "#C98BB7", outfit: "#F7E7F0" };
+
+function MiumiBunnyGuide({ currentPage, onNavigate }: { currentPage: Page; onNavigate: (page: Page) => void }) {
+  const [open, setOpen] = useState(false);
+  const [customising, setCustomising] = useState(false);
+  const [look, setLook] = useState<BunnyLook>(() => {
+    try {
+      const saved = window.localStorage.getItem("miumi-bunny-look");
+      return saved ? { ...bunnyLooks, ...JSON.parse(saved) as Partial<BunnyLook> } : bunnyLooks;
+    } catch { return bunnyLooks; }
+  });
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState<{ from: "bunny" | "visitor"; text: string; target?: Page }[]>([
+    { from: "bunny", text: "Hiii! I'm your Miumi Bunny guide. Ask me where something is, or how to use a feature. ♡" },
+  ]);
+  useEffect(() => {
+    try { window.localStorage.setItem("miumi-bunny-look", JSON.stringify(look)); } catch { /* keep this session's look */ }
+  }, [look]);
+
+  const pages: { page: Page; name: string; aliases: string[]; description: string }[] = [
+    { page: "home", name: "Home", aliases: ["home", "homepage", "start"], description: "Your Miumi home page has the daily question and featured quizzes." },
+    { page: "quizzes", name: "Quizzes", aliases: ["quiz", "quizzes", "personality quiz"], description: "Browse the quiz collection and choose one to play." },
+    { page: "results", name: "My results", aliases: ["result", "results", "score", "history"], description: "Your completed quiz results live here." },
+    { page: "friendship", name: "Friendship Universe", aliases: ["friendship", "universe", "friendship universe"], description: "Explore your friendship world and identities." },
+    { page: "calendar", name: "Miumi Calendar", aliases: ["calendar", "birthday", "anniversary", "date"], description: "Save birthdays, friendship anniversaries, plans, reminders and memories." },
+    { page: "duo", name: "Miumi Duo", aliases: ["duo", "compatibility", "two people", "friendship test"], description: "Answer separately with a friend and reveal your duo result together." },
+    { page: "dedicate", name: "Create & Dedicate", aliases: ["dedicate", "letter", "card", "message", "gift"], description: "This is the creative dedication area; the full studio is still marked as coming soon." },
+    { page: "games", name: "Playroom", aliases: ["game", "games", "playroom", "truth or dare", "never have i ever"], description: "Find the mini-games: This or That, Never Have I Ever, Truth or Dare, and Two Truths & One Lie." },
+    { page: "photo-studio", name: "Photo Studio", aliases: ["photo", "photos", "photo studio", "print", "postcard", "folded card"], description: "Make a printable photo postcard or folded card, add 2–6 photos, and customise a template." },
+    { page: "museum", name: "Museum of Us", aliases: ["museum", "museum of us", "exhibit", "memory room"], description: "Keep friendship memories in the Firsts, Inside Jokes, Our Eras and Future rooms." },
+  ];
+
+  const findAnswer = (raw: string): { text: string; target?: Page } => {
+    const q = raw.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\\s+/g, " ").trim();
+    if (!q) return { text: "Try asking me something like “Where is Photo Studio?” or “How do I print a card?” ♡" };
+    if (/(print|printing|pdf)/.test(q)) return { text: "Open Photo Studio, choose postcard or folded card, add your photos and customise the design. Then press the print button to open your browser's print dialog. ♡", target: "photo-studio" };
+    if (/(upload|add photos|add a photo)/.test(q)) return { text: "You can add 2–6 photos in Photo Studio. Your photos stay in your browser session and aren't uploaded to a Miumi server. ♡", target: "photo-studio" };
+    if (/(save|add birthday|add date|reminder)/.test(q)) return { text: "Miumi Calendar is where you can add birthdays, anniversaries, plans, reminders and little memories. ♡", target: "calendar" };
+    if (/(inside joke|memory|museum|exhibit)/.test(q)) return { text: "Visit Museum of Us! It has four rooms for your firsts, inside jokes, different eras and future wishes. ♡", target: "museum" };
+    if (/(two truth|truth|dare|never have|this or that|mini game)/.test(q)) return { text: "The mini-games are all together in the Playroom. Pick a game and start a round! ♡", target: "games" };
+    if (/(how.*duo|duo.*work|play.*friend)/.test(q)) return { text: "Miumi Duo is a pass-the-phone experience: each person answers their questions, then you reveal your shared result. ♡", target: "duo" };
+    const match = pages.find((item) => item.aliases.some((alias) => q.includes(alias)));
+    if (match) return { text: `${match.name} is in your main navigation. ${match.description}`, target: match.page };
+    if (/(where|find|locate|tab|feature|section)/.test(q)) return { text: "I can help you find Home, Quizzes, My Results, Friendship Universe, Miumi Calendar, Miumi Duo, Create & Dedicate, Playroom, Photo Studio or Museum of Us. Which one are you looking for? ♡" };
+    return { text: "I'm still learning the Miumi map! I can guide you around the tabs and explain the features. Try asking “Where is Miumi Calendar?” ♡" };
+  };
+
+  const send = (value = question) => {
+    const clean = value.trim();
+    if (!clean) return;
+    const answer = findAnswer(clean);
+    setMessages((items) => [...items, { from: "visitor", text: clean }, { from: "bunny", text: answer.text, ...(answer.target ? { target: answer.target } : {}) }]);
+    setQuestion("");
+  };
+  const colourOptions = [{ label: "Strawberry pink", value: "#F4BBD2" }, { label: "Lavender", value: "#D8C9F2" }, { label: "Mint", value: "#C5E6D8" }, { label: "Buttercream", value: "#F3E1A8" }, { label: "Cloud blue", value: "#C9DDF3" }];
+  return (
+    <div className="miumi-bunny-guide">
+      {open && (
+        <section className="miumi-bunny-chat" aria-label="Miumi Bunny guide">
+          <div className="miumi-bunny-chat-head">
+            <div className="miumi-bunny-mini" style={{ "--bunny-colour": look.colour, "--bunny-bow": look.bow } as React.CSSProperties}>🐰</div>
+            <div><strong>Miumi Bunny</strong><small>Your little website guide ♡</small></div>
+            <button type="button" aria-label="Close guide" onClick={() => setOpen(false)}>×</button>
+          </div>
+          <div className="miumi-bunny-messages" aria-live="polite">
+            {messages.map((message, index) => (
+              <div className={`miumi-bunny-message ${message.from === "visitor" ? "is-visitor" : "is-bunny"}`} key={index}>
+                <p>{message.text}</p>
+                {message.target && <button type="button" onClick={() => { onNavigate(message.target!); setOpen(false); }}>Take me there <span>→</span></button>}
+              </div>
+            ))}
+          </div>
+          <div className="miumi-bunny-quick">
+            {["Where is Photo Studio?", "How do I print a card?", "What is Museum of Us?"].map((prompt) => <button type="button" key={prompt} onClick={() => send(prompt)}>{prompt}</button>)}
+          </div>
+          {customising && (
+            <div className="miumi-bunny-customiser">
+              <label>My bunny's colour<select value={look.colour} onChange={(event) => setLook((old) => ({ ...old, colour: event.target.value }))}>{colourOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}</select></label>
+              <label>Bow colour<select value={look.bow} onChange={(event) => setLook((old) => ({ ...old, bow: event.target.value }))}><option value="#C98BB7">Rose</option><option value="#9B83C7">Lilac</option><option value="#83BCA5">Mint</option><option value="#D6A64E">Honey</option></select></label>
+              <label>Outfit<select value={look.outfit} onChange={(event) => setLook((old) => ({ ...old, outfit: event.target.value }))}><option value="#F7E7F0">Pink dress</option><option value="#E9E2FA">Lavender dress</option><option value="#E2F1E9">Mint dress</option><option value="#F7EFD8">Cream dress</option></select></label>
+            </div>
+          )}
+          <div className="miumi-bunny-compose">
+            <button type="button" className="miumi-bunny-customise" onClick={() => setCustomising((value) => !value)} aria-label="Customise your bunny">🎀</button>
+            <input value={question} onChange={(event) => setQuestion(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") send(); }} placeholder="Ask your bunny..." aria-label="Ask Miumi Bunny" />
+            <button type="button" onClick={() => send()} aria-label="Send question">➤</button>
+          </div>
+        </section>
+      )}
+      <button type="button" className="miumi-bunny-launcher" onClick={() => setOpen((value) => !value)} aria-label={open ? "Close Miumi Bunny guide" : "Open Miumi Bunny guide"}>
+        <span className="miumi-bunny-launcher-art" style={{ "--bunny-colour": look.colour, "--bunny-bow": look.bow, "--bunny-outfit": look.outfit } as React.CSSProperties}>🐰</span>
+        <span className="miumi-bunny-launcher-label">Need a little help?</span>
+        <span className="miumi-bunny-launcher-sparkle">✦</span>
+      </button>
+    </div>
+  );
+}
+
+୧ made for good company and gentle fun ♡</p>
     </section>
   );
 }
