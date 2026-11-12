@@ -522,14 +522,24 @@ function PlayroomPage() {
   const selectedGame = playroomGames.find((game) => game.id === activeGame);
   const categories = selectedGame?.categories ?? [];
   const deck = activeGame ? (playroomDecks[activeGame][category] ?? Object.values(playroomDecks[activeGame])[0] ?? []) : [];
-  const prompt = deck[round % Math.max(deck.length, 1)];
-
-  const startGame = (id: PlayroomGameId) => {
-    const game = playroomGames.find((item) => item.id === id);
-    setActiveGame(id);
-    setCategory(game?.categories[0] ?? "Everyday");
-    setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setTruthDarePrompt(null); setTruthDareSeen([]); setUsingCustom(false);
-  };
+  const prompt = deck[round] ?? deck[0];
+ const startGame = (id: PlayroomGameId) => {
+  const game = playroomGames.find((item) => item.id === id);
+  setActiveGame(id);
+  setCategory(game?.categories[0] ?? "Everyday");
+  setRound(0);
+  setRoundNumber(1);
+  setResponses([]);
+  setFinished(false);
+  setSeen([0]);
+  setChoice(null);
+  setRevealed(false);
+  setScore(0);
+  setTruthOrDare(null);
+  setTruthDarePrompt(null);
+  setTruthDareSeen([]);
+  setUsingCustom(false);
+};
   const currentResponse = () => {
     if (activeGame === "this-or-that" && prompt && choice !== null) return prompt.prompt + " — " + prompt.options[choice];
     if (activeGame === "never-have-i-ever" && prompt && choice !== null) return prompt.text + " — " + (choice === 0 ? "I've done this" : "Never have I ever");
@@ -542,18 +552,55 @@ function PlayroomPage() {
     setResponses(finalResponse ? [...responses, finalResponse] : responses);
     setFinished(true);
   };
-  const nextPrompt = () => {
-    if (!deck.length || roundNumber >= totalRounds) return;
-    const finalResponse = currentResponse();
-    if (finalResponse) setResponses((previous) => [...previous, finalResponse]);
-    const available = deck.map((_: unknown, index: number) => index).filter((index: number) => !seen.includes(index));
-    const next = available.length ? available[Math.floor(Math.random() * available.length)] : Math.floor(Math.random() * deck.length);
-    setSeen(available.length ? [...seen, next] : [next]);
-    setRound(next); setRoundNumber((value) => value + 1); setChoice(null); setRevealed(false); setTruthOrDare(null); setTruthDarePrompt(null); setUsingCustom(false);
-  };
-  const changeCategory = (value: string) => {
-    setCategory(value); setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setUsingCustom(false);
-  };
+ const nextPrompt = () => {
+  if (!deck.length || roundNumber >= totalRounds) return;
+
+  const finalResponse = currentResponse();
+
+  if (finalResponse) {
+    setResponses((previous) => [...previous, finalResponse]);
+  }
+
+  // Find questions that have NOT been shown yet.
+  const availableQuestions = deck
+    .map((_: unknown, index: number) => index)
+    .filter((index: number) => !seen.includes(index));
+
+  // If every question in this category has been used,
+  // finish the game instead of repeating a question.
+  if (availableQuestions.length === 0) {
+    setFinished(true);
+    return;
+  }
+
+  // Randomly select an unused question.
+  const nextIndex =
+    availableQuestions[
+      Math.floor(Math.random() * availableQuestions.length)
+    ];
+
+  setSeen((previous) => [...previous, nextIndex]);
+  setRound(nextIndex);
+  setRoundNumber((value) => value + 1);
+
+  setChoice(null);
+  setRevealed(false);
+  setTruthOrDare(null);
+  setTruthDarePrompt(null);
+  setUsingCustom(false);
+};
+const changeCategory = (value: string) => {
+  setCategory(value);
+  setRound(0);
+  setRoundNumber(1);
+  setResponses([]);
+  setFinished(false);
+  setSeen([0]);
+  setChoice(null);
+  setRevealed(false);
+  setScore(0);
+  setUsingCustom(false);
+};
   const resetGame = () => {
     setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
   };
