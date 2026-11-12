@@ -5,6 +5,8 @@ import {
   Check,
    ChevronLeft,
   Clock3,
+  CalendarDays,
+  Users,
   Gamepad2,
   Gift,
   ImagePlus,
@@ -49,6 +51,8 @@ type Page =
   | "play"
   | "quiz-result"
   | "friendship"
+  | "calendar"
+  | "duo"
   | "dedicate"
   | "games"
   | "photo-studio";
@@ -242,6 +246,9 @@ function MiumiHome() {
     onClick={() => navigate("friendship")}
   />
 
+  <NavButton active={page === "calendar"} icon={<CalendarDays />} label="Miumi Calendar" onClick={() => navigate("calendar")} />
+  <NavButton active={page === "duo"} icon={<Users />} label="Miumi Duo" onClick={() => navigate("duo")} />
+
   <NavButton
     active={page === "dedicate"}
     icon={<Gift />}
@@ -322,7 +329,10 @@ function MiumiHome() {
             )}
 
             
-{page === "dedicate" && (
+{page === "calendar" && <MiumiCalendarPage onNotice={setNotice} />}
+            {page === "duo" && <MiumiDuoPage onNotice={setNotice} />}
+
+            {page === "dedicate" && (
   <section className="feature-page dedicate-page page-enter">
     <div className="feature-hero dedicate-hero">
       <span className="feature-emoji">💌</span>
@@ -406,6 +416,8 @@ function MiumiHome() {
   <NavButton active={page === "quizzes" || page === "play"} icon={<Sparkles />} label="Quizzes" onClick={() => navigate("quizzes")} />
   <NavButton active={page === "results" || page === "quiz-result"} icon={<Trophy />} label="Results" onClick={() => navigate("results")} />
   <NavButton active={page === "friendship"} icon={<Heart />} label="Friends" onClick={() => navigate("friendship")} />
+  <NavButton active={page === "calendar"} icon={<CalendarDays />} label="Calendar" onClick={() => navigate("calendar")} />
+  <NavButton active={page === "duo"} icon={<Users />} label="Duo" onClick={() => navigate("duo")} />
   <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
   <NavButton active={page === "games"} icon={<Gamepad2 />} label="Playroom" onClick={() => navigate("games")} />
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
@@ -416,6 +428,107 @@ function MiumiHome() {
   );
 }
 
+
+
+
+type CalendarMemory = { id: number; title: string; date: string; kind: string; note: string };
+const calendarKinds = ["Birthday", "Friendship anniversary", "Plan together", "Memory", "Reminder"];
+
+function MiumiCalendarPage({ onNotice }: { onNotice: (message: string) => void }) {
+  const [memories, setMemories] = useState<CalendarMemory[]>(() => {
+    try { const saved = window.localStorage.getItem("miumi-calendar-memories"); return saved ? JSON.parse(saved) as CalendarMemory[] : []; }
+    catch { return []; }
+  });
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [kind, setKind] = useState(calendarKinds[0]);
+  const [note, setNote] = useState("");
+  useEffect(() => {
+    try { window.localStorage.setItem("miumi-calendar-memories", JSON.stringify(memories)); }
+    catch { onNotice("Your browser could not save this calendar on this device."); }
+  }, [memories]);
+  const addMemory = () => {
+    if (!title.trim() || !date) { onNotice("Add a title and date first ♡"); return; }
+    setMemories((items) => [...items, { id: Date.now(), title: title.trim(), date, kind, note: note.trim() }].sort((a,b) => a.date.localeCompare(b.date)));
+    setTitle(""); setDate(""); setNote(""); setKind(calendarKinds[0]); onNotice("Your little date has been added ♡");
+  };
+  const shareCalendar = async () => {
+    const text = memories.length ? "Our Miumi Calendar ♡\\n" + memories.map((item) => item.date + " · " + item.title + " (" + item.kind + ")").join("\\n") : "Our Miumi Calendar is waiting for its first memory ♡";
+    try { if (navigator.share) await navigator.share({ title: "Miumi Calendar", text }); else { await navigator.clipboard.writeText(text); onNotice("Calendar list copied ♡"); } }
+    catch { onNotice("Sharing isn't available right now ♡"); }
+  };
+  return (
+    <section className="feature-page miumi-calendar-page page-enter">
+      <div className="feature-hero"><span className="feature-emoji">🗓️</span><p className="eyebrow">LITTLE DATES, BIG MEMORIES</p><h1>Miumi Calendar</h1><p>Keep birthdays, plans and the tiny moments you never want to forget.</p></div>
+      <div className="miumi-tool-panel">
+        <div className="miumi-tool-heading"><div><p className="garden-overline">YOUR LITTLE MEMORY BOARD</p><h2>Add a special date</h2></div><span>♡</span></div>
+        <div className="miumi-calendar-form">
+          <label>What's the occasion?<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Our first café day" maxLength={70} /></label>
+          <label>When is it?<input type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+          <label>Choose a category<select value={kind} onChange={(event) => setKind(event.target.value)}>{calendarKinds.map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label>A note (optional)<textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Add a detail you'll want to remember…" maxLength={220} /></label>
+          <button type="button" className="miumi-primary-button" onClick={addMemory}>＋ Add to our calendar</button>
+        </div>
+      </div>
+      <div className="miumi-tool-panel miumi-calendar-list">
+        <div className="miumi-tool-heading"><div><p className="garden-overline">THE LITTLE THINGS WE'LL REMEMBER</p><h2>Our dates & memories</h2></div><button type="button" className="miumi-soft-button" onClick={shareCalendar}>Share list ↗</button></div>
+        {memories.length === 0 ? <div className="miumi-empty-state"><span>🌷</span><h3>Your calendar is waiting</h3><p>Add your first birthday, friendship date or plan together.</p></div> : <div className="miumi-memory-list">{memories.map((item) => (
+          <article className="miumi-memory-item" key={item.id}><div className="miumi-memory-date"><strong>{new Date(item.date + "T12:00:00").getDate()}</strong><span>{new Date(item.date + "T12:00:00").toLocaleDateString(undefined, { month: "short" })}</span></div><div className="miumi-memory-copy"><span>{item.kind}</span><h3>{item.title}</h3>{item.note && <p>{item.note}</p>}</div><button type="button" className="miumi-remove-button" onClick={() => setMemories((items) => items.filter((memory) => memory.id !== item.id))} aria-label={"Delete " + item.title}>×</button></article>
+        ))}</div>}
+      </div>
+      <p className="miumi-local-note">♡ Dates are saved in this browser on this device. Shared syncing across two devices will need an online database and friend invite system.</p>
+    </section>
+  );
+}
+
+const duoQuestions = [
+  { prompt: "Your ideal bestie day looks like…", options: [{ label: "A spontaneous little adventure", type: 0 }, { label: "A cosy day with snacks", type: 1 }, { label: "A creative project together", type: 2 }, { label: "Laughing until it's chaotic", type: 3 }] },
+  { prompt: "When plans suddenly change, you…", options: [{ label: "Find a new adventure", type: 0 }, { label: "Keep things calm", type: 1 }, { label: "Make a clever new plan", type: 2 }, { label: "Turn it into a funny story", type: 3 }] },
+  { prompt: "Pick a friendship superpower.", options: [{ label: "Bringing the sunshine", type: 0 }, { label: "Being the safe place", type: 1 }, { label: "Noticing every detail", type: 2 }, { label: "Making anything fun", type: 3 }] },
+  { prompt: "Choose your perfect little aesthetic.", options: [{ label: "Golden sunshine", type: 0 }, { label: "Soft blankets and rain", type: 1 }, { label: "Books, stars and playlists", type: 2 }, { label: "Glitter, stickers and colour", type: 3 }] },
+  { prompt: "Your friends would describe you as…", options: [{ label: "Bright and bold", type: 0 }, { label: "Gentle and thoughtful", type: 1 }, { label: "Dreamy and observant", type: 2 }, { label: "Funny and unpredictable", type: 3 }] },
+];
+const duoTypes = [
+  { name: "Sunshine", emoji: "☀️", note: "You bring warmth, energy and a little sparkle." },
+  { name: "Soft Cloud", emoji: "☁️", note: "You bring comfort, calm and a feeling of being understood." },
+  { name: "Moon Dreamer", emoji: "🌙", note: "You bring imagination, thoughtful details and quiet magic." },
+  { name: "Happy Chaos", emoji: "🎉", note: "You bring laughter, surprises and stories worth retelling." },
+];
+function MiumiDuoPage({ onNotice }: { onNotice: (message: string) => void }) {
+  const [names, setNames] = useState(["Friend one", "Friend two"]);
+  const [player, setPlayer] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [scores, setScores] = useState<number[][]>([[], []]);
+  const [revealed, setRevealed] = useState(false);
+  const answer = (type: number) => {
+    const next = [...scores]; next[player] = [...next[player], type]; setScores(next);
+    if (questionIndex < duoQuestions.length - 1) setQuestionIndex(questionIndex + 1);
+    else if (player === 0) { setPlayer(1); setQuestionIndex(0); onNotice("Pass the phone to friend two ♡"); }
+    else setRevealed(true);
+  };
+  const getType = (values: number[]) => { const counts = [0,0,0,0]; values.forEach((value) => { counts[value] = (counts[value] ?? 0) + 1; }); return duoTypes[counts.indexOf(Math.max(...counts))] ?? duoTypes[0]; };
+  const first = getType(scores[0]); const second = getType(scores[1]);
+  const pair = first.name === second.name ? "The matching mirrors" : first.name === "Sunshine" && second.name === "Soft Cloud" || first.name === "Soft Cloud" && second.name === "Sunshine" ? "Sunshine × Soft Cloud" : first.name + " × " + second.name;
+  const restart = () => { setPlayer(0); setQuestionIndex(0); setScores([[],[]]); setRevealed(false); };
+  const share = async () => { const text = names[0] + " & " + names[1] + " are " + pair + " on Miumi ♡"; try { if (navigator.share) await navigator.share({ title: "Miumi Duo", text }); else { await navigator.clipboard.writeText(text); onNotice("Your duo identity was copied ♡"); } } catch { onNotice("Sharing isn't available right now ♡"); } };
+  return (
+    <section className="feature-page miumi-duo-page page-enter">
+      <div className="feature-hero"><span className="feature-emoji">🫶</span><p className="eyebrow">TWO HEARTS, ONE LITTLE DISCOVERY</p><h1>Miumi Duo</h1><p>Answer separately, then reveal the lovely little duo you make together.</p></div>
+      {!revealed ? <div className="miumi-tool-panel miumi-duo-quiz">
+        <div className="miumi-tool-heading"><div><p className="garden-overline">FRIEND {player + 1} OF 2 · QUESTION {questionIndex + 1} OF {duoQuestions.length}</p><h2>{names[player]}'s turn</h2></div><span>{player === 0 ? "☀️" : "🌙"}</span></div>
+        {player === 0 && questionIndex === 0 && <div className="miumi-name-fields"><label>Friend one<input value={names[0]} onChange={(event) => setNames([event.target.value,names[1]])} maxLength={24} /></label><label>Friend two<input value={names[1]} onChange={(event) => setNames([names[0],event.target.value])} maxLength={24} /></label></div>}
+        <div className="miumi-duo-progress"><span style={{width: ((questionIndex + 1) / duoQuestions.length * 100) + "%"}} /></div>
+        <div className="miumi-duo-question"><span>0{questionIndex + 1}</span><h2>{duoQuestions[questionIndex].prompt}</h2></div>
+        <div className="miumi-duo-options">{duoQuestions[questionIndex].options.map((option) => <button type="button" key={option.label} onClick={() => answer(option.type)}>{option.label}<span>↗</span></button>)}</div>
+        <p className="miumi-local-note">{player === 0 ? "Only friend one should answer for now. Pass the phone after the final question." : "Friend two is answering now. Friend one's answers stay hidden."}</p>
+      </div> : <div className="miumi-tool-panel miumi-duo-result">
+        <p className="garden-overline">YOUR MIUMI DUO IDENTITY</p><div className="miumi-duo-characters"><div><span>{first.emoji}</span><strong>{names[0] || "Friend one"}</strong><small>{first.name}</small></div><b>×</b><div><span>{second.emoji}</span><strong>{names[1] || "Friend two"}</strong><small>{second.name}</small></div></div>
+        <h2>{pair}</h2><p>{first.note} {second.note}</p><div className="miumi-duo-footer">different little worlds, one lovely friendship ♡</div>
+        <div className="miumi-duo-actions"><button type="button" className="miumi-primary-button" onClick={share}>Share our duo ↗</button><button type="button" className="miumi-soft-button" onClick={restart}>Play again</button></div>
+      </div>}
+    </section>
+  );
+}
 
 type PhotoCardFormat = "postcard" | "folded";
 type PhotoCardTemplate = "coquette" | "vintage" | "minimal" | "chaos" | "midnight" | "lavender";
