@@ -4171,3 +4171,27 @@ button:hover::after {
 .studio-filter-note { margin:10px 0 0; color:#9AA1AF; font-size:10px; }
 @media(max-width:760px) { .studio-filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 @media(max-width:420px) { .studio-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Miumi Calendar and Miumi Duo */
+.miumi-tool-panel{margin:26px auto 0;max-width:900px;padding:clamp(18px,3vw,30px);border:1px solid #f0dce7;border-radius:25px;background:rgba(255,255,255,.82);box-shadow:0 12px 35px rgba(150,105,130,.07)}
+.miumi-tool-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}
+.miumi-tool-heading h2{margin:4px 0 0;color:#66556a;font-size:clamp(20px,3vw,26px)}
+.miumi-tool-heading>span{font-size:30px;color:#d99bb7}
+.miumi-calendar-form{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.miumi-calendar-form label,.miumi-name-fields label{display:flex;flex-direction:column;gap:7px;color:#7e6a7d;font-size:12px;font-weight:800}
+.miumi-calendar-form input,.miumi-calendar-form select,.miumi-calendar-form textarea,.miumi-name-fields input{width:100%;min-width:0;padding:12px 13px;border:1px solid #eadce7;border-radius:12px;background:#fffafd;color:#66556a;font:inherit;font-size:13px;outline:none}
+.miumi-calendar-form textarea{min-height:80px;resize:vertical}
+.miumi-calendar-form label:nth-child(4){grid-column:1/-1}
+.miumi-primary-button,.miumi-soft-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 17px;border:1px solid #e5bfd2;border-radius:13px;background:#f8eaf2;color:#986b83;font:800 12px "Nunito",sans-serif;cursor:pointer}
+.miumi-calendar-form>.miumi-primary-button{grid-column:1/-1}
+.miumi-soft-button{background:#fff;color:#9b7890}
+.miumi-empty-state{text-align:center;padding:25px 12px;color:#9a8798}.miumi-empty-state>span{font-size:34px}.miumi-empty-state h3{margin:8px 0;color:#79647a}.miumi-empty-state p{font-size:12px}
+.miumi-memory-list{display:grid;gap:10px}.miumi-memory-item{display:flex;align-items:center;gap:14px;padding:13px;border:1px solid #f0e5ec;border-radius:15px;background:#fffafd}
+.miumi-memory-date{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 54px;min-height:58px;border-radius:12px;background:#f9eaf2;color:#a36e8a}.miumi-memory-date strong{font-size:22px;line-height:1}.miumi-memory-date span{font-size:10px;font-weight:800;text-transform:uppercase}
+.miumi-memory-copy{min-width:0;flex:1}.miumi-memory-copy>span{color:#bd8ca7;font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.miumi-memory-copy h3{margin:3px 0;color:#6f5c70;font-size:14px}.miumi-memory-copy p{margin:4px 0 0;color:#9b8b9a;font-size:11px;overflow-wrap:anywhere}
+.miumi-remove-button{width:30px;height:30px;border:0;border-radius:50%;background:#fff0f5;color:#b77f99;font-size:21px;cursor:pointer}.miumi-local-note{max-width:850px;margin:15px auto 0;color:#a394a2;font-size:10px;line-height:1.6;text-align:center}
+.miumi-name-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.miumi-duo-progress{height:6px;overflow:hidden;border-radius:99px;background:#f5eaf0}.miumi-duo-progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#e7aac6,#bca9df);transition:width .25s}
+.miumi-duo-question{padding:25px 5px 15px;text-align:center}.miumi-duo-question>span{color:#c28eaa;font-size:11px;font-weight:900;letter-spacing:2px}.miumi-duo-question h2{margin:10px 0;color:#6d5b70;font-size:clamp(20px,3vw,27px)}
+.miumi-duo-options{display:grid;grid-template-columns:1fr 1fr;gap:11px}.miumi-duo-options button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:62px;padding:15px;border:1px solid #eddfeb;border-radius:15px;background:#fffafd;color:#78667c;text-align:left;font:700 12px "Nunito",sans-serif;cursor:pointer;transition:.18s}.miumi-duo-options button:hover{border-color:#d6a4c0;background:#fff4f9;transform:translateY(-2px)}.miumi-duo-options button span{color:#c28eaa}
+.miumi-duo-result{text-align:center}.miumi-duo-characters{display:flex;align-items:center;justify-content:center;gap:clamp(12px,4vw,35px);margin:25px 0}.miumi-duo-characters>div{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:100px}.miumi-duo-characters>div>span{display:grid;width:95px;height:95px;place-items:center;border:1px solid #f0dce8;border-radius:50%;background:linear-gradient(145deg,#fff2f7,#f0edff);font-size:47px}.miumi-duo-characters strong{color:#6f5c70;font-size:13px}.miumi-duo-characters small{color:#bd8ca7;font-size:10px;font-weight:800}.miumi-duo-characters>b{color:#c99ab5;font-size:22px}.miumi-duo-result>h2{color:#8e6683;font-size:clamp(22px,4vw,30px)}.miumi-duo-result>p:not(.garden-overline){max-width:560px;margin:10px auto;color:#88788a;font-size:13px;line-height:1.7}.miumi-duo-footer{margin:22px 0;color:#b27e9b;font-family:Georgia,serif;font-style:italic}.miumi-duo-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+@media(max-width:620px){.miumi-calendar-form,.miumi-name-fields,.miumi-duo-options{grid-template-columns:1fr}.miumi-calendar-form label:nth-child(4){grid-column:auto}.miumi-duo-characters>div>span{width:76px;height:76px;font-size:38px}}
