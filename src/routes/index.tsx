@@ -513,6 +513,8 @@ function PlayroomPage() {
   const [revealed, setRevealed] = useState(false);
   const [score, setScore] = useState(0);
   const [truthOrDare, setTruthOrDare] = useState<"truth" | "dare" | null>(null);
+  const [truthDarePrompt, setTruthDarePrompt] = useState<any>(null);
+  const [truthDareSeen, setTruthDareSeen] = useState<number[]>([]);
   const [customStatements, setCustomStatements] = useState(["", "", ""]);
   const [customLie, setCustomLie] = useState(0);
   const [usingCustom, setUsingCustom] = useState(false);
@@ -526,15 +528,12 @@ function PlayroomPage() {
     const game = playroomGames.find((item) => item.id === id);
     setActiveGame(id);
     setCategory(game?.categories[0] ?? "Everyday");
-    setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setUsingCustom(false);
+    setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setTruthOrDare(null); setTruthDarePrompt(null); setTruthDareSeen([]); setUsingCustom(false);
   };
   const currentResponse = () => {
     if (activeGame === "this-or-that" && prompt && choice !== null) return prompt.prompt + " — " + prompt.options[choice];
     if (activeGame === "never-have-i-ever" && prompt && choice !== null) return prompt.text + " — " + (choice === 0 ? "I've done this" : "Never have I ever");
-    if (activeGame === "truth-or-dare" && prompt && truthOrDare) {
-      const chosenPrompt = prompt.type === truthOrDare ? prompt : playroomDecks["truth-or-dare"][category].find((item: any) => item.type === truthOrDare);
-      return truthOrDare.toUpperCase() + " — " + (chosenPrompt?.text ?? "");
-    }
+    if (activeGame === "truth-or-dare" && truthOrDare && truthDarePrompt) return truthOrDare.toUpperCase() + " — " + truthDarePrompt.text;
     if (activeGame === "two-truths" && prompt && choice !== null) return "Statement " + (choice + 1) + (choice === (usingCustom ? customLie : prompt.lie) ? " — correct" : " — incorrect");
     return "";
   };
@@ -550,7 +549,7 @@ function PlayroomPage() {
     const available = deck.map((_: unknown, index: number) => index).filter((index: number) => !seen.includes(index));
     const next = available.length ? available[Math.floor(Math.random() * available.length)] : Math.floor(Math.random() * deck.length);
     setSeen(available.length ? [...seen, next] : [next]);
-    setRound(next); setRoundNumber((value) => value + 1); setChoice(null); setRevealed(false); setTruthOrDare(null); setUsingCustom(false);
+    setRound(next); setRoundNumber((value) => value + 1); setChoice(null); setRevealed(false); setTruthOrDare(null); setTruthDarePrompt(null); setUsingCustom(false);
   };
   const changeCategory = (value: string) => {
     setCategory(value); setRound(0); setRoundNumber(1); setResponses([]); setFinished(false); setSeen([]); setChoice(null); setRevealed(false); setScore(0); setUsingCustom(false);
@@ -686,10 +685,10 @@ function PlayroomPage() {
         </>}
         {activeGame === "truth-or-dare" && prompt && <>
           <div className="playroom-choice-grid playroom-truth-dare">
-            <button type="button" className={"playroom-choice " + (truthOrDare === "truth" ? "is-picked" : "")} onClick={() => { setTruthOrDare("truth"); setRevealed(true); }}><span className="playroom-big-emoji">💬</span><strong>Truth</strong><span>Answer a question</span></button>
-            <button type="button" className={"playroom-choice " + (truthOrDare === "dare" ? "is-picked" : "")} onClick={() => { setTruthOrDare("dare"); setRevealed(true); }}><span className="playroom-big-emoji">✨</span><strong>Dare</strong><span>Try a harmless challenge</span></button>
+            <button type="button" className={"playroom-choice " + (truthOrDare === "truth" ? "is-picked" : "")} onClick={() => { const pool = playroomDecks["truth-or-dare"][category].map((item: any, index: number) => ({ item, index })).filter(({ item }: any) => item.type === "truth"); const available = pool.filter(({ index }: any) => !truthDareSeen.includes(index)); const source = available.length ? available : pool; const pick = source[Math.floor(Math.random() * source.length)]; if (pick) { setTruthDarePrompt(pick.item); setTruthDareSeen((previous) => available.length ? [...previous, pick.index] : [pick.index]); setTruthOrDare("truth"); setRevealed(true); } }}><span className="playroom-big-emoji">💬</span><strong>Truth</strong><span>Answer a question</span></button>
+            <button type="button" className={"playroom-choice " + (truthOrDare === "dare" ? "is-picked" : "")} onClick={() => { const pool = playroomDecks["truth-or-dare"][category].map((item: any, index: number) => ({ item, index })).filter(({ item }: any) => item.type === "dare"); const available = pool.filter(({ index }: any) => !truthDareSeen.includes(index)); const source = available.length ? available : pool; const pick = source[Math.floor(Math.random() * source.length)]; if (pick) { setTruthDarePrompt(pick.item); setTruthDareSeen((previous) => available.length ? [...previous, pick.index] : [pick.index]); setTruthOrDare("dare"); setRevealed(true); } }}><span className="playroom-big-emoji">✨</span><strong>Dare</strong><span>Try a harmless challenge</span></button>
           </div>
-          {revealed && truthOrDare && <div className="playroom-prompt-reveal"><span>{truthOrDare === "truth" ? "YOUR TRUTH" : "YOUR DARE"}</span><p>{prompt.type === truthOrDare ? prompt.text : (playroomDecks["truth-or-dare"][category].find((item: any) => item.type === truthOrDare)?.text ?? "Choose another round for a new prompt.")}</p></div>}
+          {revealed && truthOrDare && <div className="playroom-prompt-reveal"><span>{truthOrDare === "truth" ? "YOUR TRUTH" : "YOUR DARE"}</span><p>{truthDarePrompt?.text ?? "Choose another round for a new prompt."}</p></div>}
           <p className="playroom-feedback">Keep it kind, comfortable and optional. You can always pass. ♡</p>
         </>}
         {activeGame === "two-truths" && prompt && <>
