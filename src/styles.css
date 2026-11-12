@@ -4195,3 +4195,57 @@ button:hover::after {
 .miumi-duo-options{display:grid;grid-template-columns:1fr 1fr;gap:11px}.miumi-duo-options button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:62px;padding:15px;border:1px solid #eddfeb;border-radius:15px;background:#fffafd;color:#78667c;text-align:left;font:700 12px "Nunito",sans-serif;cursor:pointer;transition:.18s}.miumi-duo-options button:hover{border-color:#d6a4c0;background:#fff4f9;transform:translateY(-2px)}.miumi-duo-options button span{color:#c28eaa}
 .miumi-duo-result{text-align:center}.miumi-duo-characters{display:flex;align-items:center;justify-content:center;gap:clamp(12px,4vw,35px);margin:25px 0}.miumi-duo-characters>div{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:100px}.miumi-duo-characters>div>span{display:grid;width:95px;height:95px;place-items:center;border:1px solid #f0dce8;border-radius:50%;background:linear-gradient(145deg,#fff2f7,#f0edff);font-size:47px}.miumi-duo-characters strong{color:#6f5c70;font-size:13px}.miumi-duo-characters small{color:#bd8ca7;font-size:10px;font-weight:800}.miumi-duo-characters>b{color:#c99ab5;font-size:22px}.miumi-duo-result>h2{color:#8e6683;font-size:clamp(22px,4vw,30px)}.miumi-duo-result>p:not(.garden-overline){max-width:560px;margin:10px auto;color:#88788a;font-size:13px;line-height:1.7}.miumi-duo-footer{margin:22px 0;color:#b27e9b;font-family:Georgia,serif;font-style:italic}.miumi-duo-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 @media(max-width:620px){.miumi-calendar-form,.miumi-name-fields,.miumi-duo-options{grid-template-columns:1fr}.miumi-calendar-form label:nth-child(4){grid-column:auto}.miumi-duo-characters>div>span{width:76px;height:76px;font-size:38px}}
+
+
+/* Miumi Museum of Us */
+.miumi-museum-hero{background:radial-gradient(circle at 12% 15%,rgba(247,207,225,.55),transparent 31%),radial-gradient(circle at 88% 78%,rgba(210,220,246,.58),transparent 34%),linear-gradient(135deg,#fff8fb,#f4f5ff)}
+.miumi-museum-script{display:block;margin-top:16px;color:#b77d9c;font:22px "Caveat",cursive}
+.miumi-museum-toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:26px 0 16px;padding:20px 23px;border:1px solid #eee4ec;border-radius:21px;background:rgba(255,255,255,.85)}
+.miumi-museum-toolbar h2,.miumi-museum-gallery-heading h2{margin:4px 0 0;color:#6d5b70;font:700 21px "Zen Maru Gothic",sans-serif}
+.miumi-museum-actions{display:flex;gap:9px;flex-wrap:wrap}
+.miumi-museum-form{display:grid;gap:14px}
+.miumi-museum-form label{display:flex;flex-direction:column;gap:7px;color:#7e6a7d;font-size:11px;font-weight:900}
+.miumi-museum-form input:not([type=file]),.miumi-museum-form select,.miumi-museum-form textarea{width:100%;min-width:0;padding:12px 13px;border:1px solid #eadce7;border-radius:12px;background:#fffafd;color:#66556a;font:600 12px "Nunito",sans-serif;outline:none}
+.miumi-museum-form textarea{min-height:95px;resize:vertical}
+.miumi-museum-fields{display:grid;grid-template-columns:1fr 1fr .7fr;gap:12px}
+.miumi-museum-upload input{padding:10px;border:1px dashed #dcbcd0;border-radius:12px;background:#fffafd;color:#8e7588;font:11px "Nunito",sans-serif}
+.miumi-museum-image-preview{display:flex;align-items:center;gap:12px;color:#9b7890;font-size:11px}
+.miumi-museum-image-preview img{width:90px;height:75px;object-fit:cover;border-radius:12px}
+.miumi-museum-image-preview button,.miumi-museum-exhibit-copy button{border:0;background:transparent;color:#ad8199;font:800 10px "Nunito",sans-serif;cursor:pointer}
+.miumi-museum-room-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 30px}
+.miumi-museum-room{display:flex;min-width:0;min-height:155px;flex-direction:column;align-items:flex-start;gap:6px;padding:17px;border:1px solid #eee4ec;border-radius:19px;background:linear-gradient(145deg,#fff,#fff8fb);text-align:left;cursor:pointer;transition:.2s}
+.miumi-museum-room:hover,.miumi-museum-room.is-active{transform:translateY(-3px);border-color:#d9b1c8;background:#fff3f8;box-shadow:0 8px 22px rgba(155,115,145,.08)}
+.miumi-museum-room>span{font-size:27px}
+.miumi-museum-room strong{color:#715f74;font:700 14px "Zen Maru Gothic",sans-serif}
+.miumi-museum-room small{min-height:29px;color:#9a899a;font-size:9px;line-height:1.5}
+.miumi-museum-room b{margin-top:auto;color:#b17e9b;font-size:9px}
+.miumi-museum-gallery-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 14px}
+.miumi-museum-gallery-heading button{border:0;background:transparent;color:#a77b96;font:800 10px "Nunito",sans-serif;cursor:pointer}
+.miumi-museum-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.miumi-museum-exhibit{overflow:hidden;border:1px solid #eee5ed;border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(130,105,135,.05)}
+.miumi-museum-exhibit-image,.miumi-museum-exhibit-art{display:grid;width:100%;height:190px;object-fit:cover}
+.miumi-museum-exhibit-art{align-content:center;justify-items:center;gap:8px;background:radial-gradient(circle at 20% 20%,#fff 0,transparent 45%),linear-gradient(135deg,#fbeaf2,#edf0fc);color:#b47f9c}
+.miumi-museum-exhibit-art span{font-size:55px}
+.miumi-museum-exhibit-art small{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase}
+.miumi-museum-exhibit-copy{padding:17px 18px 15px}
+.miumi-museum-exhibit-copy>span{color:#b48aa4;font-size:9px;font-weight:900;letter-spacing:.7px;text-transform:uppercase}
+.miumi-museum-exhibit-copy h3{margin:7px 0;color:#6c5b70;font:700 18px "Zen Maru Gothic",sans-serif;overflow-wrap:anywhere}
+.miumi-museum-exhibit-copy p{margin:0 0 12px;color:#918293;font-size:11px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.miumi-museum-exhibit-copy button{padding:0}
+.miumi-museum-empty{padding:35px 18px;border:1px dashed #e7d4e1;border-radius:21px;background:#fffafd;text-align:center}
+.miumi-museum-empty>span{font-size:40px}
+.miumi-museum-empty h3{margin:9px 0;color:#78657b;font:700 18px "Zen Maru Gothic",sans-serif}
+.miumi-museum-empty p{margin:0 0 17px;color:#9a899a;font-size:11px}
+.miumi-museum-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:25px;padding:22px;border:1px solid #eee4ec;border-radius:21px;background:linear-gradient(135deg,#fff7fb,#f6f7ff)}
+.miumi-museum-bottom>div:first-child{max-width:440px}
+.miumi-museum-bottom>div:first-child>span{color:#bd8eaa;font-size:21px}
+.miumi-museum-bottom h2{margin:5px 0;color:#6e5b72;font:700 18px "Zen Maru Gothic",sans-serif}
+.miumi-museum-bottom p{margin:0;color:#968797;font-size:10px;line-height:1.7}
+@media(max-width:760px){.miumi-museum-room-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.miumi-museum-toolbar,.miumi-museum-bottom{align-items:flex-start;flex-direction:column}.miumi-museum-actions{width:100%}.miumi-museum-actions button{flex:1}.miumi-museum-gallery{grid-template-columns:1fr}}
+@media(max-width:520px){.miumi-museum-fields{grid-template-columns:1fr 1fr}.miumi-museum-fields label:first-child{grid-column:1/-1}.miumi-museum-room{min-height:145px;padding:13px}.miumi-museum-room strong{font-size:12px}.miumi-museum-bottom{padding:17px}.miumi-museum-bottom .miumi-duo-actions{width:100%}.miumi-museum-bottom button{flex:1}}
+@media print{
+  .side-nav,.mobile-nav,.topbar,.miumi-museum-toolbar,.miumi-museum-form,.miumi-museum-room-grid,.miumi-museum-gallery-heading button,.miumi-museum-exhibit-copy button,.miumi-museum-bottom,.miumi-local-note{display:none!important}
+  .miumi-museum-page{max-width:none!important;padding:0!important}
+  .miumi-museum-gallery{grid-template-columns:repeat(2,1fr)!important}
+  .miumi-museum-exhibit{break-inside:avoid;box-shadow:none}
+}
