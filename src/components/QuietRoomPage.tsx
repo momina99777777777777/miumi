@@ -12,6 +12,7 @@ export default function QuietRoomPage() {
   const [speaking, setSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [voiceNotice, setVoiceNotice] = useState("");
+  const [sending, setSending] = useState(false);
   const recognition = useRef<any>(null);
 
   useEffect(() => () => {
@@ -31,27 +32,33 @@ export default function QuietRoomPage() {
     window.speechSynthesis.speak(utterance);
   };
 
-  const makePreviewReply = (value: string) => {
-    const text = value.toLowerCase();
-    if (["sad", "lonely", "cry", "upset", "hurt", "down"].some(word => text.includes(word)))
-      return "That sounds like a lot to carry. Thank you for putting it into words. Would you like to tell me what part has felt hardest?";
-    if (["stress", "overwhelm", "pressure", "anxious", "worry", "worried"].some(word => text.includes(word)))
-      return "It can be difficult when so much is happening at once. What feels like the biggest thing asking for your attention right now?";
-    if (["friend", "relationship", "argument", "fight"].some(word => text.includes(word)))
-      return "Relationships can bring up complicated feelings. What happened, and what did it mean to you?";
-    if (["happy", "excited", "proud", "good"].some(word => text.includes(word)))
-      return "I'm glad you shared that. What do you think made this moment feel especially good?";
-    return "I'm listening. Could you tell me a little more about what that has been like for you? We can take it one step at a time.";
-  };
-
-  const sendMessage = (value = draft) => {
+  const sendMessage = async (value = draft) => {
     const clean = value.trim();
-    if (!clean) return;
-    const reply = makePreviewReply(clean);
-    const id = Date.now();
-    setMessages(previous => [...previous, { id, role: "you", text: clean }, { id: id + 1, role: "companion", text: reply }]);
+    if (!clean || sending) return;
     setDraft("");
-    speak(reply);
+    setVoiceNotice("");
+    setMessages(previous => [...previous, { id: Date.now(), role: "you", text: clean }]);
+    setSending(true);
+    try {
+      const response = await fetch("/api/quiet-room", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: clean, history: messages.slice(-12).map(({ role, text }) => ({ role, content: text })) }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || "The companion couldn't respond just now.");
+      const reply = String(data.reply || "").trim();
+      if (!reply) throw new Error("The companion returned an empty reply. Please try again.");
+      setMessages(previous => [...previous, { id: Date.now() + 1, role: "companion", text: reply }]);
+      speak(reply);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong.";
+      setVoiceNotice(message.includes("not configured")
+        ? "AI connection needs its secure server key before conversations can begin. Your message was not stored."
+        : message + " Your message was not stored.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const startListening = () => {
@@ -93,7 +100,7 @@ export default function QuietRoomPage() {
         <p>A calm space to talk, reflect, and find your next small step.</p>
       </div>
       <div className="quiet-room-shell">
-        <div className="quiet-room-scene" aria-label="Illustrated companion sitting on a sofa in a peaceful room">
+        <div className="quiet-room-scene" aria-label="A softly animated companion seated on a sofa in a peaceful room">
           <div className="quiet-window"><span /><i /><b /></div>
           <div className="quiet-plant"><i /><i /><i /><b /></div>
           <div className="quiet-lamp"><i /><b /></div>
@@ -121,7 +128,7 @@ export default function QuietRoomPage() {
         <div className="quiet-chat-panel">
           <div className="quiet-chat-top">
             <div className="quiet-avatar"><MessageCircle size={18} /></div>
-            <div><strong>Your Miumi companion</strong><span>Supportive reflection · Preview mode</span></div>
+            <div><strong>Your Miumi companion</strong><span>Private supportive conversation · Not therapy</span></div>
             <button className="quiet-sound-toggle" onClick={() => { setVoiceEnabled(value => !value); window.speechSynthesis?.cancel(); setSpeaking(false); }} aria-label={voiceEnabled ? "Mute companion voice" : "Enable companion voice"}>{voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}</button>
           </div>
           <div className="quiet-messages" aria-live="polite">
@@ -138,13 +145,13 @@ export default function QuietRoomPage() {
             <textarea value={draft} onChange={event => setDraft(event.target.value)} placeholder="You can write whatever feels comfortable..." rows={2} aria-label="Write your message" />
             <div className="quiet-composer-actions">
               <button type="button" className={listening ? "quiet-mic-button is-listening" : "quiet-mic-button"} onClick={() => listening ? recognition.current?.stop() : startListening()} aria-label={listening ? "Stop listening" : "Speak your message"}>{listening ? <MicOff size={17} /> : <Mic size={17} />}<span>{listening ? "Stop" : "Speak"}</span></button>
-              <button type="submit" className="quiet-send-button" disabled={!draft.trim()}><Send size={16} /> Send</button>
+              <button type="submit" className="quiet-send-button" disabled={!draft.trim() || sending}><Send size={16} /> {sending ? "Thinking…" : "Send"}</button>
             </div>
           </form>
-          <div className="quiet-safety-note"><ShieldCheck size={15} /><span>This is an early demo, not therapy or a crisis service. Replies are scripted, not generated by a clinician or a live AI. Avoid sharing identifying or highly sensitive details. If you feel unsafe or need urgent help, contact a trusted person or local emergency support.</span></div>
+          <div className="quiet-safety-note"><ShieldCheck size={15} /><span>Miumi is an AI support companion, not a therapist or crisis service. Avoid sharing identifying details. If you feel unsafe, reach out to a trusted adult or local emergency support.</span></div>
         </div>
       </div>
-      <div className="quiet-bottom-note"><Sparkles size={16} /><span>You can pause, leave, or switch to typing whenever you like. This demo does not save conversations.</span></div>
+      <div className="quiet-bottom-note"><Sparkles size={16} /><span>You can pause, leave, or switch to typing whenever you like. Your conversation is not saved by this page. Microphone access is only used when you choose Speak.</span></div>
     </section>
   );
 }
