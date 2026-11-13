@@ -50,8 +50,8 @@ export default function InBetweenGame() {
       try {
         // Three.js is loaded only when the player enters the game, keeping Miumi's
         // regular pages light. The browser fetches the pinned ESM build at runtime.
-        const threeModuleUrl = "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-        const loaderModuleUrl = "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js";
+        const threeModuleUrl = "https://esm.sh/three@0.180.0";
+        const loaderModuleUrl = "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js";
         const THREE = await import(/* @vite-ignore */ threeModuleUrl) as ThreeModule;
         const { GLTFLoader } = await import(/* @vite-ignore */ loaderModuleUrl) as { GLTFLoader: new () => { load: (url: string, onLoad: (gltf: any) => void, onProgress?: undefined, onError?: (error: unknown) => void) => void } };
         if (cancelled || !canvasRef.current) return;
@@ -137,12 +137,12 @@ export default function InBetweenGame() {
         // Clock on the rear wall.
         const clock = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.12, 48), brass);
         clock.rotation.x = Math.PI / 2;
-        clock.position.set(0, 3.8, -10.72);
+        clock.position.set(2.8, 3.8, -10.72);
         scene.add(clock);
         const clockFace = new THREE.Mesh(new THREE.CircleGeometry(0.47, 48), mat("#d9cfb8"));
-        clockFace.position.set(0, 3.8, -10.64);
+        clockFace.position.set(2.8, 3.8, -10.64);
         scene.add(clockFace);
-        const hand = makeBox(0.035, 0.42, 0.035, darkWood, 0, 3.82, -10.57);
+        const hand = makeBox(0.035, 0.42, 0.035, darkWood, 2.8, 3.82, -10.57);
         hand.rotation.z = -0.55;
         const painting = makeBox(1.55, 1.25, 0.12, brass, -3.9, 3.35, -10.72);
         makeBox(1.35, 1.05, 0.05, mat("#172b2a"), -3.9, 3.35, -10.62);
@@ -191,6 +191,9 @@ export default function InBetweenGame() {
         );
 
         const keys = new Set<string>();
+        let unlocked = false;
+        const onUnlock = () => { unlocked = true; };
+        window.addEventListener("inbetween:unlock", onUnlock);
         const onKeyDown = (event: KeyboardEvent) => {
           if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) event.preventDefault();
           keys.add(event.key.toLowerCase());
@@ -221,7 +224,7 @@ export default function InBetweenGame() {
           const near = (x: number, z: number, radius = 2.1) => Math.hypot(px - x, pz - z) < radius;
           if (near(-0.55, -2.1)) {
             window.dispatchEvent(new CustomEvent("inbetween:letter"));
-          } else if (near(0, -10, 2.6)) {
+          } else if (near(2.8, -9.8, 2.4)) {
             window.dispatchEvent(new CustomEvent("inbetween:clock"));
           } else if (near(-3.9, -9.2, 2.2)) {
             window.dispatchEvent(new CustomEvent("inbetween:painting"));
@@ -249,7 +252,7 @@ export default function InBetweenGame() {
           const desired = new THREE.Vector3(player.position.x, 3.1, player.position.z + 6.2);
           camera.position.lerp(desired, 1 - Math.pow(0.001, delta));
           camera.lookAt(target);
-          if (doorOpen) {
+          if (unlocked) {
             door.rotation.y = THREE.MathUtils.lerp(door.rotation.y, -1.2, delta * 1.2);
           }
           renderer.render(scene, camera);
@@ -261,6 +264,7 @@ export default function InBetweenGame() {
           cancelAnimationFrame(frame);
           window.removeEventListener("keydown", onKeyDown);
           window.removeEventListener("keyup", onKeyUp);
+          window.removeEventListener("inbetween:unlock", onUnlock);
           resizeObserver.disconnect();
           scene.traverse((object: any) => {
             if (object.geometry) object.geometry.dispose();
@@ -285,7 +289,7 @@ export default function InBetweenGame() {
       cleanup?.();
       engineRef.current = null;
     };
-  }, [started, doorOpen]);
+  }, [started]);
 
   useEffect(() => {
     const letter = () => {
@@ -309,6 +313,7 @@ export default function InBetweenGame() {
     const door = () => {
       if (inventory.includes("The brass key")) {
         setDoorOpen(true);
+        window.dispatchEvent(new CustomEvent("inbetween:unlock"));
         setMessage({ title: "The first door opens", body: "Beyond it is not the hallway you expected. A second library stretches into darkness. Chapter One is complete — and the real mystery is only beginning." });
       } else setMessage({ title: "A locked door", body: "The lock is old, but still intact. There must be a key somewhere in this room." });
     };
@@ -365,8 +370,8 @@ export default function InBetweenGame() {
           {loading && <div className="ib-loading"><span className="ib-loader" />Preparing the library…</div>}
           {engineError && <div className="ib-error">{engineError}</div>}
           <div className="ib-mobile-controls">
-            <button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "w" }))}>↑</button>
-            <div><button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }))}>←</button><button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "s" }))}>↓</button><button onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "d" }))}>→</button></div>
+            <button onPointerDown={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "w" }))} onPointerUp={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "w" }))} onPointerLeave={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "w" }))}>↑</button>
+            <div><button onPointerDown={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }))} onPointerUp={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "a" }))} onPointerLeave={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "a" }))}>←</button><button onPointerDown={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "s" }))} onPointerUp={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "s" }))} onPointerLeave={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "s" }))}>↓</button><button onPointerDown={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "d" }))} onPointerUp={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "d" }))} onPointerLeave={() => window.dispatchEvent(new KeyboardEvent("keyup", { key: "d" }))}>→</button></div>
             <button className="ib-interact" onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "e" }))}>E</button>
           </div>
         </div>
