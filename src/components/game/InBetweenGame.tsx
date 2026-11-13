@@ -465,6 +465,28 @@ export default function InBetweenGame() {
         lampShade.position.set(0, 4.7, -1.5);
         scene.add(lampShade);
 
+        // Interactive furniture and clues: drawers, a photograph, a wardrobe,
+        // and a ledger waiting in the archive.
+        const drawerFront = makeBox(0.9, 0.28, 0.12, wood, -2.45, 0.82, -2.15);
+        const drawerHandle = makeBox(0.16, 0.035, 0.045, brass, -2.45, 0.82, -2.075);
+        const sideCabinet = makeBox(1.05, 1.05, 0.8, darkWood, -2.45, 0.55, -2.5);
+        const drawerOpenPosition = { x: -2.45, z: -1.82 };
+        const photoFrame = makeBox(0.72, 0.92, 0.12, brass, 5.8, 2.15, -5.8);
+        const photoImage = makeBox(0.58, 0.76, 0.035, mat("#59646a"), 5.8, 2.15, -5.7);
+        const wardrobe = new THREE.Group();
+        wardrobe.position.set(5.85, 0, -18.1);
+        scene.add(wardrobe);
+        const wardrobeBody = new THREE.Mesh(new THREE.BoxGeometry(1.35, 3.4, 0.85), darkWood);
+        wardrobeBody.position.y = 1.7; wardrobeBody.castShadow = true; wardrobe.add(wardrobeBody);
+        const wardrobeDoorL = new THREE.Mesh(new THREE.BoxGeometry(0.62, 3.25, 0.08), wood);
+        wardrobeDoorL.position.set(-0.33, 1.7, -0.47); wardrobe.add(wardrobeDoorL);
+        const wardrobeDoorR = new THREE.Mesh(new THREE.BoxGeometry(0.62, 3.25, 0.08), wood);
+        wardrobeDoorR.position.set(0.33, 1.7, -0.47); wardrobe.add(wardrobeDoorR);
+        const wardrobeHandleL = makeBox(0.035, 0.18, 0.05, brass, 5.85, 1.7, -18.62);
+        const wardrobeHandleR = makeBox(0.035, 0.18, 0.05, brass, 5.85, 1.7, -18.62);
+        const archiveLedger = makeBox(0.7, 0.09, 0.52, paper, 0, 1.22, -20.5);
+        const ledgerSeal = makeBox(0.12, 0.025, 0.12, brass, 0, 1.28, -20.5);
+
         // Build the player's customised human character from reusable 3D parts.
         // This keeps appearance choices local and avoids a generic sample character.
         const player = new THREE.Group();
@@ -576,6 +598,9 @@ export default function InBetweenGame() {
         let doorIsOpen = unlocked;
         let clockActivated = progressRef.current.clockSolved;
         let enteredArchive = false;
+        let drawerIsOpen = false;
+        let wardrobeIsOpen = false;
+        let hidingInWardrobe = false;
         if (doorIsOpen) doorPivot.rotation.y = -1.42;
         if (clockActivated) painting.position.x = -4.75;
         let lastPrompt = "";
@@ -647,6 +672,23 @@ export default function InBetweenGame() {
           } else if (near(0, -9.2, 2.5)) {
             if (unlocked) doorIsOpen = !doorIsOpen;
             else window.dispatchEvent(new CustomEvent("inbetween:door"));
+          } else if (near(-2.45, -2.5, 1.8)) {
+            drawerIsOpen = !drawerIsOpen;
+            if (drawerIsOpen && !inventory.includes("Old photograph")) {
+              setInventory((items) => [...items, "Old photograph"]);
+              setMessage({ title: "Something inside the drawer", body: "A faded photograph rests beneath the dust. On its back, someone has written: 'The room remembers what the people forget.' It has been added to your inventory." });
+            } else {
+              setMessage({ title: drawerIsOpen ? "Drawer opened" : "Drawer closed", body: "The wooden drawer slides with a soft, reluctant scrape." });
+            }
+          } else if (near(5.8, -5.8, 2.0)) {
+            setMessage({ title: "The photograph", body: "A family stands in front of this very library. But there is a fourth shadow in the picture, although only three people are visible." });
+          } else if (near(5.85, -18.1, 2.0)) {
+            wardrobeIsOpen = !wardrobeIsOpen;
+            hidingInWardrobe = wardrobeIsOpen;
+            setMessage({ title: wardrobeIsOpen ? "Inside the wardrobe" : "Back in the archive", body: wardrobeIsOpen ? "You slip inside and pull the wardrobe doors nearly shut. The archive sounds distant from here." : "You step out into the archive. The wardrobe doors creak closed behind you." });
+          } else if (near(0, -20.5, 2.0)) {
+            if (!inventory.includes("Archive ledger")) setInventory((items) => [...items, "Archive ledger"]);
+            setMessage({ title: "The archive ledger", body: "The ledger lists rooms that do not appear on any floor plan. One entry is circled: THE FORGOTTEN GARDEN. The ledger has been added to your inventory." });
           }
         }
 
@@ -695,7 +737,8 @@ export default function InBetweenGame() {
           }
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const doorNear = promptNear(0, -9.2, 2.5);
-          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : "";
+          const inArchive = player.position.z < -12.2;
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-2.45, -2.5, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
           const horizontalDistance = Math.cos(cameraPitch) * 6.2;
@@ -703,6 +746,10 @@ export default function InBetweenGame() {
           camera.position.lerp(desired, 1 - Math.pow(0.001, delta));
           camera.lookAt(target);
           doorPivot.rotation.y = THREE.MathUtils.lerp(doorPivot.rotation.y, doorIsOpen ? -1.42 : 0, delta * 2.2);
+          drawerFront.position.z = THREE.MathUtils.lerp(drawerFront.position.z, drawerIsOpen ? -1.72 : -2.15, delta * 3);
+          drawerHandle.position.z = THREE.MathUtils.lerp(drawerHandle.position.z, drawerIsOpen ? -1.645 : -2.075, delta * 3);
+          wardrobeDoorL.rotation.y = THREE.MathUtils.lerp(wardrobeDoorL.rotation.y, wardrobeIsOpen ? -0.95 : 0, delta * 2.5);
+          wardrobeDoorR.rotation.y = THREE.MathUtils.lerp(wardrobeDoorR.rotation.y, wardrobeIsOpen ? 0.95 : 0, delta * 2.5);
           if (unlocked && !enteredArchive && player.position.z < -12.2) {
             enteredArchive = true;
             setTimeout(() => setMessage({ title:"The hidden archive", body:"The library was only the first room. Shelves of forgotten records stretch into the dark. Somewhere in here, another door is waiting." }), 250);
