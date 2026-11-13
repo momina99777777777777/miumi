@@ -27,6 +27,8 @@ export default function InBetweenGame() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const avatarPreviewRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<{ dispose: () => void } | null>(null);
+  const gameShellRef = useRef<HTMLElement | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [started, setStarted] = useState(false);
   const [message, setMessage] = useState<GameMessage | null>(null);
   const [inventory, setInventory] = useState<string[]>([]);
@@ -37,6 +39,21 @@ export default function InBetweenGame() {
   const [nearbyPrompt, setNearbyPrompt] = useState("");
   const [avatar, setAvatar] = useState<AvatarSettings>(DEFAULT_AVATAR);
   const progressRef = useRef({ clockSolved: false, doorOpen: false });
+
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(document.fullscreenElement === gameShellRef.current);
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else if (gameShellRef.current?.requestFullscreen) await gameShellRef.current.requestFullscreen();
+    } catch {
+      // Fullscreen can be unavailable in embedded or restricted browsers.
+    }
+  };
 
   useEffect(() => {
     try {
@@ -312,9 +329,9 @@ export default function InBetweenGame() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color("#10131a");
         scene.fog = new THREE.FogExp2("#11141b", 0.035);
-        const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 100);
+        const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -322,23 +339,37 @@ export default function InBetweenGame() {
         renderer.toneMappingExposure = 1.05;
 
         scene.add(new THREE.HemisphereLight("#a9b9d1", "#29201b", 1.35));
-        const moon = new THREE.DirectionalLight("#9bb6dc", 1.5);
+        const moon = new THREE.DirectionalLight("#a8c2e5", 2.05);
         moon.position.set(-5, 9, 5);
         moon.castShadow = true;
-        moon.shadow.mapSize.set(1024, 1024);
+        moon.shadow.mapSize.set(2048, 2048);
+        moon.shadow.camera.near = 0.5;
+        moon.shadow.camera.far = 32;
+        moon.shadow.camera.left = -12;
+        moon.shadow.camera.right = 12;
+        moon.shadow.camera.top = 10;
+        moon.shadow.camera.bottom = -10;
+        moon.shadow.bias = -0.00018;
+        moon.shadow.normalBias = 0.025;
         scene.add(moon);
-        const warm = new THREE.PointLight("#e6a86c", 13, 17, 2);
+        const warm = new THREE.PointLight("#e6a86c", 18, 19, 2);
         warm.position.set(0, 3.4, -5);
         scene.add(warm);
+        const candleGlow = new THREE.PointLight("#d99558", 5.5, 8, 2);
+        candleGlow.position.set(-2.8, 2.1, -2.6);
+        scene.add(candleGlow);
+        const coolFill = new THREE.PointLight("#829fc7", 4.5, 13, 2);
+        coolFill.position.set(5.8, 2.8, 1.8);
+        scene.add(coolFill);
 
         const mat = (color: string, roughness = 0.82, metalness = 0) =>
           new THREE.MeshStandardMaterial({ color, roughness, metalness });
-        const floorMat = mat("#34343a");
-        const wallMat = mat("#4a4542");
-        const darkWood = mat("#211a18");
-        const wood = mat("#51382b");
-        const brass = mat("#9b7444", 0.35, 0.7);
-        const paper = mat("#d7c8a7");
+        const floorMat = mat("#34343a", 0.94);
+        const wallMat = mat("#4a4542", 0.96);
+        const darkWood = mat("#211a18", 0.72);
+        const wood = mat("#51382b", 0.68);
+        const brass = mat("#9b7444", 0.3, 0.62);
+        const paper = mat("#d7c8a7", 0.98);
         const makeBox = (w: number, h: number, d: number, material: ThreeModule["MeshStandardMaterial"], x: number, y: number, z: number) => {
           const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
           mesh.position.set(x, y, z);
@@ -734,11 +765,14 @@ export default function InBetweenGame() {
   }
 
   return (
-    <section className="ib-page ib-game-page">
+    <section ref={gameShellRef} className="ib-page ib-game-page">
       <header className="ib-game-header">
         <div><p className="ib-kicker">MIUMI ORIGINAL · CHAPTER 01</p><h1>THE IN-BETWEEN</h1></div>
         <div className="ib-chapter-label"><span /> THE SILENT LIBRARY</div>
-        <button className="ib-quiet-button" onClick={reset}>RESET STORY</button>
+        <div className="ib-game-actions">
+          <button className="ib-quiet-button ib-fullscreen-button" onClick={toggleFullscreen} aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}>{isFullscreen ? "EXIT FULL SCREEN" : "FULL SCREEN ⛶"}</button>
+          <button className="ib-quiet-button" onClick={reset}>RESET STORY</button>
+        </div>
       </header>
       <div className="ib-game-layout">
         <div className="ib-world">
