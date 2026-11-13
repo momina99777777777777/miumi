@@ -1313,7 +1313,6 @@ export default function InBetweenGame() {
             nextOverheardAt=time+24;
           }
           fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
-          fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
           memoryShard.rotation.y += delta*0.8; memoryShard.rotation.x += delta*0.25;
           warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
           candleGlow.intensity = 5.5 + Math.sin(time * 5.2) * 0.75;
