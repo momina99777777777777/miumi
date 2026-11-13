@@ -702,7 +702,7 @@ export default function InBetweenGame() {
         const strapMat = mat("#59402e", 0.78);
         const strap = makePart(new THREE.CapsuleGeometry(0.025, 0.78, 4, 8), strapMat, 0.24, 1.28, 0.11);
         strap.rotation.z = -0.48;
-        const satchelFlap = makePart(new THREE.BoxGeometry(0.31, 0.13, 0.025), beltMat, 0, 0.105, -0.095, satchel);
+        const satchelFlap = makePart(new THREE.BoxGeometry(0.31, 0.13, 0.025), strapMat, 0, 0.105, -0.095, satchel);
         satchelFlap.rotation.x = -0.08;
         makePart(new THREE.SphereGeometry(0.235, 32, 28), skinMat, 0, 1.82, 0);
         const facePlate = makePart(new THREE.SphereGeometry(0.19, 28, 20, 0, Math.PI, 0.15, Math.PI * 0.7), skinMat, 0, 1.81, -0.035);
