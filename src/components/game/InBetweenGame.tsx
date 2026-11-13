@@ -834,7 +834,7 @@ export default function InBetweenGame() {
         <div className="ib-world">
           <canvas ref={canvasRef} aria-label="Third-person 3D view of the Silent Library" />
           <div className="ib-world-top"><span>✦ THE SILENT LIBRARY</span><span>CHAPTER 01 / 04</span></div>
-          <div className="ib-world-bottom"><span>W A S D / ARROW KEYS TO MOVE</span><span>E · INTERACT</span></div>
+          <div className="ib-world-bottom"><span>W A S D TO MOVE · MOVE MOUSE TO LOOK</span><span>CLICK WORLD TO CAPTURE MOUSE · E TO INTERACT · ESC TO RELEASE</span></div>
           {nearbyPrompt && <div className="ib-interaction-prompt">{nearbyPrompt}</div>}
           {loading && <div className="ib-loading"><span className="ib-loader" />Preparing the library…</div>}
           {engineError && <div className="ib-error">{engineError}</div>}
