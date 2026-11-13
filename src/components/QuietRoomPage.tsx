@@ -56,7 +56,7 @@ export default function QuietRoomPage() {
           throw new Error("Quiet Room received an invalid response. Please try again.");
         }
       } else {
-        throw new Error("Quiet Room's API endpoint returned a webpage instead of JSON. The latest Cloudflare Pages deployment may not include the Quiet Room Function yet. Please redeploy the latest main-branch commit.");
+        throw new Error("Quiet Room's API endpoint returned a webpage instead of JSON. The latest Miumi Worker may not include the API route yet. Check that the newest Cloudflare Pages deployment from the main branch has finished successfully.");
       }
       if (!response.ok) throw new Error(data?.error || "The companion couldn't respond just now.");
       const reply = String(data.reply || "").trim();
