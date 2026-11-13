@@ -35,10 +35,10 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "miumi ♡ — your little friendship world" },
-      { name: "description", content: "A dreamy little world of bestie quizzes, daily questions, and sweet discoveries." },
-      { property: "og:title", content: "miumi ♡ — your little friendship world" },
-      { property: "og:description", content: "Friendship, fun and little discoveries ♡" },
+      { title: "Miumi — Your world, all in one place." },
+      { name: "description", content: "Miumi is your all-in-one digital space to create, explore, play, plan, and keep what matters." },
+      { property: "og:title", content: "Miumi — Your world, all in one place." },
+      { property: "og:description", content: "Create, explore, play, plan, and keep what matters — all in one place." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -216,7 +216,7 @@ function MiumiHome() {
           <button className="wordmark" onClick={() => navigate("home")} aria-label="miumi home">
             <span className="wordmark-bow">୨୧</span> miumi <span className="wordmark-heart">♡</span>
           </button>
-          <span className="topbar-note"><Sparkles size={14} /> a little world for besties</span>
+          <span className="topbar-note"><Sparkles size={14} /> Your world, all in one place.</span>
           <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
         </header>
 
