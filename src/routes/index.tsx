@@ -21,6 +21,7 @@ import {
   Landmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import InBetweenGame from "@/components/game/InBetweenGame";
 
 import {
   calculateScore,
@@ -57,7 +58,8 @@ type Page =
   | "dedicate"
   | "games"
   | "photo-studio"
-  | "museum";
+  | "museum"
+  | "in-between";
 type CompletedQuiz = {
   quizId: QuizId;
   answers: number[];
@@ -266,6 +268,13 @@ function MiumiHome() {
   />
 
   <NavButton
+    active={page === "in-between"}
+    icon={<Sparkles />}
+    label="THE IN-BETWEEN"
+    onClick={() => navigate("in-between")}
+  />
+
+  <NavButton
     active={page === "photo-studio"}
     icon={<ImagePlus />}
     label="Photo Studio"
@@ -410,6 +419,7 @@ function MiumiHome() {
 
            
 {page === "games" && <PlayroomPage />}
+            {page === "in-between" && <InBetweenGame />}
             {page === "photo-studio" && <PhotoStudioPage onNotice={setNotice} />}
             {page === "museum" && <MiumiMuseumPage onNotice={setNotice} />}
 
@@ -425,6 +435,7 @@ function MiumiHome() {
   <NavButton active={page === "duo"} icon={<Users />} label="Duo" onClick={() => navigate("duo")} />
   <NavButton active={page === "dedicate"} icon={<Gift />} label="Create" onClick={() => navigate("dedicate")} />
   <NavButton active={page === "games"} icon={<Gamepad2 />} label="Playroom" onClick={() => navigate("games")} />
+  <NavButton active={page === "in-between"} icon={<Sparkles />} label="In-Between" onClick={() => navigate("in-between")} />
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
 </nav>
