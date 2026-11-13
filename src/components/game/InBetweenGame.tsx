@@ -406,6 +406,17 @@ export default function InBetweenGame() {
         archiveGlow.position.set(0, 3.1, -23); scene.add(archiveGlow);
         makeBox(0.7, 1.3, 0.45, mat("#4a3b32"), -3.6, 0.65, -23.2);
         makeBox(0.7, 1.3, 0.45, mat("#3b4651"), 3.6, 0.65, -23.2);
+        // Archive stacks make the second room visually distinct from the library.
+        for (const side of [-1, 1]) {
+          makeBox(0.55, 4.3, 3.8, darkWood, side * 6.65, 2.15, -20.4);
+          for (let level = 0; level < 4; level++) {
+            makeBox(0.62, 0.09, 3.7, wood, side * 6.65, 0.65 + level * 1.05, -20.4);
+            for (let bookIndex = 0; bookIndex < 10; bookIndex++) {
+              const archiveBook = makeBox(0.1, 0.48 + (bookIndex % 3) * 0.08, 0.2, mat(["#66504a", "#4b5a63", "#8a7657", "#51485d"][bookIndex % 4]), side * 6.65, 0.94 + level * 1.05, -21.95 + bookIndex * 0.34);
+              archiveBook.rotation.z = (bookIndex % 2 ? 1 : -1) * 0.025;
+            }
+          }
+        }
 
         // Tall library shelves, filled with individually shaded book spines.
         for (const side of [-1, 1]) {
@@ -582,7 +593,10 @@ export default function InBetweenGame() {
           cameraYaw -= event.movementX * 0.0024;
           cameraPitch = THREE.MathUtils.clamp(cameraPitch + event.movementY * 0.0018, -0.12, 0.62);
         };
-        const onTouchStart = (event: PointerEvent) => { if (event.pointerType === "touch") { touchLookActive = true; lastTouchX = event.clientX; lastTouchY = event.clientY; } };
+        const onTouchStart = (event: PointerEvent) => {
+          if (event.pointerType !== "touch" || (event.target as HTMLElement)?.closest?.(".ib-mobile-controls")) return;
+          touchLookActive = true; lastTouchX = event.clientX; lastTouchY = event.clientY;
+        };
         const onTouchMove = (event: PointerEvent) => {
           if (!touchLookActive || event.pointerType !== "touch") return;
           cameraYaw -= (event.clientX-lastTouchX)*0.006;
