@@ -81,6 +81,7 @@ const dailyQuestions = [
 const quizById = (id: QuizId | null) => quizzes.find((quiz) => quiz.id === id) ?? null;
 
 function MiumiHome() {
+  const [showBrandSplash, setShowBrandSplash] = useState(true);
     useEffect(() => {
     const handleMagicClick = (event: MouseEvent) => {
       const particles = ["💗", "✨", "🌸", "⭐", "🦋"];
@@ -107,6 +108,10 @@ function MiumiHome() {
     };
   }, []);
   const [page, setPage] = useState<Page>("home");
+  useEffect(() => {
+    const splashTimer = window.setTimeout(() => setShowBrandSplash(false), 1450);
+    return () => window.clearTimeout(splashTimer);
+  }, []);
   const [activeQuizId, setActiveQuizId] = useState<QuizId | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -211,6 +216,15 @@ function MiumiHome() {
 
   return (
     <main className="miumi-app">
+      {showBrandSplash && (
+        <div className="miumi-brand-splash" role="status" aria-label="Loading Miumi">
+          <div className="miumi-brand-splash-glow" />
+          <img src="/brand/miumi_infinite_window_symbol_transparent.png" alt="" className="miumi-brand-splash-symbol" />
+          <img src="/brand/miumi_horizontal_logo_transparent.png" alt="Miumi" className="miumi-brand-splash-wordmark" />
+          <p>Your world, all in one place.</p>
+          <div className="miumi-brand-splash-loader"><span /></div>
+        </div>
+      )}
       <div className="page-wrap">
         <header className="topbar">
           <button className="wordmark" onClick={() => navigate("home")} aria-label="Miumi home">
