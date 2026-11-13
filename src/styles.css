@@ -4305,3 +4305,73 @@ button:hover::after {
 @keyframes miumi-splash-progress{from{transform:translateX(-110%)}to{transform:translateX(280%)}}
 @keyframes miumi-splash-out{to{opacity:0;visibility:hidden;pointer-events:none}}
 @media(prefers-reduced-motion:reduce){.miumi-brand-splash,.miumi-brand-splash-symbol,.miumi-brand-splash-glow,.miumi-brand-splash-loader span{animation:none}.miumi-brand-splash{opacity:0;visibility:hidden;pointer-events:none}}
+
+
+/* The Quiet Room */
+.quiet-page { padding: 10px 0 34px; }
+.quiet-heading { text-align:center; margin:8px auto 26px; max-width:650px; }
+.quiet-heading h1 { margin:5px 0 8px; color:#80536f; font-family:var(--font-display); font-size:clamp(30px,4vw,43px); }
+.quiet-heading > p:last-child { color:#927d8b; margin:0; }
+.quiet-room-shell { display:grid; grid-template-columns:minmax(0,1.03fr) minmax(340px,.97fr); overflow:hidden; border:1px solid #ead9e3; border-radius:28px; background:#fffafc; box-shadow:0 22px 65px rgba(133,83,112,.11); min-height:620px; }
+.quiet-room-scene { min-height:620px; position:relative; overflow:hidden; background:linear-gradient(180deg,#f5e8f0 0%,#f7e9e9 54%,#ead7df 100%); }
+.quiet-room-scene:before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 34%,rgba(255,255,255,.65),transparent 48%),linear-gradient(90deg,rgba(255,255,255,.17),transparent 45%,rgba(255,255,255,.14)); }
+.quiet-window { position:absolute; top:9%; left:12%; width:43%; height:39%; border:9px solid #fff8fb; border-bottom-width:13px; border-radius:90px 90px 9px 9px; background:linear-gradient(180deg,#d7d9ee,#f8dce7 70%,#f7e7df); box-shadow:0 8px 24px #a77c9630,inset 0 0 0 2px #dfc8d6; overflow:hidden; }
+.quiet-window:before,.quiet-window:after { content:""; position:absolute; background:#fff8fb; opacity:.85; }
+.quiet-window:before { width:7px; height:100%; left:50%; top:0; }.quiet-window:after { height:7px; width:100%; top:54%; left:0; }
+.quiet-window span { position:absolute; width:110px;height:110px;border-radius:50%;background:#fff4d9;right:14%;top:12%;filter:blur(1px); }
+.quiet-window i,.quiet-window b { position:absolute; bottom:-12px; width:45%; height:45%; background:#b7b5c9; clip-path:polygon(0 100%,50% 0,100% 100%); opacity:.55; }
+.quiet-window i { left:-3%; }.quiet-window b { right:-3%; background:#c9aabd; }
+.quiet-plant { position:absolute; z-index:2; bottom:25%; left:5%; width:65px;height:150px; }
+.quiet-plant i { position:absolute; width:25px;height:48px; border-radius:100% 0 100% 0; background:linear-gradient(135deg,#a6b9a4,#728f7b); transform:rotate(-34deg); bottom:50px; left:18px; }
+.quiet-plant i:nth-child(2){transform:rotate(35deg);left:35px;bottom:78px;}.quiet-plant i:nth-child(3){transform:rotate(-58deg);left:0;bottom:93px;}
+.quiet-plant b { position:absolute;bottom:0;left:10px;width:48px;height:47px;background:#c78da7;border-radius:7px 7px 17px 17px;box-shadow:inset 0 6px #e5b7ca; }
+.quiet-lamp { position:absolute; z-index:3; right:8%;bottom:35%;width:56px;height:150px; }
+.quiet-lamp i { display:block; margin:auto;width:54px;height:52px;background:#fff1d5;clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);filter:drop-shadow(0 0 18px #fff2c6); }
+.quiet-lamp b { display:block;margin:0 auto;width:5px;height:92px;background:#a88c9c; }
+.quiet-sofa { position:absolute; z-index:4; width:76%; height:260px; bottom:17%; left:12%; }
+.quiet-sofa-back { position:absolute; left:0;right:0;top:38px;height:150px;border-radius:48px 48px 28px 28px;background:linear-gradient(145deg,#d5a9bd,#b77f9c);box-shadow:inset 0 12px 20px #f4d9e6a8,0 20px 28px #90647c35; }
+.quiet-sofa-seat { position:absolute;left:8px;right:8px;top:145px;height:74px;border-radius:25px;background:linear-gradient(180deg,#e6c3d2,#c997ae);box-shadow:inset 0 7px 12px #fff7; }
+.quiet-sofa-base { position:absolute;left:17px;right:17px;top:195px;height:37px;border-radius:8px 8px 22px 22px;background:#b77f9a; }
+.quiet-sofa-leg { position:absolute;top:225px;width:9px;height:28px;background:#8b6878;border-radius:0 0 5px 5px; }.quiet-leg-left{left:35px}.quiet-leg-right{right:35px}
+.quiet-cushion { position:absolute;z-index:2;top:91px;width:82px;height:90px;border-radius:23px;background:linear-gradient(145deg,#f7e7ed,#e4c4d5);box-shadow:inset 0 0 0 2px #fff7; }
+.quiet-cushion-one{left:18px;transform:rotate(-9deg)}.quiet-cushion-two{right:18px;transform:rotate(9deg)}
+.quiet-character { position:absolute;z-index:3;left:50%;top:-8px;transform:translateX(-50%);width:150px;height:210px;animation:quiet-breathe 4.5s ease-in-out infinite; }
+.quiet-head { position:absolute;z-index:3;top:0;left:43px;width:65px;height:78px;border-radius:46% 46% 45% 45%;background:linear-gradient(120deg,#f1c6ae,#d99d8c);box-shadow:inset -8px -2px 0 #c88c80; }
+.quiet-hair { position:absolute;z-index:4;top:-8px;left:37px;width:78px;height:91px;border-radius:48% 48% 38% 42%;background:linear-gradient(110deg,#72505c,#493943); }
+.quiet-head:before {content:"";position:absolute;z-index:2;left:5px;top:12px;width:55px;height:60px;border-radius:48%;background:linear-gradient(120deg,#f4d0b9,#dca18e);}
+.quiet-head i,.quiet-head b {position:absolute;z-index:4;top:37px;width:5px;height:3px;border-radius:50%;background:#59424b;}.quiet-head i{left:17px}.quiet-head b{right:17px}
+.quiet-neck {position:absolute;z-index:2;top:67px;left:67px;width:20px;height:28px;background:#dca18e;}
+.quiet-body {position:absolute;z-index:2;top:83px;left:26px;width:105px;height:111px;border-radius:43px 43px 20px 20px;background:linear-gradient(110deg,#f4e9ec,#d9bdce);box-shadow:inset -9px 0 #c9a9bf;}
+.quiet-body i {position:absolute;left:43px;top:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:23px solid #fff8;}
+.quiet-body b {position:absolute;left:48px;top:3px;width:8px;height:8px;background:#c58da9;transform:rotate(45deg);}
+.quiet-arm {position:absolute;z-index:4;top:111px;width:24px;height:82px;border-radius:20px;background:linear-gradient(90deg,#e9c0aa,#d49a88);}
+.quiet-arm-left{left:23px;transform:rotate(18deg)}.quiet-arm-right{right:20px;transform:rotate(-18deg)}
+.quiet-rug {position:absolute;bottom:7%;left:17%;width:66%;height:54px;border-radius:50%;background:#d7b9c9;opacity:.6;filter:blur(1px);}
+.quiet-table {position:absolute;z-index:5;bottom:10%;left:43%;width:112px;height:42px;border-radius:50%;background:linear-gradient(180deg,#d8b7c6,#b98ca5);box-shadow:0 12px 0 -5px #9d778c,0 18px 20px #805d7228;}
+.quiet-table i {position:absolute;left:49px;top:-27px;width:17px;height:29px;border-radius:50% 50% 35% 35%;background:#b5c7a8;}
+.quiet-scene-caption {position:absolute;bottom:3%;left:0;right:0;text-align:center;color:#886d7c;font-size:12px;letter-spacing:.04em;}
+.quiet-speaking-dot {display:inline-block;width:7px;height:7px;border-radius:50%;background:#c9a9ba;margin-right:6px;}.quiet-speaking-dot.active{background:#7eaa8a;box-shadow:0 0 0 5px #7eaa8a30;animation:quiet-pulse 1.4s infinite;}
+.quiet-chat-panel {display:flex;flex-direction:column;min-height:620px;background:#fffdfd;padding:22px;min-width:0;}
+.quiet-chat-top {display:flex;align-items:center;gap:12px;padding-bottom:17px;border-bottom:1px solid #f0e5eb;}
+.quiet-avatar {width:42px;height:42px;display:grid;place-items:center;border-radius:15px;background:#f6e8ef;color:#a66e8b;}
+.quiet-chat-top strong,.quiet-chat-top span {display:block}.quiet-chat-top strong{font-size:14px;color:#705268}.quiet-chat-top span{font-size:11px;color:#a18d9b;margin-top:3px;}
+.quiet-sound-toggle {margin-left:auto;border:1px solid #f0e3eb;background:#fff8fb;color:#a66e8b;border-radius:12px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;}
+.quiet-messages {flex:1;min-height:250px;max-height:390px;overflow-y:auto;padding:18px 2px;display:flex;flex-direction:column;gap:13px;}
+.quiet-message {max-width:91%;border-radius:18px;padding:12px 14px;box-shadow:0 4px 14px #8c61750c;}
+.quiet-message p{margin:0;font-size:13px;line-height:1.65;color:#6d5967;white-space:pre-wrap;}.quiet-message-companion{align-self:flex-start;background:#f8eef3;border-bottom-left-radius:5px;}.quiet-message-you{align-self:flex-end;background:#eeeaf7;border-bottom-right-radius:5px;}
+.quiet-message-label{display:block;font-size:9px;letter-spacing:.1em;color:#a57891;font-weight:800;margin-bottom:5px;}
+.quiet-replay{display:inline-flex;align-items:center;gap:5px;border:0;background:none;color:#a57891;font-size:11px;margin-top:8px;padding:0;cursor:pointer;}
+.quiet-composer {border:1px solid #eadce5;border-radius:18px;padding:10px;background:#fff;box-shadow:0 5px 18px #8c61750a;}
+.quiet-composer textarea{width:100%;resize:vertical;min-height:58px;border:0;outline:0;background:transparent;color:#695365;font:inherit;font-size:13px;padding:5px;}
+.quiet-composer textarea::placeholder{color:#b4a3af;}
+.quiet-composer-actions{display:flex;justify-content:space-between;align-items:center;margin-top:7px;}
+.quiet-mic-button,.quiet-send-button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;cursor:pointer;}
+.quiet-mic-button{background:#f8edf3;color:#a36c89;}.quiet-mic-button.is-listening{background:#fbe4e7;color:#b64f68;animation:quiet-pulse 1.3s infinite;}
+.quiet-send-button{background:#b87998;color:white;}.quiet-send-button:disabled{opacity:.45;cursor:not-allowed;}
+.quiet-voice-notice{font-size:11px;line-height:1.5;color:#99778d;margin:0 0 8px;}
+.quiet-safety-note{display:flex;gap:8px;align-items:flex-start;color:#9b8995;font-size:10px;line-height:1.5;margin-top:14px;}.quiet-safety-note svg{flex:none;color:#a77c96;margin-top:1px;}
+.quiet-bottom-note{display:flex;justify-content:center;align-items:center;gap:8px;color:#9a8794;font-size:11px;margin:18px auto 0;text-align:center;}
+@keyframes quiet-breathe{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-3px)}}
+@keyframes quiet-pulse{0%,100%{box-shadow:0 0 0 0 #c77e9b22}50%{box-shadow:0 0 0 6px #c77e9b22}}
+@media(max-width:900px){.quiet-room-shell{grid-template-columns:1fr}.quiet-room-scene{min-height:470px}.quiet-chat-panel{min-height:540px}.quiet-sofa{bottom:14%;}.quiet-window{height:42%;}}
+@media(max-width:560px){.quiet-heading{margin-bottom:18px}.quiet-room-shell{border-radius:21px}.quiet-room-scene{min-height:390px}.quiet-sofa{width:88%;left:6%;transform:scale(.86);transform-origin:bottom center;bottom:12%;}.quiet-window{left:9%;width:52%;height:38%;}.quiet-plant{left:1%;transform:scale(.8);transform-origin:bottom}.quiet-lamp{right:3%;transform:scale(.8);transform-origin:bottom}.quiet-chat-panel{padding:15px;min-height:520px}.quiet-messages{min-height:230px}.quiet-safety-note{font-size:9px}}
