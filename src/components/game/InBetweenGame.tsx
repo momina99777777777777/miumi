@@ -304,6 +304,8 @@ export default function InBetweenGame() {
           scarfPivot.rotation.x = breeze * 0.035;
           scarfPivot.rotation.z = 0.12 + breeze * 0.025;
           coatTail.rotation.x = Math.sin(elapsed * 2.0) * 0.035;
+          coatSkirt.rotation.z = Math.sin(elapsed * 1.4) * 0.012;
+          satchel.rotation.z = Math.sin(elapsed * 1.8) * 0.035;
           limbs[0].rotation.x = Math.sin(elapsed * 1.2) * 0.025;
           limbs[1].rotation.x = -Math.sin(elapsed * 1.2) * 0.025;
           renderer.render(scene, camera);
@@ -847,6 +849,8 @@ export default function InBetweenGame() {
             scarfPivot.rotation.x = breeze * (moving ? 0.075 : 0.03);
             scarfPivot.rotation.z = 0.12 + breeze * 0.025;
             coatTail.rotation.x = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 2)) * (moving ? 0.085 : 0.025);
+            coatSkirt.rotation.z = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 1.5)) * (moving ? 0.045 : 0.012);
+            satchel.rotation.z = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 1.8)) * (moving ? 0.09 : 0.025);
             // Gentle counter-sway and vertical foot rhythm keep the gait from
             // looking like a rigid sliding mannequin.
             player.position.y = moving ? Math.abs(Math.sin(clockTimer.elapsedTime * 9)) * 0.045 : Math.sin(clockTimer.elapsedTime * 1.7) * 0.012;
