@@ -580,6 +580,7 @@ export default function InBetweenGame() {
         townBuilding(10, -61, 6, 7.5, "#49434b");
         townBuilding(-10, -75, 6, 8.2, "#39484a");
         townBuilding(10, -78, 6.5, 6.8, "#51433d");
+        const stoneForTown = mat("#77716a",0.96);
         // Raised pavements, kerbs and a worn central lane give the square scale.
         for (const side of [-1,1]) {
           makeBox(2.25,0.16,64,mat("#77736d",0.98),side*5.15,-0.02,-59);
@@ -605,7 +606,6 @@ export default function InBetweenGame() {
           }
           makeBox(0.72,0.035,0.28,iron,0,0.0,z+2.1);
         }
-        const stoneForTown = mat("#77716a",0.96);
         // Scattered wet patches catch lantern reflections on the old road.
         for(let i=0;i<12;i++){
           const puddle=new THREE.Mesh(new THREE.CircleGeometry(0.28+(i%3)*0.13,16),new THREE.MeshStandardMaterial({color:"#60717a",roughness:0.16,metalness:0.22,transparent:true,opacity:0.42}));
