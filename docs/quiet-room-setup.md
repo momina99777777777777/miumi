@@ -2,25 +2,26 @@
 
 The Quiet Room is a supportive AI conversation feature, not a therapy or crisis service.
 
-## How the API is routed
+## Connect Workers AI using Cloudflare dashboard
 
-Miumi's TanStack Start app uses a custom Cloudflare Worker entry point in `src/server.ts`. Cloudflare Pages advanced mode ignores the separate `/functions` directory whenever the build outputs a `_worker.js` file. For that reason, the live `/api/quiet-room` endpoint is handled directly by `src/server.ts`, before normal requests are forwarded to TanStack Start.
+Miumi routes `/api/quiet-room` through its main Cloudflare Worker entry point in `src/server.ts`. The handler expects a Cloudflare Workers AI binding named `AI`.
 
-The older `functions/api/quiet-room.ts` file remains as a fallback for deployments that use Pages' standard Functions routing instead of advanced mode.
+The repository no longer includes a Wrangler configuration file. This returns Pages runtime configuration management to the Cloudflare dashboard so the binding can be added there.
 
-## Connect the free Cloudflare AI service
+1. Wait until the latest Git-integrated deployment from the `main` branch completes.
+2. Open the Pages project in Cloudflare and go to **Settings → Bindings**.
+3. Select the **Production** environment.
+4. Choose **Add → Workers AI**.
+5. Set the variable name to exactly `AI`.
+6. Save the binding.
+7. Repeat for **Preview** only if you want preview deployments to use AI.
+8. Redeploy the latest production deployment so the binding becomes available at runtime.
 
-Miumi's Cloudflare Pages project is configured in `wrangler.jsonc`. That file keeps the existing Pages output directory (`./dist`), the `nodejs_compat` runtime flag, and the Workers AI binding named `AI`.
+Cloudflare documentation: https://developers.cloudflare.com/pages/functions/bindings/#workers-ai
 
-1. The `wrangler.jsonc` file is committed to the `main` branch and declares the `AI` binding at the top level, as well as explicitly under both `env.production` and `env.preview`.
-2. Cloudflare Pages should build and deploy the latest `main` commit.
-3. The API checks for `env.AI` and calls Cloudflare Workers AI using `@cf/zai-org/glm-4.7-flash`.
+## Free usage and billing
 
-No OpenAI API key is required. A GET request to `/api/quiet-room` returns a small JSON health check showing whether the binding is available.
-
-## Free usage limits
-
-Cloudflare documents a free allocation of 10,000 Neurons per day on the Workers Free plan. The daily allowance resets at 00:00 UTC. When the free allowance is exhausted, further requests fail until the reset. On the Workers Paid plan, usage above the free allocation is billed, so keep the account on the Free plan and do not enable paid billing. Some models require a paid billing method; the selected `@cf/zai-org/glm-4.7-flash` model is listed as available on the Free plan.
+Workers AI has a 10,000-Neuron daily free allocation on the Workers Free plan. Usage above this allocation requires the Workers Paid plan. Keep the account on the Free plan and do not enable paid billing. Some model choices may require a paid billing method; do not select those models.
 
 ## Current experience and privacy
 
