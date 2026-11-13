@@ -376,8 +376,9 @@ export default function InBetweenGame() {
 
         const canvas = canvasRef.current;
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color("#10131a");
-        scene.fog = new THREE.FogExp2("#11141b", 0.035);
+        // Bright, clear daytime atmosphere across both the library and Bellwether.
+        scene.background = new THREE.Color("#9fc9e8");
+        scene.fog = new THREE.FogExp2("#c5dff0", 0.006);
         const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -385,29 +386,32 @@ export default function InBetweenGame() {
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.05;
+        renderer.toneMappingExposure = 1.22;
 
-        scene.add(new THREE.HemisphereLight("#a9b9d1", "#29201b", 1.35));
-        const moon = new THREE.DirectionalLight("#a8c2e5", 2.05);
-        moon.position.set(-5, 9, 5);
-        moon.castShadow = true;
-        moon.shadow.mapSize.set(2048, 2048);
-        moon.shadow.camera.near = 0.5;
-        moon.shadow.camera.far = 32;
-        moon.shadow.camera.left = -12;
-        moon.shadow.camera.right = 12;
-        moon.shadow.camera.top = 10;
-        moon.shadow.camera.bottom = -10;
-        moon.shadow.bias = -0.00018;
-        moon.shadow.normalBias = 0.025;
-        scene.add(moon);
-        const warm = new THREE.PointLight("#e6a86c", 18, 19, 2);
+        scene.add(new THREE.HemisphereLight("#e6f5ff", "#777b72", 2.35));
+        const sun = new THREE.DirectionalLight("#fff2d6", 3.6);
+        sun.position.set(-8, 18, 7);
+        sun.castShadow = true;
+        sun.shadow.mapSize.set(2048, 2048);
+        sun.shadow.camera.near = 0.5;
+        sun.shadow.camera.far = 80;
+        sun.shadow.camera.left = -32;
+        sun.shadow.camera.right = 32;
+        sun.shadow.camera.top = 28;
+        sun.shadow.camera.bottom = -28;
+        sun.shadow.bias = -0.00018;
+        sun.shadow.normalBias = 0.025;
+        scene.add(sun);
+        const daylightFill = new THREE.DirectionalLight("#c5e4ff", 1.35);
+        daylightFill.position.set(10, 9, -18);
+        scene.add(daylightFill);
+        const warm = new THREE.PointLight("#f2c58e", 4.8, 19, 2);
         warm.position.set(0, 3.4, -5);
         scene.add(warm);
-        const candleGlow = new THREE.PointLight("#d99558", 5.5, 8, 2);
+        const candleGlow = new THREE.PointLight("#e6b77f", 1.5, 8, 2);
         candleGlow.position.set(-2.8, 2.1, -2.6);
         scene.add(candleGlow);
-        const coolFill = new THREE.PointLight("#829fc7", 4.5, 13, 2);
+        const coolFill = new THREE.PointLight("#b5d9f5", 5.5, 24, 2);
         coolFill.position.set(5.8, 2.8, 1.8);
         scene.add(coolFill);
 
@@ -483,11 +487,11 @@ export default function InBetweenGame() {
         windowArch.rotation.set(Math.PI / 2, Math.PI / 2, 0);
         windowArch.position.set(-7.68, 5.22, -6.3);
         scene.add(windowArch);
-        const windowGlow = new THREE.PointLight("#91a9d2", 8, 12, 2);
+        const windowGlow = new THREE.PointLight("#ffe7bd", 2.8, 12, 2);
         windowGlow.position.set(-6.7, 3.8, -6.3);
         scene.add(windowGlow);
         const windowBeamMaterial = new THREE.MeshBasicMaterial({
-          color: "#9bb7df", transparent: true, opacity: 0.045,
+          color: "#fff0d5", transparent: true, opacity: 0.025,
           side: THREE.DoubleSide, depthWrite: false
         });
         const windowBeam = new THREE.Mesh(new THREE.ConeGeometry(1.25, 5.2, 32, 1, true), windowBeamMaterial);
@@ -529,7 +533,7 @@ export default function InBetweenGame() {
           const roofMat = mat("#292b31", 0.88, 0.04);
           const stone = mat("#77716a", 0.96);
           const glass = new THREE.MeshStandardMaterial({color:"#8fa9b2",roughness:0.22,metalness:0.12,emissive:"#24343a",emissiveIntensity:0.18});
-          const warmGlass = new THREE.MeshStandardMaterial({color:"#e6b879",roughness:0.28,emissive:"#a86632",emissiveIntensity:0.28});
+          const warmGlass = new THREE.MeshStandardMaterial({color:"#f2d8a8",roughness:0.28,emissive:"#b78b54",emissiveIntensity:0.12});
           makeBox(w, h, 5.8, facade, x, h / 2 - 0.08, z);
           makeBox(w + 0.5, 0.34, 6.15, stone, x, 0.02, z);
           makeBox(w + 0.38, 0.2, 6.12, darkWood, x, h + 0.02, z);
@@ -616,7 +620,7 @@ export default function InBetweenGame() {
         for (const z of [-34, -46, -58, -70, -82]) for (const x of [-3.7, 3.7]) {
           makeBox(0.12, 3.4, 0.12, darkWood, x, 1.7, z);
           makeBox(0.52, 0.12, 0.52, brass, x, 3.45, z);
-          const glow = new THREE.PointLight("#e8b978", 2.4, 8, 2);
+          const glow = new THREE.PointLight("#e8b978", 0.35, 5, 2);
           glow.position.set(x, 3.2, z); scene.add(glow);
         }
         const fountain = new THREE.Mesh(new THREE.CylinderGeometry(2, 2.25, 0.42, 32), mat("#68696b", 0.58));
@@ -1314,11 +1318,11 @@ export default function InBetweenGame() {
           }
           fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
           memoryShard.rotation.y += delta*0.8; memoryShard.rotation.x += delta*0.25;
-          warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
-          candleGlow.intensity = 5.5 + Math.sin(time * 5.2) * 0.75;
-          chandelierLight.intensity = 10 + Math.sin(time * 1.8) * 0.55;
-          windowGlow.intensity = 7.5 + Math.sin(time * 1.35) * 0.65;
-          windowBeamMaterial.opacity = 0.04 + Math.sin(time * 0.8) * 0.006;
+          warm.intensity = 4.8 + Math.sin(time * 2.1) * 0.18;
+          candleGlow.intensity = 1.5 + Math.sin(time * 5.2) * 0.12;
+          chandelierLight.intensity = 2.2 + Math.sin(time * 1.8) * 0.12;
+          windowGlow.intensity = 2.8 + Math.sin(time * 1.35) * 0.16;
+          windowBeamMaterial.opacity = 0.025 + Math.sin(time * 0.8) * 0.003;
           chandelier.rotation.z = Math.sin(time * 0.55) * 0.018;
           pagePivot.rotation.y = -0.15 + Math.sin(time * 0.8) * 0.09;
           const dust = dustGeometry.attributes.position;
