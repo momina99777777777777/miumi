@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Mic, MicOff, Send, Volume2, VolumeX, ShieldCheck } from "lucide-react";
+import { MessageCircle, Mic, MicOff, Send, Volume2, VolumeX, ShieldCheck, Sparkles } from "lucide-react";
+import QuietRoomAvatar from "@/components/QuietRoomAvatar";
 
 type Message = { id: number; role: "companion" | "you"; text: string };
 
@@ -100,30 +101,10 @@ export default function QuietRoomPage() {
         <p>A calm space to talk, reflect, and find your next small step.</p>
       </div>
       <div className="quiet-room-shell">
-        <div className="quiet-room-scene" aria-label="A softly animated companion seated on a sofa in a peaceful room">
-          <div className="quiet-window"><span /><i /><b /></div>
-          <div className="quiet-plant"><i /><i /><i /><b /></div>
-          <div className="quiet-lamp"><i /><b /></div>
-          <div className="quiet-sofa">
-            <div className="quiet-sofa-back" />
-            <div className="quiet-cushion quiet-cushion-one" />
-            <div className="quiet-cushion quiet-cushion-two" />
-            <div className={speaking ? "quiet-character is-speaking" : "quiet-character"}>
-              <div className="quiet-hair" />
-              <div className="quiet-head"><i /><b /></div>
-              <div className="quiet-neck" />
-              <div className="quiet-body"><i /><b /></div>
-              <div className="quiet-arm quiet-arm-left" />
-              <div className="quiet-arm quiet-arm-right" />
-            </div>
-            <div className="quiet-sofa-seat" />
-            <div className="quiet-sofa-base" />
-            <div className="quiet-sofa-leg quiet-leg-left" />
-            <div className="quiet-sofa-leg quiet-leg-right" />
-          </div>
-          <div className="quiet-table"><i /></div>
-          <div className="quiet-rug" />
+        <div className="quiet-room-scene quiet-room-3d-scene">
+          <QuietRoomAvatar speaking={speaking} />
           <div className="quiet-scene-caption"><span className={speaking ? "quiet-speaking-dot active" : "quiet-speaking-dot"} />{speaking ? " Your companion is speaking" : " A moment just for you"}</div>
+          <div className="quiet-scene-tag"><Sparkles size={13} /> YOUR LITTLE SANCTUARY</div>
         </div>
         <div className="quiet-chat-panel">
           <div className="quiet-chat-top">
