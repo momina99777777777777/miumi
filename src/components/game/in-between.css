@@ -52,3 +52,10 @@
   .ib-game-page:fullscreen .ib-side-section>p:not(.ib-side-label),.ib-game-page:fullscreen .ib-journal-item small{font-size:9px}
   .ib-game-page:fullscreen .ib-game-footer{font-size:7px;padding-top:6px}
 }
+
+
+/* Mouse-look and world exploration affordances */
+.ib-world canvas{cursor:crosshair;touch-action:pan-y}
+.ib-world:has(canvas:active) canvas{cursor:grabbing}
+.ib-world-bottom{font-size:9px;gap:14px}
+@media(max-width:700px){.ib-world-bottom{font-size:7px;letter-spacing:.08em}.ib-world-bottom span:last-child{text-align:right}}
