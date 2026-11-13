@@ -81,18 +81,13 @@ async function handleQuietRoomApi(request: Request, rawEnv: unknown): Promise<Re
       ok: true,
       service: "miumi-quiet-room",
       configured: Boolean(env.AI),
-      provider: env.AI ? "cloudflare-workers-ai" : "not-configured",
+      provider: env.AI ? "cloudflare-workers-ai" : "guided-free-mode",
+      mode: env.AI ? "ai" : "guided",
     });
   }
 
   if (request.method !== "POST") {
     return quietRoomJson({ error: "Method not allowed." }, 405);
-  }
-
-  if (!env.AI) {
-    return quietRoomJson({
-      error: "The free AI connection is not available in this deployment yet. Check the Workers AI binding named AI in wrangler.jsonc and redeploy.",
-    }, 503);
   }
 
   let payload: { message?: unknown; history?: unknown };
@@ -120,6 +115,10 @@ async function handleQuietRoomApi(request: Request, rawEnv: unknown): Promise<Re
       })
     : [];
 
+  if (!env.AI) {
+    return quietRoomJson({ reply: createGuidedReply(message, history), mode: "guided" });
+  }
+
   try {
     const result = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
       messages: [
@@ -137,13 +136,65 @@ async function handleQuietRoomApi(request: Request, rawEnv: unknown): Promise<Re
       return quietRoomJson({ error: "The companion couldn't form a response. Please try again." }, 502);
     }
 
-    return quietRoomJson({ reply });
+    return quietRoomJson({ reply, mode: "ai" });
   } catch (error) {
     console.error("Miumi Quiet Room AI request failed:", error);
-    return quietRoomJson({
-      error: "The free AI service is temporarily unavailable or its daily free allowance has been reached. Please try again later.",
-    }, 503);
+    return quietRoomJson({ reply: createGuidedReply(message, history), mode: "guided" });
   }
+}
+
+
+function createGuidedReply(message: string, history: QuietRoomMessage[]): string {
+  const text = message.toLowerCase();
+  const containsAny = (items: string[]) => items.some((item) => text.includes(item));
+
+  if (containsAny([
+    "hurt myself", "harm myself", "kill myself", "suicide", "want to die",
+    "don't want to live", "do not want to live", "end my life",
+  ])) {
+    return "I'm really sorry things feel this difficult right now. You deserve support from a real person, not to handle this alone. Please tell a trusted adult near you now, such as a parent, guardian, teacher, or another adult you trust. If you may be in immediate danger, ask them to contact local emergency help and stay with you. Are you with a trusted person right now?";
+  }
+
+  if (containsAny(["hello", "hi", "hey", "good morning", "good evening"])) {
+    return "Hi. I'm here to give you a calm space to sort through what's on your mind. How has today been for you so far?";
+  }
+
+  if (containsAny(["exam", "school", "college", "homework", "assignment", "study", "studying", "test"])) {
+    return "It sounds like studies are taking up a lot of space in your mind. You don't have to solve everything at once. What is the one study-related thing that feels most important or difficult today?";
+  }
+
+  if (containsAny(["stress", "stressed", "overwhelmed", "pressure", "too much", "can't cope"])) {
+    return "That sounds like a lot to carry at once. Let's make the next few minutes simpler: pause, let your shoulders relax, and choose just one small thing that needs your attention first. What's been creating the most pressure today?";
+  }
+
+  if (containsAny(["anxious", "anxiety", "nervous", "panic", "worried", "scared", "afraid"])) {
+    return "Feeling worried can make everything seem louder. Try noticing your feet on the floor and taking one slow, comfortable breath out. You don't need to force the feeling away. What's the main thing your mind keeps returning to?";
+  }
+
+  if (containsAny(["lonely", "alone", "no friends", "ignored", "left out", "nobody cares"])) {
+    return "Feeling left out or alone can really hurt. You deserve kindness and connection. Would you like to tell me what happened, or what you wish someone around you understood?";
+  }
+
+  if (containsAny(["sad", "upset", "crying", "hurt", "disappointed", "bad day", "feeling down"])) {
+    return "I'm sorry today feels heavy. You don't have to pretend everything is fine here. What happened that has been weighing on you the most?";
+  }
+
+  if (containsAny(["happy", "excited", "proud", "good news", "great day", "amazing"])) {
+    return "That sounds like a lovely moment. I'm glad you shared it. What part of it made you feel happiest?";
+  }
+
+  if (containsAny(["thank you", "thanks"])) {
+    return "You're welcome. And remember, you can take things one step at a time. What would feel helpful to focus on next?";
+  }
+
+  const previousCompanionMessages = history.filter((item) => item.role === "assistant").length;
+  const prompts = [
+    "I'm listening. What feels most important for me to understand about that?",
+    "That sounds worth taking a moment with. What happened just before you started feeling this way?",
+    "Let's take this one step at a time. What would you most like to feel clearer about?",
+    "Thank you for putting that into words. What kind of support would feel useful right now: being heard, sorting out the situation, or thinking of one small next step?",
+  ];
+  return prompts[previousCompanionMessages % prompts.length];
 }
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
