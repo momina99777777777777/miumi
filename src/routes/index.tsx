@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { MessageCircle } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type CSSProperties } from "react";
 import {
   ArrowRight,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InBetweenGame from "@/components/game/InBetweenGame";
+import QuietRoomPage from "@/components/QuietRoomPage";
 
 import {
   calculateScore,
@@ -59,7 +61,8 @@ type Page =
   | "games"
   | "photo-studio"
   | "museum"
-  | "in-between";
+  | "in-between"
+  | "quiet-room";
 type CompletedQuiz = {
   quizId: QuizId;
   answers: number[];
@@ -296,6 +299,7 @@ function MiumiHome() {
   />
 
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum of Us" onClick={() => navigate("museum")} />
+  <NavButton active={page === "quiet-room"} icon={<MessageCircle />} label="The Quiet Room" onClick={() => navigate("quiet-room")} />
 
   <div className="nav-little-note">
     made with<br />
@@ -436,6 +440,7 @@ function MiumiHome() {
             {page === "in-between" && <InBetweenGame />}
             {page === "photo-studio" && <PhotoStudioPage onNotice={setNotice} />}
             {page === "museum" && <MiumiMuseumPage onNotice={setNotice} />}
+            {page === "quiet-room" && <QuietRoomPage />}
 
           </div>
         </div>
