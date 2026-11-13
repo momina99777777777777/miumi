@@ -553,6 +553,50 @@ export default function InBetweenGame() {
         const dome = new THREE.Group(); dome.position.set(0,0,-88); scene.add(dome);
         const domeBody = new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.6,7.2,12), mat("#4b4a50",0.9)); domeBody.position.y=3.6; dome.add(domeBody);
         const domeRoof = new THREE.Mesh(new THREE.ConeGeometry(4.1,2.8,12), mat("#34313b",0.7,0.25)); domeRoof.position.y=8.6; dome.add(domeRoof);
+        // Bellwether's remaining residents: quiet, stylised townsfolk with
+        // readable silhouettes and gentle idle motion.
+        const townsfolk: Array<{ group:any; name:string; x:number; z:number; phase:number; lantern?:any }> = [];
+        const addTownsperson = (name:string, x:number, z:number, coatColor:string, hairColor:string, phase:number, carriesLantern=false) => {
+          const group = new THREE.Group(); group.position.set(x,0,z); scene.add(group);
+          const coat = new THREE.Mesh(new THREE.CapsuleGeometry(0.29,0.72,4,8), mat(coatColor,0.92));
+          coat.position.y=1.02; group.add(coat);
+          const head = new THREE.Mesh(new THREE.SphereGeometry(0.22,16,12), mat("#c69b7e",0.88));
+          head.position.y=1.72; group.add(head);
+          const hair = new THREE.Mesh(new THREE.SphereGeometry(0.235,16,12), mat(hairColor,0.98));
+          hair.position.set(0,1.82,-0.035); hair.scale.set(1,0.72,0.9); group.add(hair);
+          const scarf = new THREE.Mesh(new THREE.BoxGeometry(0.42,0.12,0.34), brass);
+          scarf.position.set(0,1.42,0.02); group.add(scarf);
+          for (const side of [-1,1]) {
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.1,0.58,8), darkWood);
+            leg.position.set(side*0.13,0.31,0); group.add(leg);
+            const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.075,0.43,3,6), mat(coatColor,0.92));
+            arm.position.set(side*0.34,1.08,0); arm.rotation.z=side*-0.12; group.add(arm);
+          }
+          let lantern:any;
+          if (carriesLantern) {
+            lantern = new THREE.Group(); lantern.position.set(0.48,0.95,0.02); group.add(lantern);
+            const cage = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.26,0.18), brass); lantern.add(cage);
+            const lightCore = new THREE.Mesh(new THREE.SphereGeometry(0.075,10,8), new THREE.MeshBasicMaterial({color:"#ffd99a"})); lantern.add(lightCore);
+            const glow = new THREE.PointLight("#e8b978",1.6,4,2); glow.position.y=0.05; lantern.add(glow);
+          }
+          townsfolk.push({group,name,x,z,phase,lantern});
+        };
+        addTownsperson("Elian, the station keeper",-2.8,-56,"#34404a","#514038",0.4,true);
+        addTownsperson("Mara, the gardener",3.2,-78,"#425244","#62422f",1.7,false);
+        addTownsperson("The quiet child",2.7,-36,"#51404a","#211d24",2.8,true);
+        // Tiny fireflies drift above the wet cobblestones and around the garden.
+        const fireflies:any[] = [];
+        for (let i=0;i<18;i++) {
+          const mote = new THREE.Mesh(new THREE.SphereGeometry(0.035,6,6), new THREE.MeshBasicMaterial({color:i%3===0?"#b9d9a2":"#f0d6a0"}));
+          mote.position.set(Math.sin(i*12.7)*11,0.7+(i%5)*0.42,-35-(i*2.7));
+          scene.add(mote); fireflies.push({mesh:mote,phase:i*0.83,baseY:mote.position.y});
+        }
+        // A tucked-away memorial plaque rewards players who leave the main road.
+        const hiddenPlaque = makeBox(0.95,0.72,0.12,mat("#39464a",0.55,0.25),-14,1.45,-70);
+        makeBox(0.52,0.08,0.035,brass,-14,1.58,-69.91);
+        const memoryShard = new THREE.Mesh(new THREE.OctahedronGeometry(0.32,1), new THREE.MeshStandardMaterial({color:"#8bb7b0",emissive:"#345f5b",emissiveIntensity:0.8,metalness:0.35,roughness:0.25}));
+        memoryShard.position.set(-14,1.15,-69.3); scene.add(memoryShard);
+        const shardGlow = new THREE.PointLight("#8bb7b0",2.2,5,2); shardGlow.position.copy(memoryShard.position); scene.add(shardGlow);
         makeBox(16, 0.35, 15, darkWood, 0, 5.8, -18.5);
         makeBox(3.6, 0.18, 1.2, wood, 0, 1.05, -20.5);
         for (const x of [-1.45, 1.45]) makeBox(0.15, 1.0, 0.15, darkWood, x, 0.5, -20.5);
@@ -958,6 +1002,16 @@ export default function InBetweenGame() {
             townUnlocked = true;
             window.dispatchEvent(new CustomEvent("inbetween:town-unlock"));
             setMessage({ title: "A town erased from every map", body: "The ledger's final page unfolds into a street plan. The library was built at the edge of Bellwether. Its gate is opening. The fountain, old station, Forgotten Garden and observatory are marked in the margin." });
+          } else if (townUnlocked && near(-2.8,-56,2.0)) {
+            setMessage({ title:"Elian · The station keeper", body:"“The last train never arrived, Mira. It waits for someone who can remember the whole town—not only the happy parts. The clock stopped when everyone agreed to forget.” He points toward the observatory." });
+          } else if (townUnlocked && near(3.2,-78,2.0)) {
+            setMessage({ title:"Mara · The gardener", body:"“I planted these flowers for people whose names I can no longer remember. The garden keeps what the town tried to bury. Take care of the seed. It is not a key; it is a promise.”" });
+          } else if (townUnlocked && near(2.7,-36,2.0)) {
+            setMessage({ title:"The quiet child", body:"The child holds out a paper boat. Inside is a tiny drawing of the library, the town and a fourth place beyond the observatory. On the back: “There is always another door.”" });
+            if (!foundTownClues.has("Paper boat")) { foundTownClues.add("Paper boat"); setInventory((items)=>[...items,"Paper boat"]); }
+          } else if (townUnlocked && near(-14,-69.3,2.0)) {
+            if (!foundTownClues.has("Memory shard")) { foundTownClues.add("Memory shard"); setInventory((items)=>[...items,"Memory shard"]); }
+            setMessage({ title:"A hidden memorial", body:"Behind the last row of houses, a plaque reads: “For those who stayed when the clock stopped.” The glowing shard hums softly. You found a secret memory of Bellwether." });
           } else if (near(0, -43, 2.8) && townUnlocked) {
             if (!foundTownClues.has("Fountain token")) { foundTownClues.add("Fountain token"); setInventory((items) => [...items, "Fountain token"]); }
             setMessage({ title: "The town square", body: "A brass token lies beneath the fountain. Its face shows the same 11:17 clock. On the reverse: 'The station remembers the last train.' The token has been added to your inventory." });
@@ -1036,7 +1090,7 @@ export default function InBetweenGame() {
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const doorNear = promptNear(0, -9.2, 2.5);
           const inArchive = player.position.z < -12.2;
-          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-3.35, -4.4, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : townUnlocked && promptNear(0, -43, 2.8) ? "E  ·  SEARCH FOUNTAIN" : townUnlocked && promptNear(-7, -66, 3) ? "E  ·  INSPECT STATION" : townUnlocked && promptNear(7, -73, 3) ? "E  ·  ENTER FORGOTTEN GARDEN" : townUnlocked && promptNear(0, -88, 4) ? "E  ·  EXAMINE OBSERVATORY" : "";
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-3.35, -4.4, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : townUnlocked && promptNear(0, -43, 2.8) ? "E  ·  SEARCH FOUNTAIN" : townUnlocked && promptNear(-2.8, -56, 2) ? "E  ·  SPEAK TO ELIAN" : townUnlocked && promptNear(3.2, -78, 2) ? "E  ·  SPEAK TO MARA" : townUnlocked && promptNear(2.7, -36, 2) ? "E  ·  SPEAK TO THE CHILD" : townUnlocked && promptNear(-14, -69.3, 2) ? "E  ·  INSPECT MEMORIAL" : townUnlocked && promptNear(-7, -66, 3) ? "E  ·  INSPECT STATION" : townUnlocked && promptNear(7, -73, 3) ? "E  ·  ENTER FORGOTTEN GARDEN" : townUnlocked && promptNear(0, -88, 4) ? "E  ·  EXAMINE OBSERVATORY" : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
           const horizontalDistance = Math.cos(cameraPitch) * 6.2;
@@ -1063,6 +1117,9 @@ export default function InBetweenGame() {
           }
           // Small continuous motion makes the room feel inhabited, not static.
           const time = clockTimer.elapsedTime;
+          townsfolk.forEach(({group,phase,lantern}) => { group.position.y = Math.sin(time*1.15+phase)*0.025; group.rotation.y = Math.sin(time*0.42+phase)*0.08; if (lantern) lantern.rotation.z = Math.sin(time*1.8+phase)*0.08; });
+          fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
+          memoryShard.rotation.y += delta*0.8; memoryShard.rotation.x += delta*0.25;
           warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
           candleGlow.intensity = 5.5 + Math.sin(time * 5.2) * 0.75;
           chandelierLight.intensity = 10 + Math.sin(time * 1.8) * 0.55;
