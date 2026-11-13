@@ -39,6 +39,7 @@ export default function InBetweenGame() {
   const [nearbyPrompt, setNearbyPrompt] = useState("");
   const [avatar, setAvatar] = useState<AvatarSettings>(DEFAULT_AVATAR);
   const progressRef = useRef({ clockSolved: false, doorOpen: false });
+  const townDiscoveredRef = useRef(false);
 
   useEffect(() => {
     const syncFullscreen = () => setIsFullscreen(document.fullscreenElement === gameShellRef.current);
@@ -506,7 +507,52 @@ export default function InBetweenGame() {
         makeBox(16, 0.35, 15, mat("#292a30", 0.9), 0, -0.2, -18.5);
         makeBox(0.35, 6, 15, wallMat, -8, 2.8, -18.5);
         makeBox(0.35, 6, 15, wallMat, 8, 2.8, -18.5);
-        makeBox(16, 6, 0.35, wallMat, 0, 2.8, -26);
+        // Bellwether town lies beyond the archive. The central opening is sealed
+        // until Mira reads the archive ledger.
+        makeBox(6.1, 6, 0.35, wallMat, -4.95, 2.8, -26);
+        makeBox(6.1, 6, 0.35, wallMat, 4.95, 2.8, -26);
+        makeBox(3.8, 1.55, 0.35, wallMat, 0, 5.02, -26);
+        for (const x of [-1.95, 1.95]) {
+          makeBox(0.22, 4.45, 0.48, darkWood, x, 2.22, -25.85);
+          makeBox(0.34, 0.22, 0.62, brass, x, 4.42, -25.85);
+          const gateGlow = new THREE.PointLight("#e8b978", 3.5, 8, 2);
+          gateGlow.position.set(x, 3.7, -27.1); scene.add(gateGlow);
+        }
+        // A small explorable Victorian town with a central square, station,
+        // glasshouse and observatory.
+        makeBox(38, 0.32, 66, mat("#30343a", 0.98), 0, -0.22, -59);
+        makeBox(7.2, 0.035, 65, mat("#45464a", 0.98), 0, -0.035, -59);
+        const townBuilding = (x: number, z: number, w: number, h: number, color: string) => {
+          makeBox(w, h, 5.8, mat(color, 0.94), x, h / 2 - 0.08, z);
+          makeBox(w + 0.35, 0.28, 6.1, darkWood, x, h + 0.05, z);
+          makeBox(w * 0.72, 0.45, 0.12, mat("#d7a66c", 0.5, 0.05), x, h * 0.62, z - 2.96);
+        };
+        townBuilding(-10, -39, 6, 7.2, "#4a4140");
+        townBuilding(10, -42, 6.5, 8.4, "#3e4848");
+        townBuilding(-10, -57, 6.5, 6.4, "#55483e");
+        townBuilding(10, -61, 6, 7.5, "#49434b");
+        townBuilding(-10, -75, 6, 8.2, "#39484a");
+        townBuilding(10, -78, 6.5, 6.8, "#51433d");
+        for (const z of [-34, -46, -58, -70, -82]) for (const x of [-3.7, 3.7]) {
+          makeBox(0.12, 3.4, 0.12, darkWood, x, 1.7, z);
+          makeBox(0.52, 0.12, 0.52, brass, x, 3.45, z);
+          const glow = new THREE.PointLight("#e8b978", 2.4, 8, 2);
+          glow.position.set(x, 3.2, z); scene.add(glow);
+        }
+        const fountain = new THREE.Mesh(new THREE.CylinderGeometry(2, 2.25, 0.42, 32), mat("#68696b", 0.58));
+        fountain.position.set(0, 0.02, -43); scene.add(fountain);
+        const fountainWater = new THREE.Mesh(new THREE.CircleGeometry(1.3, 32), mat("#526d79", 0.22, 0.3));
+        fountainWater.rotation.x = -Math.PI / 2; fountainWater.position.set(0, 0.25, -43); scene.add(fountainWater);
+        townBuilding(-7, -66, 8, 5.2, "#4b4742");
+        const greenhouse = new THREE.Group(); greenhouse.position.set(7, 0, -73); scene.add(greenhouse);
+        const glassMat = new THREE.MeshStandardMaterial({ color:"#8da99a", roughness:0.24, metalness:0.08, transparent:true, opacity:0.32 });
+        const glassBox = new THREE.Mesh(new THREE.BoxGeometry(4.25,3.1,4.25), glassMat); glassBox.position.y=1.65; greenhouse.add(glassBox);
+        for (const x of [-2.1,2.1]) for (const z of [-2.1,2.1]) {
+          const post = new THREE.Mesh(new THREE.BoxGeometry(0.12,3.4,0.12), brass); post.position.set(x,1.7,z); greenhouse.add(post);
+        }
+        const dome = new THREE.Group(); dome.position.set(0,0,-88); scene.add(dome);
+        const domeBody = new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.6,7.2,12), mat("#4b4a50",0.9)); domeBody.position.y=3.6; dome.add(domeBody);
+        const domeRoof = new THREE.Mesh(new THREE.ConeGeometry(4.1,2.8,12), mat("#34313b",0.7,0.25)); domeRoof.position.y=8.6; dome.add(domeRoof);
         makeBox(16, 0.35, 15, darkWood, 0, 5.8, -18.5);
         makeBox(3.6, 0.18, 1.2, wood, 0, 1.05, -20.5);
         for (const x of [-1.45, 1.45]) makeBox(0.15, 1.0, 0.15, darkWood, x, 0.5, -20.5);
@@ -803,6 +849,7 @@ export default function InBetweenGame() {
         const playerLimbs = [armL, armR, legL, legR];
         const keys = new Set<string>();
         let unlocked = progressRef.current.doorOpen;
+        let townUnlocked = inventory.includes("Archive ledger");
         let doorIsOpen = unlocked;
         let clockActivated = progressRef.current.clockSolved;
         let enteredArchive = false;
@@ -814,6 +861,8 @@ export default function InBetweenGame() {
         let lastPrompt = "";
         const onUnlock = () => { unlocked = true; doorIsOpen = true; };
         const onClockSolved = () => { clockActivated = true; };
+        const onTownUnlock = () => { townUnlocked = true; };
+        window.addEventListener("inbetween:town-unlock", onTownUnlock);
         window.addEventListener("inbetween:unlock", onUnlock);
         window.addEventListener("inbetween:clock-solved", onClockSolved);
         let cameraYaw = 0;
@@ -905,7 +954,22 @@ export default function InBetweenGame() {
             setMessage({ title: wardrobeIsOpen ? "Inside the wardrobe" : "Back in the archive", body: wardrobeIsOpen ? "You slip inside and pull the wardrobe doors nearly shut. The archive sounds distant from here." : "You step out into the archive. The wardrobe doors creak closed behind you." });
           } else if (near(0, -20.5, 2.0)) {
             if (!inventory.includes("Archive ledger")) setInventory((items) => [...items, "Archive ledger"]);
-            setMessage({ title: "The archive ledger", body: "The ledger lists rooms that do not appear on any floor plan. One entry is circled: THE FORGOTTEN GARDEN. The ledger has been added to your inventory." });
+            townUnlocked = true;
+            window.dispatchEvent(new CustomEvent("inbetween:town-unlock"));
+            setMessage({ title: "A town erased from every map", body: "The ledger's final page unfolds into a street plan. The library was built at the edge of Bellwether. Its gate is opening. The fountain, old station, Forgotten Garden and observatory are marked in the margin." });
+          } else if (near(0, -43, 2.8) && townUnlocked) {
+            if (!inventory.includes("Fountain token")) setInventory((items) => [...items, "Fountain token"]);
+            setMessage({ title: "The town square", body: "A brass token lies beneath the fountain. Its face shows the same 11:17 clock. On the reverse: 'The station remembers the last train.' The token has been added to your inventory." });
+          } else if (near(-7, -66, 3) && townUnlocked) {
+            if (!inventory.includes("Station timetable")) setInventory((items) => [...items, "Station timetable"]);
+            setMessage({ title: "Bellwether Station", body: "The timetable lists one final train, departing at 11:17. Its destination has been scratched away. A note says: 'Only the person who remembers may choose the platform.' The timetable has been added to your inventory." });
+          } else if (near(7, -73, 3) && townUnlocked) {
+            if (!inventory.includes("Garden seed")) setInventory((items) => [...items, "Garden seed"]);
+            setMessage({ title: "The Forgotten Garden", body: "Flowers grow through the glasshouse floor. A note explains that Bellwether vanished when its residents tried to erase a painful day from memory. The seed has been added to your inventory." });
+          } else if (near(0, -88, 4) && townUnlocked) {
+            if (inventory.includes("Station timetable") && inventory.includes("Garden seed")) {
+              setMessage({ title: "The Observatory", body: "You have found the town's final records. The truth is clear: Bellwether was trapped at 11:17 by a choice to forget. Return to the station to let the town go, or the garden to restore its memories." });
+            } else setMessage({ title: "The Observatory", body: "The dome is locked. Search the station and the Forgotten Garden for the missing records." });
           }
         }
 
@@ -933,8 +997,9 @@ export default function InBetweenGame() {
               { x: -3.35, z: -4.4, hx: 0.62, hz: 0.52 },
             ];
             const collides = (x: number, z: number) => blockers.some((b) => Math.abs(x - b.x) < b.hx && Math.abs(z - b.z) < b.hz);
-            const nextX = THREE.MathUtils.clamp(player.position.x + direction.x * step, -5.8, 5.8);
-            const nextZ = THREE.MathUtils.clamp(player.position.z + direction.z * step, unlocked ? -24.8 : -9.5, 7.2);
+            const inTown = townUnlocked && player.position.z < -27.5;
+            const nextX = THREE.MathUtils.clamp(player.position.x + direction.x * step, inTown ? -16.5 : -5.8, inTown ? 16.5 : 5.8);
+            const nextZ = THREE.MathUtils.clamp(player.position.z + direction.z * step, townUnlocked ? -94 : unlocked ? -24.8 : -9.5, 7.2);
             if (!collides(nextX, player.position.z)) player.position.x = nextX;
             if (!collides(player.position.x, nextZ)) player.position.z = nextZ;
             player.rotation.y = Math.atan2(direction.x, direction.z);
@@ -962,7 +1027,7 @@ export default function InBetweenGame() {
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const doorNear = promptNear(0, -9.2, 2.5);
           const inArchive = player.position.z < -12.2;
-          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-3.35, -4.4, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : "";
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-3.35, -4.4, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : townUnlocked && promptNear(0, -43, 2.8) ? "E  ·  SEARCH FOUNTAIN" : townUnlocked && promptNear(-7, -66, 3) ? "E  ·  INSPECT STATION" : townUnlocked && promptNear(7, -73, 3) ? "E  ·  ENTER FORGOTTEN GARDEN" : townUnlocked && promptNear(0, -88, 4) ? "E  ·  EXAMINE OBSERVATORY" : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
           const horizontalDistance = Math.cos(cameraPitch) * 6.2;
@@ -977,6 +1042,10 @@ export default function InBetweenGame() {
           if (unlocked && !enteredArchive && player.position.z < -12.2) {
             enteredArchive = true;
             setTimeout(() => setMessage({ title:"The hidden archive", body:"The library was only the first room. Shelves of forgotten records stretch into the dark. Somewhere in here, another door is waiting." }), 250);
+          }
+          if (townUnlocked && player.position.z < -31 && !townDiscoveredRef.current) {
+            townDiscoveredRef.current = true;
+            window.dispatchEvent(new CustomEvent("inbetween:town-discovered"));
           }
           if (clockActivated) hand.rotation.z = THREE.MathUtils.lerp(hand.rotation.z, -2.4, delta * 0.9);
           if (clockActivated) {
@@ -1018,6 +1087,7 @@ export default function InBetweenGame() {
           if (document.pointerLockElement === canvas) document.exitPointerLock();
           window.removeEventListener("inbetween:unlock", onUnlock);
           window.removeEventListener("inbetween:clock-solved", onClockSolved);
+          window.removeEventListener("inbetween:town-unlock", onTownUnlock);
           resizeObserver.disconnect();
           scene.traverse((object: any) => {
             if (object.geometry) object.geometry.dispose();
@@ -1046,6 +1116,7 @@ export default function InBetweenGame() {
 
   useEffect(() => {
     const prompt = (event: Event) => setNearbyPrompt((event as CustomEvent<string>).detail || "");
+    const townDiscovery = () => { townDiscoveredRef.current = true; setMessage({ title: "Welcome to Bellwether", body: "Beyond the library lies a whole town caught between one minute and the next. Explore the square, station, Forgotten Garden and observatory to discover what happened here." }); };
     const letter = () => {
       if (!inventory.includes("The torn letter")) {
         setInventory((items) => [...items, "The torn letter"]);
@@ -1073,12 +1144,14 @@ export default function InBetweenGame() {
       } else setMessage({ title: "A locked door", body: "The lock is old, but still intact. There must be a key somewhere in this room." });
     };
     window.addEventListener("inbetween:prompt", prompt);
+    window.addEventListener("inbetween:town-discovered", townDiscovery);
     window.addEventListener("inbetween:letter", letter);
     window.addEventListener("inbetween:clock", clock);
     window.addEventListener("inbetween:painting", painting);
     window.addEventListener("inbetween:door", door);
     return () => {
       window.removeEventListener("inbetween:prompt", prompt);
+      window.removeEventListener("inbetween:town-discovered", townDiscovery);
       window.removeEventListener("inbetween:letter", letter);
       window.removeEventListener("inbetween:clock", clock);
       window.removeEventListener("inbetween:painting", painting);
