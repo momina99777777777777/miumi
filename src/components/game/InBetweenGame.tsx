@@ -476,6 +476,48 @@ export default function InBetweenGame() {
         makeBox(0.35, 6, 18, wallMat, -8, 2.8, -2);
         makeBox(0.35, 6, 18, wallMat, 8, 2.8, -2);
         makeBox(16, 0.35, 18, darkWood, 0, 5.8, -2);
+
+        // A tall stained-glass window gives the library a recognisable landmark
+        // and casts a cool counter-light against the warm chandelier.
+        const stainedGlass = new THREE.Mesh(
+          new THREE.PlaneGeometry(2.35, 3.25),
+          new THREE.MeshBasicMaterial({ color: "#7894b6", transparent: true, opacity: 0.34, side: THREE.DoubleSide })
+        );
+        stainedGlass.rotation.y = Math.PI / 2;
+        stainedGlass.position.set(-7.77, 3.62, -6.3);
+        scene.add(stainedGlass);
+        const glassAccentA = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.68, 3.12),
+          new THREE.MeshBasicMaterial({ color: "#9b7e9d", transparent: true, opacity: 0.38, side: THREE.DoubleSide })
+        );
+        glassAccentA.rotation.y = Math.PI / 2;
+        glassAccentA.position.set(-7.75, 3.62, -6.86);
+        scene.add(glassAccentA);
+        const glassAccentB = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.68, 3.12),
+          new THREE.MeshBasicMaterial({ color: "#c19b69", transparent: true, opacity: 0.34, side: THREE.DoubleSide })
+        );
+        glassAccentB.rotation.y = Math.PI / 2;
+        glassAccentB.position.set(-7.75, 3.62, -5.74);
+        scene.add(glassAccentB);
+        for (const z of [-7.52, -6.3, -5.08]) makeBox(0.08, 3.55, 0.08, brass, -7.69, 3.62, z);
+        makeBox(0.08, 0.08, 2.55, brass, -7.69, 3.62, -6.3);
+        const windowArch = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.075, 8, 40, Math.PI), brass);
+        windowArch.rotation.set(Math.PI / 2, Math.PI / 2, 0);
+        windowArch.position.set(-7.68, 5.22, -6.3);
+        scene.add(windowArch);
+        const windowGlow = new THREE.PointLight("#91a9d2", 8, 12, 2);
+        windowGlow.position.set(-6.7, 3.8, -6.3);
+        scene.add(windowGlow);
+        const windowBeamMaterial = new THREE.MeshBasicMaterial({
+          color: "#9bb7df", transparent: true, opacity: 0.045,
+          side: THREE.DoubleSide, depthWrite: false
+        });
+        const windowBeam = new THREE.Mesh(new THREE.ConeGeometry(1.25, 5.2, 32, 1, true), windowBeamMaterial);
+        windowBeam.rotation.z = -Math.PI / 2;
+        windowBeam.position.set(-5.15, 3.55, -6.3);
+        scene.add(windowBeam);
+
         const doorPivot = new THREE.Group();
         doorPivot.position.set(-1.2, 0, -10.72); scene.add(doorPivot);
         const door = new THREE.Mesh(new THREE.BoxGeometry(2.4, 4.1, 0.22), darkWood);
@@ -999,6 +1041,8 @@ export default function InBetweenGame() {
           warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
           candleGlow.intensity = 5.5 + Math.sin(time * 5.2) * 0.75;
           chandelierLight.intensity = 10 + Math.sin(time * 1.8) * 0.55;
+          windowGlow.intensity = 7.5 + Math.sin(time * 1.35) * 0.65;
+          windowBeamMaterial.opacity = 0.04 + Math.sin(time * 0.8) * 0.006;
           chandelier.rotation.z = Math.sin(time * 0.55) * 0.018;
           pagePivot.rotation.y = -0.15 + Math.sin(time * 0.8) * 0.09;
           const dust = dustGeometry.attributes.position;
