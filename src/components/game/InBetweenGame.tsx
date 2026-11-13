@@ -11,11 +11,11 @@ type AvatarSettings = {
   outfit: string;
 };
 const DEFAULT_AVATAR: AvatarSettings = {
-  presentation: "androgynous",
-  skin: "#bd896d",
-  hair: "#241b18",
+  presentation: "feminine",
+  skin: "#d5a27e",
+  hair: "#8a4933",
   hairStyle: "long",
-  outfit: "#283746",
+  outfit: "#34473c",
 };
 const SKIN_OPTIONS = [{label:"Warm",value:"#bd896d"},{label:"Golden",value:"#d5a27e"},{label:"Light",value:"#edc5a5"},{label:"Deep",value:"#754b3b"},{label:"Rich",value:"#9a6249"}];
 const HAIR_OPTIONS = [{label:"Espresso",value:"#241b18"},{label:"Chestnut",value:"#68412d"},{label:"Midnight",value:"#171b2b"},{label:"Auburn",value:"#8a4933"},{label:"Silver",value:"#aaa6a0"}];
@@ -127,6 +127,8 @@ export default function InBetweenGame() {
         platform.castShadow = true;
         platform.receiveShadow = true;
         scene.add(platform);
+        const portraitHalo = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.012, 8, 64), brass);
+        portraitHalo.position.y = 0.11; portraitHalo.rotation.x = Math.PI / 2; scene.add(portraitHalo);
         const character = new THREE.Group();
         character.position.y = 0.11;
         scene.add(character);
@@ -151,18 +153,39 @@ export default function InBetweenGame() {
         const torso = part(new THREE.CapsuleGeometry(avatar.presentation === "masculine" ? 0.31 : 0.28, 0.62, 7, 18), outfit, 0, 1.13, 0);
         torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
         part(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), shadowOutfit, 0, 0.76, 0.015);
-        part(new THREE.TorusGeometry(0.19, 0.025, 8, 24), brass, 0, 1.47, 0).rotation.x = Math.PI / 2;
-        part(new THREE.SphereGeometry(0.235, 28, 22), skin, 0, 1.82, 0);
-        part(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hair, 0, 1.88, 0);
+        // Mira's signature field coat, layered waist sash and travel satchel.
+        const coatSkirt = part(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), shadowOutfit, 0, 0.79, 0);
+        coatSkirt.rotation.y = Math.PI / 8;
+        for (let i = 0; i < 5; i++) {
+          const pleat = part(new THREE.BoxGeometry(0.018, 0.43, 0.025), brass, -0.25 + i * 0.125, 0.79, -0.17);
+          pleat.rotation.z = (i - 2) * 0.035;
+        }
+        const sash = part(new THREE.TorusGeometry(0.2, 0.035, 8, 28), brass, 0, 0.98, 0);
+        sash.rotation.x = Math.PI / 2;
+        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); player.add(satchel);
+        part(new THREE.BoxGeometry(0.34, 0.36, 0.16), darkOutfitMat, 0, 0, 0, satchel);
+        part(new THREE.BoxGeometry(0.29, 0.11, 0.035), brass, 0, -0.04, -0.09, satchel);
+        part(new THREE.TorusGeometry(0.045, 0.012, 6, 12), brass, 0, -0.04, -0.115, satchel);
+        part(new THREE.SphereGeometry(0.235, 32, 28), skin, 0, 1.82, 0);
+        part(new THREE.SphereGeometry(0.25, 32, 24, 0, Math.PI * 2, 0, Math.PI * 0.57), hair, 0, 1.88, 0);
         const hairMotion: any[] = [];
         if (avatar.hairStyle === "long") {
+          // Sculpted back hair plus separate face-framing locks create a
+          // recognisable original silhouette instead of a plain sphere cap.
+          part(new THREE.CapsuleGeometry(0.22, 0.58, 7, 16), hair, 0, 1.48, 0.13);
           for (const side of [-1, 1]) {
             const lock = new THREE.Group();
             lock.position.set(side * 0.19, 1.72, 0.045);
             character.add(lock);
-            part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, 0, -0.15, 0, lock);
+            part(new THREE.CapsuleGeometry(0.095, 0.46, 7, 14), hair, 0, -0.15, 0, lock);
+            const curl = part(new THREE.SphereGeometry(0.105, 16, 12), hair, 0, -0.42, 0.015, lock);
+            curl.scale.set(0.9, 0.72, 0.85);
             hairMotion.push({ pivot: lock, side });
           }
+          const fringe = part(new THREE.SphereGeometry(0.19, 24, 16, 0, Math.PI, 0, Math.PI * 0.5), hair, 0, 1.93, -0.13);
+          fringe.scale.set(1.1, 0.62, 0.72);
+          const hairPin = part(new THREE.TorusGeometry(0.055, 0.014, 7, 18), brass, 0.17, 1.91, -0.19);
+          hairPin.rotation.x = Math.PI / 2;
         } else if (avatar.hairStyle === "tied") {
           part(new THREE.SphereGeometry(0.12, 16, 12), hair, 0, 1.72, 0.22);
           const ponytail = new THREE.Group();
@@ -174,6 +197,7 @@ export default function InBetweenGame() {
           part(new THREE.SphereGeometry(0.16, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hair, 0, 1.94, 0.015);
         }
         const eye = material("#241e1b", 0.45);
+        const iris = material("#806044", 0.35, 0.05);
         part(new THREE.SphereGeometry(0.022, 10, 8), eye, -0.075, 1.83, -0.218);
         part(new THREE.SphereGeometry(0.022, 10, 8), eye, 0.075, 1.83, -0.218);
         // Face shaping: brows, nose bridge, ears and a subtle mouth make the
@@ -182,7 +206,9 @@ export default function InBetweenGame() {
         const brow = material(new THREE.Color(avatar.hair).multiplyScalar(0.72).getStyle());
         for (const x of [-0.075, 0.075]) {
           part(new THREE.SphereGeometry(0.031, 12, 10), eyeWhite, x, 1.835, -0.205);
-          part(new THREE.SphereGeometry(0.013, 10, 8), eye, x, 1.833, -0.232);
+          part(new THREE.SphereGeometry(0.013, 10, 8), iris, x, 1.833, -0.232);
+          const lash = part(new THREE.CapsuleGeometry(0.008, 0.055, 3, 6), eye, x, 1.866, -0.221);
+          lash.rotation.z = x < 0 ? -0.45 : 0.45;
           const browMesh = part(new THREE.CapsuleGeometry(0.012, 0.065, 3, 8), brow, x, 1.885, -0.202);
           browMesh.rotation.z = x < 0 ? -0.12 : 0.12;
         }
@@ -214,6 +240,8 @@ export default function InBetweenGame() {
         coatTail.position.set(0, 0.9, 0.13);
         character.add(coatTail);
         part(new THREE.BoxGeometry(0.43, 0.38, 0.075), shadowOutfit, 0, -0.18, 0, coatTail);
+        const collarPin = part(new THREE.TorusGeometry(0.055, 0.012, 6, 16), brass, -0.18, 1.43, -0.22);
+        collarPin.rotation.x = Math.PI / 2;
         part(new THREE.BoxGeometry(0.11, 0.28, 0.035), seam, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, mat: any) => {
           const pivot = new THREE.Group();
