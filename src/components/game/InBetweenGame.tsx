@@ -635,22 +635,24 @@ export default function InBetweenGame() {
         const domeRoof = new THREE.Mesh(new THREE.ConeGeometry(4.1,2.8,12), mat("#34313b",0.7,0.25)); domeRoof.position.y=8.6; dome.add(domeRoof);
         // Bellwether's remaining residents: quiet, stylised townsfolk with
         // readable silhouettes and gentle idle motion.
-        const townsfolk: Array<{ group:any; name:string; x:number; z:number; phase:number; lantern?:any }> = [];
-        const addTownsperson = (name:string, x:number, z:number, coatColor:string, hairColor:string, phase:number, carriesLantern=false) => {
+        const townsfolk:any[] = [];
+        const addTownsperson = (name:string, x:number, z:number, coatColor:string, hairColor:string, phase:number, carriesLantern=false, route:Array<[number,number]>=[], job="idle") => {
           const group = new THREE.Group(); group.position.set(x,0,z); scene.add(group);
           const coat = new THREE.Mesh(new THREE.CapsuleGeometry(0.29,0.72,4,8), mat(coatColor,0.92));
           coat.position.y=1.02; group.add(coat);
-          const head = new THREE.Mesh(new THREE.SphereGeometry(0.22,16,12), mat("#c69b7e",0.88));
-          head.position.y=1.72; group.add(head);
+          const head = new THREE.SphereGeometry(0.22,16,12);
+          const headMesh = new THREE.Mesh(head, mat("#c69b7e",0.88));
+          headMesh.position.y=1.72; group.add(headMesh);
           const hair = new THREE.Mesh(new THREE.SphereGeometry(0.235,16,12), mat(hairColor,0.98));
           hair.position.set(0,1.82,-0.035); hair.scale.set(1,0.72,0.9); group.add(hair);
           const scarf = new THREE.Mesh(new THREE.BoxGeometry(0.42,0.12,0.34), brass);
           scarf.position.set(0,1.42,0.02); group.add(scarf);
+          const arms:any[]=[]; const legs:any[]=[];
           for (const side of [-1,1]) {
             const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.1,0.58,8), darkWood);
-            leg.position.set(side*0.13,0.31,0); group.add(leg);
+            leg.position.set(side*0.13,0.31,0); group.add(leg); legs.push(leg);
             const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.075,0.43,3,6), mat(coatColor,0.92));
-            arm.position.set(side*0.34,1.08,0); arm.rotation.z=side*-0.12; group.add(arm);
+            arm.position.set(side*0.34,1.08,0); arm.rotation.z=side*-0.12; group.add(arm); arms.push(arm);
           }
           let lantern:any;
           if (carriesLantern) {
@@ -659,11 +661,25 @@ export default function InBetweenGame() {
             const lightCore = new THREE.Mesh(new THREE.SphereGeometry(0.075,10,8), new THREE.MeshBasicMaterial({color:"#ffd99a"})); lantern.add(lightCore);
             const glow = new THREE.PointLight("#e8b978",1.6,4,2); glow.position.y=0.05; lantern.add(glow);
           }
-          townsfolk.push({group,name,x,z,phase,lantern});
+          // Speech plaques are canvas-backed sprites, so residents can talk to
+          // one another without opening Mira's dialogue panel.
+          const bubbleCanvas=document.createElement("canvas"); bubbleCanvas.width=512; bubbleCanvas.height=128;
+          const bubbleContext=bubbleCanvas.getContext("2d");
+          const bubbleTexture=new THREE.CanvasTexture(bubbleCanvas);
+          const bubbleMaterial=new THREE.SpriteMaterial({map:bubbleTexture,transparent:true,depthWrite:false});
+          const bubble=new THREE.Sprite(bubbleMaterial); bubble.scale.set(3.4,0.86,1); bubble.position.set(0,2.48,0); bubble.visible=false; group.add(bubble);
+          const npc={group,name,x,z,phase,lantern,arms,legs,route,routeIndex:0,waitUntil:0,job,bubble,bubbleCanvas,bubbleContext,bubbleTexture,bubbleUntil:0};
+          townsfolk.push(npc);
+          return npc;
         };
-        addTownsperson("Elian, the station keeper",-2.8,-56,"#34404a","#514038",0.4,true);
-        addTownsperson("Mara, the gardener",3.2,-78,"#425244","#62422f",1.7,false);
-        addTownsperson("The quiet child",2.7,-36,"#51404a","#211d24",2.8,true);
+        const elian = addTownsperson("Elian, the station keeper",-2.8,-56,"#34404a","#514038",0.4,true,[[-2.8,-56],[-4.2,-52],[-2.4,-47],[0,-43],[-2.4,-49],[-5.2,-61]],"station");
+        const mara = addTownsperson("Mara, the gardener",3.2,-78,"#425244","#62422f",1.7,false,[[3.2,-78],[5.3,-75],[7.2,-73],[5.2,-76],[2.8,-79]],"garden");
+        const child = addTownsperson("The quiet child",2.7,-36,"#51404a","#211d24",2.8,true,[[2.7,-36],[1.8,-40],[0,-43],[-1.8,-46],[1.2,-47],[2.7,-36]],"child");
+        // Work props: a small watering can for Mara and a folded timetable for Elian.
+        const wateringCan=new THREE.Group(); wateringCan.position.set(0.48,0.95,0.02); mara.group.add(wateringCan);
+        const canBody=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.16,0.26,12),mat("#8b9b83",0.5,0.25)); wateringCan.add(canBody);
+        const canSpout=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.07,0.34,8),mat("#8b9b83",0.5,0.25)); canSpout.position.set(0.19,0.1,0); canSpout.rotation.z=-0.7; wateringCan.add(canSpout);
+        const timetableProp=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.32,0.035),paper); timetableProp.position.set(-0.48,1.0,-0.02); elian.group.add(timetableProp);
         // Tiny fireflies drift above the wet cobblestones and around the garden.
         const fireflies:any[] = [];
         for (let i=0;i<18;i++) {
@@ -1028,6 +1044,8 @@ export default function InBetweenGame() {
         let active = true;
         let frame = 0;
         const clockTimer = new THREE.Clock();
+        let nextOverheardAt=13;
+        let overheardIndex=0;
 
         // Mira is built from the authored, coloured Three.js character parts
         // below. This avoids replacing her with an unrelated sample avatar.
@@ -1100,11 +1118,11 @@ export default function InBetweenGame() {
             townUnlocked = true;
             window.dispatchEvent(new CustomEvent("inbetween:town-unlock"));
             setMessage({ title: "A town erased from every map", body: "The ledger's final page unfolds into a street plan. The library was built at the edge of Bellwether. Its gate is opening. The fountain, old station, Forgotten Garden and observatory are marked in the margin." });
-          } else if (townUnlocked && near(-2.8,-56,2.0)) {
+          } else if (townUnlocked && near(elian.group.position.x,elian.group.position.z,2.2)) {
             setMessage({ title:"Elian · The station keeper", body:"“The last train never arrived, Mira. It waits for someone who can remember the whole town—not only the happy parts. The clock stopped when everyone agreed to forget.” He points toward the observatory." });
-          } else if (townUnlocked && near(3.2,-78,2.0)) {
+          } else if (townUnlocked && near(mara.group.position.x,mara.group.position.z,2.2)) {
             setMessage({ title:"Mara · The gardener", body:"“I planted these flowers for people whose names I can no longer remember. The garden keeps what the town tried to bury. Take care of the seed. It is not a key; it is a promise.”" });
-          } else if (townUnlocked && near(2.7,-36,2.0)) {
+          } else if (townUnlocked && near(child.group.position.x,child.group.position.z,2.2)) {
             setMessage({ title:"The quiet child", body:"The child holds out a paper boat. Inside is a tiny drawing of the library, the town and a fourth place beyond the observatory. On the back: “There is always another door.”" });
             if (!foundTownClues.has("Paper boat")) { foundTownClues.add("Paper boat"); setInventory((items)=>[...items,"Paper boat"]); }
           } else if (townUnlocked && near(-14,-69.3,2.0)) {
@@ -1217,7 +1235,84 @@ export default function InBetweenGame() {
           }
           // Small continuous motion makes the room feel inhabited, not static.
           const time = clockTimer.elapsedTime;
-          townsfolk.forEach(({group,phase,lantern}) => { group.position.y = Math.sin(time*1.15+phase)*0.025; group.rotation.y = Math.sin(time*0.42+phase)*0.08; if (lantern) lantern.rotation.z = Math.sin(time*1.8+phase)*0.08; });
+          // Independent daily-life loops: residents walk their own routes,
+          // pause at destinations, and animate their hands while working.
+          townsfolk.forEach((npc:any,index:number) => {
+            const {group,phase,lantern,route,arms,legs,bubble,bubbleUntil}=npc;
+            const moving = townUnlocked && route.length>0 && time>npc.waitUntil;
+            let walking=false;
+            if (moving) {
+              const waypoint=route[npc.routeIndex];
+              const dx=waypoint[0]-group.position.x, dz=waypoint[1]-group.position.z;
+              const distance=Math.hypot(dx,dz);
+              if (distance<0.28) {
+                npc.routeIndex=(npc.routeIndex+1)%route.length;
+                npc.waitUntil=time+(npc.job==="garden"?3.8:npc.job==="station"?2.8:1.8)+((npc.routeIndex+index)%3)*0.7;
+              } else {
+                const speed=npc.job==="child"?0.92:0.68;
+                const step=Math.min(distance,speed*delta);
+                group.position.x+=dx/distance*step;
+                group.position.z+=dz/distance*step;
+                group.rotation.y=Math.atan2(dx,dz);
+                walking=true;
+              }
+            }
+            group.position.y=Math.sin(time*1.15+phase)*0.018;
+            if(walking){
+              arms[0].rotation.x=Math.sin(time*8+phase)*0.48;
+              arms[1].rotation.x=-Math.sin(time*8+phase)*0.48;
+              legs[0].rotation.x=-Math.sin(time*8+phase)*0.42;
+              legs[1].rotation.x=Math.sin(time*8+phase)*0.42;
+            } else {
+              legs[0].rotation.x=THREE.MathUtils.lerp(legs[0].rotation.x,0,delta*5);
+              legs[1].rotation.x=THREE.MathUtils.lerp(legs[1].rotation.x,0,delta*5);
+              const work=Math.sin(time*2.1+phase);
+              if(npc.job==="garden"){
+                arms[0].rotation.x=-0.85+work*0.18; arms[0].rotation.z=-0.28;
+                arms[1].rotation.x=0.18+work*0.12; arms[1].rotation.z=0.2;
+                wateringCan.rotation.z=-0.35+Math.max(0,work)*0.42;
+              } else if(npc.job==="station"){
+                arms[0].rotation.x=-0.18+work*0.08; arms[1].rotation.x=-0.42+Math.sin(time*1.3)*0.12;
+                arms[1].rotation.z=-0.15;
+              } else {
+                arms[0].rotation.x=Math.sin(time*1.6+phase)*0.14;
+                arms[1].rotation.x=-Math.sin(time*1.6+phase)*0.14;
+              }
+            }
+            if(npc.job!=="garden") {
+              arms[0].rotation.z=THREE.MathUtils.lerp(arms[0].rotation.z,0.08,delta*2);
+              arms[1].rotation.z=THREE.MathUtils.lerp(arms[1].rotation.z,-0.08,delta*2);
+            }
+            if(lantern) lantern.rotation.z=Math.sin(time*1.8+phase)*0.08;
+            bubble.visible=time<bubbleUntil;
+            if(bubble.visible) bubble.position.y=2.48+Math.sin(time*3+phase)*0.035;
+          });
+          // Elian and the child occasionally meet at the fountain and exchange
+          // fragments of town gossip. Their speech is visible overhead to Mira.
+          if(townUnlocked && time>nextOverheardAt && Math.hypot(elian.group.position.x-child.group.position.x,elian.group.position.z-child.group.position.z)<4.2){
+            const exchanges=[
+              ["The timetable changed again. It says the train is waiting for a name.","Maybe it is waiting for the name everyone stopped saying."],
+              ["I heard the clock tick once last night.","That wasn't the clock. It was someone remembering."],
+              ["Do you still leave a light on at the station?","Every night. Someone might still be finding their way home."]
+            ];
+            const exchange=exchanges[overheardIndex%exchanges.length]; overheardIndex++;
+            const showSpeech=(npc:any,line:string)=>{
+              const ctx=npc.bubbleContext; if(!ctx) return;
+              ctx.clearRect(0,0,512,128);
+              ctx.fillStyle="rgba(25,29,34,0.91)"; ctx.beginPath(); ctx.roundRect(8,8,496,108,22); ctx.fill();
+              ctx.strokeStyle="rgba(221,190,139,0.9)"; ctx.lineWidth=4; ctx.stroke();
+              ctx.fillStyle="#f4ead7"; ctx.font="bold 25px Georgia"; ctx.textAlign="center"; ctx.textBaseline="middle";
+              const words=line.split(" "); let rows=[""]; 
+              for(const word of words){const candidate=(rows[rows.length-1]+" "+word).trim(); if(ctx.measureText(candidate).width>450) rows.push(word); else rows[rows.length-1]=candidate;}
+              rows.slice(0,2).forEach((row,i)=>ctx.fillText(row,256,48+i*32));
+              npc.bubbleTexture.needsUpdate=true; npc.bubbleUntil=time+5.2;
+            };
+            showSpeech(elian,exchange[0]); showSpeech(child,exchange[1]);
+            elian.group.rotation.y=Math.atan2(child.group.position.x-elian.group.position.x,child.group.position.z-elian.group.position.z);
+            child.group.rotation.y=Math.atan2(elian.group.position.x-child.group.position.x,elian.group.position.z-child.group.position.z);
+            nextOverheardAt=time+24;
+          }
+          fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
           fireflies.forEach(({mesh,phase,baseY}) => { mesh.position.y = baseY + Math.sin(time*1.4+phase)*0.22; mesh.position.x += Math.sin(time*0.55+phase)*0.0009; mesh.material.opacity = 0.55 + (Math.sin(time*2+phase)+1)*0.2; });
           memoryShard.rotation.y += delta*0.8; memoryShard.rotation.x += delta*0.25;
           warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
