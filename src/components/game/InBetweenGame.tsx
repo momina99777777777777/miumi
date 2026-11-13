@@ -17,6 +17,7 @@ export default function InBetweenGame() {
   const [loading, setLoading] = useState(false);
   const [engineError, setEngineError] = useState("");
   const [nearbyPrompt, setNearbyPrompt] = useState("");
+  const progressRef = useRef({ clockSolved: false, doorOpen: false });
 
   useEffect(() => {
     try {
@@ -31,6 +32,10 @@ export default function InBetweenGame() {
       localStorage.removeItem(SAVE_KEY);
     }
   }, []);
+
+  useEffect(() => {
+    progressRef.current = { clockSolved, doorOpen };
+  }, [clockSolved, doorOpen]);
 
   useEffect(() => {
     try {
@@ -146,7 +151,7 @@ export default function InBetweenGame() {
         const hand = makeBox(0.035, 0.42, 0.035, darkWood, 2.8, 3.82, -10.57);
         hand.rotation.z = -0.55;
         const painting = makeBox(1.55, 1.25, 0.12, brass, -3.9, 3.35, -10.72);
-        makeBox(1.35, 1.05, 0.05, mat("#172b2a"), -3.9, 3.35, -10.62);
+        const paintingArt = makeBox(1.35, 1.05, 0.05, mat("#172b2a"), -3.9, 3.35, -10.62);
         // Pillars and a warm hanging light give the room depth.
         for (const x of [-4.7, 4.7]) makeBox(0.42, 5.5, 0.42, mat("#393434"), x, 2.65, -8.9);
         const lamp = new THREE.PointLight("#f2bd7b", 24, 9, 2);
@@ -219,8 +224,10 @@ export default function InBetweenGame() {
         );
 
         const keys = new Set<string>();
-        let unlocked = false;
-        let clockActivated = false;
+        let unlocked = progressRef.current.doorOpen;
+        let clockActivated = progressRef.current.clockSolved;
+        if (unlocked) door.rotation.y = -1.2;
+        if (clockActivated) painting.position.x = -4.75;
         let lastPrompt = "";
         const onUnlock = () => { unlocked = true; };
         const onClockSolved = () => { clockActivated = true; };
@@ -306,7 +313,10 @@ export default function InBetweenGame() {
             door.rotation.y = THREE.MathUtils.lerp(door.rotation.y, -1.2, delta * 1.2);
           }
           if (clockActivated) hand.rotation.z = THREE.MathUtils.lerp(hand.rotation.z, -2.4, delta * 0.9);
-          if (clockActivated) painting.position.x = THREE.MathUtils.lerp(painting.position.x, -4.75, delta * 1.4);
+          if (clockActivated) {
+            painting.position.x = THREE.MathUtils.lerp(painting.position.x, -4.75, delta * 1.4);
+            paintingArt.position.x = THREE.MathUtils.lerp(paintingArt.position.x, -4.75, delta * 1.4);
+          }
           renderer.render(scene, camera);
         };
         animate();
