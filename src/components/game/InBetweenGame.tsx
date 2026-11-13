@@ -127,7 +127,7 @@ export default function InBetweenGame() {
         platform.castShadow = true;
         platform.receiveShadow = true;
         scene.add(platform);
-        const portraitHalo = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.012, 8, 64), brass);
+        const portraitHalo = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.012, 8, 64), new THREE.MeshStandardMaterial({ color: "#b49a72", metalness: 0.45, roughness: 0.38 }));
         portraitHalo.position.y = 0.11; portraitHalo.rotation.x = Math.PI / 2; scene.add(portraitHalo);
         const character = new THREE.Group();
         character.position.y = 0.11;
@@ -162,8 +162,8 @@ export default function InBetweenGame() {
         }
         const sash = part(new THREE.TorusGeometry(0.2, 0.035, 8, 28), brass, 0, 0.98, 0);
         sash.rotation.x = Math.PI / 2;
-        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); player.add(satchel);
-        part(new THREE.BoxGeometry(0.34, 0.36, 0.16), darkOutfitMat, 0, 0, 0, satchel);
+        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); character.add(satchel);
+        part(new THREE.BoxGeometry(0.34, 0.36, 0.16), shadowOutfit, 0, 0, 0, satchel);
         part(new THREE.BoxGeometry(0.29, 0.11, 0.035), brass, 0, -0.04, -0.09, satchel);
         part(new THREE.TorusGeometry(0.045, 0.012, 6, 12), brass, 0, -0.04, -0.115, satchel);
         part(new THREE.SphereGeometry(0.235, 32, 28), skin, 0, 1.82, 0);
