@@ -154,7 +154,8 @@ export default function InBetweenGame() {
         torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
         part(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), shadowOutfit, 0, 0.76, 0.015);
         // Mira's signature field coat, layered waist sash and travel satchel.
-        const coatSkirt = part(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), shadowOutfit, 0, 0.79, 0);
+        const skirtMat = material("#514047", 0.88);
+        const coatSkirt = part(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), skirtMat, 0, 0.79, 0);
         coatSkirt.rotation.y = Math.PI / 8;
         for (let i = 0; i < 5; i++) {
           const pleat = part(new THREE.BoxGeometry(0.018, 0.43, 0.025), brass, -0.25 + i * 0.125, 0.79, -0.17);
@@ -607,7 +608,8 @@ export default function InBetweenGame() {
         torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
         makePart(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), darkOutfitMat, 0, 0.76, 0.015);
         // Mira Vale's signature field coat, pleated travel skirt and satchel.
-        const coatSkirt = makePart(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), darkOutfitMat, 0, 0.79, 0);
+        const skirtMat = mat("#514047", 0.88);
+        const coatSkirt = makePart(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), skirtMat, 0, 0.79, 0);
         coatSkirt.rotation.y = Math.PI / 8;
         for (let i = 0; i < 5; i++) {
           const pleat = makePart(new THREE.BoxGeometry(0.018, 0.43, 0.025), trimMat, -0.25 + i * 0.125, 0.79, -0.17);
@@ -998,7 +1000,7 @@ export default function InBetweenGame() {
             <p className="ib-kicker">A MIUMI ORIGINAL ADVENTURE</p>
             <h1>THE <span>IN-BETWEEN</span></h1>
             <p className="ib-subtitle">Some doors are not meant to be found.</p>
-            <p className="ib-intro">You wake in a library that has no windows, no visitors, and no memory of how you arrived. The clock has stopped. The exit is locked. Something is waiting beyond the shelves.</p>
+            <p className="ib-intro">Mira Vale is an apprentice archivist who discovers a letter written in her own handwriting — dated tomorrow. It leads her to a library missing from every map. The clock is frozen at 11:17, and the only exit opens into a room that should not exist.</p>
             <div className="ib-avatar-studio">
               <div className="ib-avatar-studio-heading"><span>MEET THE PROTAGONIST</span><strong>MIRA VALE · THE GIRL BETWEEN ROOMS</strong><small>A curious young archivist with a field coat, travel satchel and a strange connection to the library.</small></div>
               <div className="ib-avatar-preview-wrap"><canvas ref={avatarPreviewRef} className="ib-avatar-preview" aria-label="Rotatable 3D preview of your customized traveller" /><span className="ib-avatar-preview-hint">DRAG TO ROTATE · LIVE PREVIEW</span></div>
@@ -1042,8 +1044,8 @@ export default function InBetweenGame() {
           </div>
         </div>
         <aside className="ib-sidebar">
-          <div className="ib-side-section"><p className="ib-side-label">YOUR OBJECTIVE</p><h2>{doorOpen ? "Beyond the first door" : clockSolved ? "Find the hidden key" : "Find a way out"}</h2><p>{doorOpen ? "The door has opened. The next room is waiting." : clockSolved ? "The painting moved. Search behind it." : "Explore the room. Find clues that reveal how to unlock the exit."}</p></div>
-          <div className="ib-side-section"><p className="ib-side-label">JOURNAL</p><div className="ib-journal-item"><span>01</span><div><strong>The clock</strong><small>{clockSolved ? "It moved at 11:17" : "Stopped at an unknown time"}</small></div></div><div className="ib-journal-item"><span>02</span><div><strong>The locked door</strong><small>{doorOpen ? "Opened" : "A key is missing"}</small></div></div></div>
+          <div className="ib-side-section"><p className="ib-side-label">YOUR OBJECTIVE</p><h2>{doorOpen ? "Beyond the first door" : clockSolved ? "Find the hidden key" : "Find a way out"}</h2><p>{doorOpen ? "The hidden archive is open. Follow the records and discover why Mira's handwriting appears in the future." : clockSolved ? "The clock answered the letter. Search behind the painting for the key." : "Explore carefully. Read the letter, inspect the room and work out why the clock stopped at 11:17."}</p></div>
+          <div className="ib-side-section"><p className="ib-side-label">JOURNAL</p><div className="ib-journal-item"><span>01</span><div><strong>The clock</strong><small>{clockSolved ? "It moved at 11:17" : "Stopped at an unknown time"}</small></div></div><div className="ib-journal-item"><span>02</span><div><strong>The locked door</strong><small>{doorOpen ? "Opened into the archive" : "A key is missing"}</small></div></div>{inventory.includes("Old photograph") && <div className="ib-journal-item"><span>03</span><div><strong>The impossible photograph</strong><small>A fourth shadow in a three-person portrait</small></div></div>}{inventory.includes("Archive ledger") && <div className="ib-journal-item"><span>04</span><div><strong>The missing room</strong><small>The Forgotten Garden is listed in the ledger</small></div></div>}</div>
           <div className="ib-side-section"><p className="ib-side-label">INVENTORY</p>{inventory.length ? inventory.map((item) => <div className="ib-inventory-item" key={item}><span>◇</span>{item}</div>) : <p className="ib-empty">Nothing collected yet.</p>}</div>
           <div className="ib-side-note">“The rooms remember what the people forget.”</div>
         </aside>
