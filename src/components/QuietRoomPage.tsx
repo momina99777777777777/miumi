@@ -108,7 +108,7 @@ export default function QuietRoomPage() {
             <div className="quiet-sofa-back" />
             <div className="quiet-cushion quiet-cushion-one" />
             <div className="quiet-cushion quiet-cushion-two" />
-            <div className="quiet-character">
+            <div className={speaking ? "quiet-character is-speaking" : "quiet-character"}>
               <div className="quiet-hair" />
               <div className="quiet-head"><i /><b /></div>
               <div className="quiet-neck" />
