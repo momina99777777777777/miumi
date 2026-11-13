@@ -3,6 +3,7 @@ import { MessageCircle, Mic, MicOff, Send, Volume2, VolumeX, ShieldCheck, Sparkl
 import QuietRoomAvatar from "@/components/QuietRoomAvatar";
 
 type Message = { id: number; role: "companion" | "you"; text: string };
+type ReplyMode = "ai" | "guided" | null;
 
 export default function QuietRoomPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -14,6 +15,7 @@ export default function QuietRoomPage() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [voiceNotice, setVoiceNotice] = useState("");
   const [sending, setSending] = useState(false);
+  const [replyMode, setReplyMode] = useState<ReplyMode>(null);
   const recognition = useRef<any>(null);
 
   useEffect(() => () => {
@@ -48,7 +50,7 @@ export default function QuietRoomPage() {
       });
       const contentType = response.headers.get("content-type") || "";
       const responseText = await response.text();
-      let data: { error?: string; reply?: string } = {};
+      let data: { error?: string; reply?: string; mode?: ReplyMode } = {};
       if (contentType.includes("application/json")) {
         try {
           data = JSON.parse(responseText);
@@ -61,6 +63,10 @@ export default function QuietRoomPage() {
       if (!response.ok) throw new Error(data?.error || "The companion couldn't respond just now.");
       const reply = String(data.reply || "").trim();
       if (!reply) throw new Error("The companion returned an empty reply. Please try again.");
+      setReplyMode(data.mode || null);
+      if (data.mode === "guided") {
+        setVoiceNotice("Free guided mode is active. Replies use built-in supportive prompts, not generative AI. Your message stays only in this open page.");
+      }
       setMessages(previous => [...previous, { id: Date.now() + 1, role: "companion", text: reply }]);
       speak(reply);
     } catch (error) {
@@ -120,7 +126,7 @@ export default function QuietRoomPage() {
         <div className="quiet-chat-panel">
           <div className="quiet-chat-top">
             <div className="quiet-avatar"><MessageCircle size={18} /></div>
-            <div><strong>Your Miumi companion</strong><span>Supportive AI conversation · Not therapy</span></div>
+            <div><strong>Your Miumi companion</strong><span>{replyMode === "guided" ? "Free guided mode · Built-in responses" : "Supportive conversation · Not therapy"}</span></div>
             <button className="quiet-sound-toggle" onClick={() => { setVoiceEnabled(value => !value); window.speechSynthesis?.cancel(); setSpeaking(false); }} aria-label={voiceEnabled ? "Mute companion voice" : "Enable companion voice"}>{voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}</button>
           </div>
           <div className="quiet-messages" aria-live="polite">
