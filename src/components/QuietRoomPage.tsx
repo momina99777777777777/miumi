@@ -46,7 +46,18 @@ export default function QuietRoomPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: clean, history: messages.slice(-12).map(({ role, text }) => ({ role, content: text })) }),
       });
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const responseText = await response.text();
+      let data: { error?: string; reply?: string } = {};
+      if (contentType.includes("application/json")) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error("Quiet Room received an invalid response. Please try again.");
+        }
+      } else {
+        throw new Error("Quiet Room's API endpoint returned a webpage instead of JSON. The latest Cloudflare Pages deployment may not include the Quiet Room Function yet. Please redeploy the latest main-branch commit.");
+      }
       if (!response.ok) throw new Error(data?.error || "The companion couldn't respond just now.");
       const reply = String(data.reply || "").trim();
       if (!reply) throw new Error("The companion returned an empty reply. Please try again.");
@@ -56,7 +67,7 @@ export default function QuietRoomPage() {
       const message = error instanceof Error ? error.message : "Something went wrong.";
       setVoiceNotice(message.includes("not configured")
         ? "AI connection needs its secure server key before conversations can begin. Your message was not stored."
-        : message + " Your message was not stored.");
+        : message + " It remains visible only in this open page; it was not sent successfully or saved to an account.");
     } finally {
       setSending(false);
     }
