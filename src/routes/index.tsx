@@ -213,8 +213,8 @@ function MiumiHome() {
     <main className="miumi-app">
       <div className="page-wrap">
         <header className="topbar">
-          <button className="wordmark" onClick={() => navigate("home")} aria-label="miumi home">
-            <span className="wordmark-bow">୨୧</span> miumi <span className="wordmark-heart">♡</span>
+          <button className="wordmark" onClick={() => navigate("home")} aria-label="Miumi home">
+            <img className="wordmark-logo" src="/brand/miumi_horizontal_logo_transparent.png" alt="Miumi — Your world, all in one place." />
           </button>
           <span className="topbar-note"><Sparkles size={14} /> Your world, all in one place.</span>
           <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
