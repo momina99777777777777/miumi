@@ -149,6 +149,38 @@ export default function InBetweenGame() {
         const eye = material("#241e1b", 0.45);
         part(new THREE.SphereGeometry(0.022, 10, 8), eye, -0.075, 1.83, -0.218);
         part(new THREE.SphereGeometry(0.022, 10, 8), eye, 0.075, 1.83, -0.218);
+        // Face shaping: brows, nose bridge, ears and a subtle mouth make the
+        // traveller read as a person from close-up and three-quarter angles.
+        const eyeWhite = material("#e6ded0", 0.5);
+        const brow = material(new THREE.Color(avatar.hair).multiplyScalar(0.72).getStyle());
+        for (const x of [-0.075, 0.075]) {
+          part(new THREE.SphereGeometry(0.031, 12, 10), eyeWhite, x, 1.835, -0.205);
+          part(new THREE.SphereGeometry(0.013, 10, 8), eye, x, 1.833, -0.232);
+          const browMesh = part(new THREE.CapsuleGeometry(0.012, 0.065, 3, 8), brow, x, 1.885, -0.202);
+          browMesh.rotation.z = x < 0 ? -0.12 : 0.12;
+        }
+        const nose = part(new THREE.SphereGeometry(0.035, 12, 10), skin, 0, 1.785, -0.235);
+        nose.scale.set(0.72, 1.25, 0.8);
+        part(new THREE.CapsuleGeometry(0.008, 0.045, 3, 6), material("#80534a"), 0, 1.735, -0.222);
+        for (const x of [-0.235, 0.235]) {
+          const ear = part(new THREE.SphereGeometry(0.055, 12, 10), skin, x, 1.81, -0.005);
+          ear.scale.set(0.55, 1, 0.65);
+        }
+        // Tailored traveller's coat: lapels, front seam, brass buttons and cuffs.
+        const lapel = material(new THREE.Color(avatar.outfit).multiplyScalar(1.22).getStyle());
+        const seam = material("#b49a72", 0.55, 0.25);
+        for (const side of [-1, 1]) {
+          const flap = part(new THREE.BoxGeometry(0.13, 0.48, 0.055), lapel, side * 0.105, 1.28, -0.255);
+          flap.rotation.z = side * -0.24;
+          part(new THREE.TorusGeometry(0.045, 0.009, 6, 14), seam, side * 0.105, 1.12, -0.257);
+          const cuff = part(new THREE.CylinderGeometry(0.098, 0.098, 0.075, 16), seam, side * shoulder, 1.04, 0);
+          cuff.rotation.z = Math.PI / 2;
+        }
+        part(new THREE.BoxGeometry(0.018, 0.65, 0.018), seam, 0, 1.12, -0.255);
+        for (let i = 0; i < 3; i++) part(new THREE.SphereGeometry(0.018, 10, 8), brass, 0.055, 1.28 - i * 0.16, -0.275);
+        const scarf = part(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), seam, 0, 1.48, -0.19);
+        scarf.rotation.z = 0.12;
+        part(new THREE.BoxGeometry(0.11, 0.28, 0.035), seam, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, mat: any) => {
           const pivot = new THREE.Group();
           pivot.position.set(x, y, 0);
@@ -394,6 +426,36 @@ export default function InBetweenGame() {
         const eyeMat = mat("#241e1b", 0.45);
         makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, -0.075, 1.83, -0.218);
         makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, 0.075, 1.83, -0.218);
+        const eyeWhiteMat = mat("#e6ded0", 0.5);
+        const browMat = mat(new THREE.Color(avatar.hair).multiplyScalar(0.72).getStyle());
+        for (const x of [-0.075, 0.075]) {
+          makePart(new THREE.SphereGeometry(0.031, 12, 10), eyeWhiteMat, x, 1.835, -0.205);
+          makePart(new THREE.SphereGeometry(0.013, 10, 8), eyeMat, x, 1.833, -0.232);
+          const brow = makePart(new THREE.CapsuleGeometry(0.012, 0.065, 3, 8), browMat, x, 1.885, -0.202);
+          brow.rotation.z = x < 0 ? -0.12 : 0.12;
+        }
+        const nose = makePart(new THREE.SphereGeometry(0.035, 12, 10), skinMat, 0, 1.785, -0.235);
+        nose.scale.set(0.72, 1.25, 0.8);
+        makePart(new THREE.CapsuleGeometry(0.008, 0.045, 3, 6), mat("#80534a"), 0, 1.735, -0.222);
+        for (const x of [-0.235, 0.235]) {
+          const ear = makePart(new THREE.SphereGeometry(0.055, 12, 10), skinMat, x, 1.81, -0.005);
+          ear.scale.set(0.55, 1, 0.65);
+        }
+        // A recognisable tailored coat with layered lapels, stitching and buttons.
+        const lapelMat = mat(new THREE.Color(avatar.outfit).multiplyScalar(1.22).getStyle());
+        const stitchMat = mat("#b49a72", 0.55, 0.25);
+        for (const side of [-1, 1]) {
+          const flap = makePart(new THREE.BoxGeometry(0.13, 0.48, 0.055), lapelMat, side * 0.105, 1.28, -0.255);
+          flap.rotation.z = side * -0.24;
+          makePart(new THREE.TorusGeometry(0.045, 0.009, 6, 14), stitchMat, side * 0.105, 1.12, -0.257);
+          const cuff = makePart(new THREE.CylinderGeometry(0.098, 0.098, 0.075, 16), stitchMat, side * shoulder, 1.04, 0);
+          cuff.rotation.z = Math.PI / 2;
+        }
+        makePart(new THREE.BoxGeometry(0.018, 0.65, 0.018), stitchMat, 0, 1.12, -0.255);
+        for (let i = 0; i < 3; i++) makePart(new THREE.SphereGeometry(0.018, 10, 8), trimMat, 0.055, 1.28 - i * 0.16, -0.275);
+        const scarf = makePart(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), stitchMat, 0, 1.48, -0.19);
+        scarf.rotation.z = 0.12;
+        makePart(new THREE.BoxGeometry(0.11, 0.28, 0.035), stitchMat, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, material: any) => {
           const pivot = new THREE.Group();
           pivot.position.set(x, y, 0);
@@ -486,6 +548,10 @@ export default function InBetweenGame() {
             const [armL, armR, legL, legR] = playerLimbs;
             armL.rotation.x = swing; armR.rotation.x = -swing;
             legL.rotation.x = -swing; legR.rotation.x = swing;
+            // Gentle counter-sway and vertical foot rhythm keep the gait from
+            // looking like a rigid sliding mannequin.
+            player.position.y = moving ? Math.abs(Math.sin(clockTimer.elapsedTime * 9)) * 0.045 : Math.sin(clockTimer.elapsedTime * 1.7) * 0.012;
+            player.rotation.z = moving ? Math.sin(clockTimer.elapsedTime * 4.5) * 0.018 : 0;
           }
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : promptNear(0, -9.2, 2.2) ? "E  ·  TRY THE DOOR" : "";
