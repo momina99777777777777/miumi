@@ -457,6 +457,7 @@ function MiumiHome() {
   <NavButton active={page === "in-between"} icon={<Sparkles />} label="In-Between" onClick={() => navigate("in-between")} />
   <NavButton active={page === "photo-studio"} icon={<ImagePlus />} label="Photos" onClick={() => navigate("photo-studio")} />
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
+  <NavButton active={page === "quiet-room"} icon={<MessageCircle />} label="Quiet Room" onClick={() => navigate("quiet-room")} />
 </nav>
         <MiumiBunnyGuide onNavigate={navigate} />
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
