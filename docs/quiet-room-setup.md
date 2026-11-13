@@ -2,30 +2,27 @@
 
 The Quiet Room is a supportive AI conversation feature, not a therapy or crisis service.
 
-## Connect Workers AI using Cloudflare dashboard
+## Cloudflare Pages configuration
 
-Miumi routes `/api/quiet-room` through its main Cloudflare Worker entry point in `src/server.ts`. The handler expects a Cloudflare Workers AI binding named `AI`.
+Miumi uses the Pages Wrangler configuration file `wrangler.jsonc` as the source of truth. It declares the Workers AI binding named `AI` at the top level, which is inherited by production and preview deployments unless an environment override is added.
 
-The repository no longer includes a Wrangler configuration file. This returns Pages runtime configuration management to the Cloudflare dashboard so the binding can be added there.
+The Cloudflare dashboard may label bindings as **Managed by Wrangler** and disable the Add button. This is expected while the repository contains this configuration. Do not try to add a duplicate dashboard binding.
 
-1. Wait until the latest Git-integrated deployment from the `main` branch completes.
-2. Open the Pages project in Cloudflare and go to **Settings → Bindings**.
-3. Select the **Production** environment.
-4. Choose **Add → Workers AI**.
-5. Set the variable name to exactly `AI`.
-6. Save the binding.
-7. Repeat for **Preview** only if you want preview deployments to use AI.
-8. Redeploy the latest production deployment so the binding becomes available at runtime.
+The repository is connected to Cloudflare Pages through Git integration, with the production branch set to `main` and automatic deployments enabled. A new commit should trigger a deployment. After the deployment that includes `wrangler.jsonc` succeeds, the health endpoint `/api/quiet-room` should report `configured: true` if Cloudflare has applied the binding.
 
-Cloudflare documentation: https://developers.cloudflare.com/pages/functions/bindings/#workers-ai
+## API routing
+
+Miumi's TanStack Start app uses a custom Worker entry point in `src/server.ts`. The `/api/quiet-room` route is handled in that Worker before normal app requests are forwarded to TanStack Start. This is necessary for Pages advanced mode, where Cloudflare ignores the separate `/functions` directory when a `_worker.js` is present in the build output.
 
 ## Free usage and billing
 
-Workers AI has a 10,000-Neuron daily free allocation on the Workers Free plan. Usage above this allocation requires the Workers Paid plan. Keep the account on the Free plan and do not enable paid billing. Some model choices may require a paid billing method; do not select those models.
+Workers AI has a daily free allocation on the Workers Free plan. Keep the account on the Free plan and do not enable paid billing. Requests may stop after the free daily allowance is exhausted. Do not upgrade to a paid plan for this feature.
 
-## Current experience and privacy
+The selected model is `@cf/zai-org/glm-4.7-flash`. Check Cloudflare's current model pricing and Free-plan limits before use, because Cloudflare can change availability and limits.
 
-- Text chat calls the same-origin `/api/quiet-room` endpoint.
+## Privacy and experience
+
+- The browser sends text to the same-origin `/api/quiet-room` endpoint.
 - The server does not write conversation history to a database.
 - The page keeps the current conversation in component memory only; leaving or refreshing clears it.
 - Browser speech recognition is optional and requires user permission. Voice transcription may be handled by the browser's speech service. Browser speech synthesis reads companion replies aloud.
