@@ -102,11 +102,13 @@ export default function InBetweenGame() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color("#171a20");
         scene.fog = new THREE.Fog("#171a20", 5, 13);
-        const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 30);
-        camera.position.set(0, 1.55, 6.2);
-        camera.lookAt(0, 1.05, 0);
+        const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 30);
+        // Frame Mira much closer so her face, coat details and satchel are
+        // readable in the character studio instead of getting lost on the plinth.
+        camera.position.set(0, 1.48, 4.65);
+        camera.lookAt(0, 1.0, 0);
         renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
