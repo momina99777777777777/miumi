@@ -590,13 +590,15 @@ export default function InBetweenGame() {
         const player = new THREE.Group();
         scene.add(player);
         player.position.set(0, 0, 4.8);
+        const fallbackGroup = new THREE.Group();
+        fallbackGroup.add(fallbackGroup);
         const skinMat = mat(avatar.skin, 0.78);
         const hairMat = mat(avatar.hair, 0.9);
         const outfitMat = mat(avatar.outfit, 0.88);
         const darkOutfitMat = mat(new THREE.Color(avatar.outfit).multiplyScalar(0.72).getStyle(), 0.9);
         const bootMat = mat("#171719", 0.7);
         const trimMat = mat("#b49a72", 0.48, 0.35);
-        const makePart = (geometry: any, material: any, x: number, y: number, z: number, parent: any = player) => {
+        const makePart = (geometry: any, material: any, x: number, y: number, z: number, parent: any = fallbackGroup) => {
           const part = new THREE.Mesh(geometry, material);
           part.position.set(x, y, z);
           part.castShadow = true;
@@ -620,7 +622,7 @@ export default function InBetweenGame() {
         }
         const sash = makePart(new THREE.TorusGeometry(0.2, 0.035, 8, 28), trimMat, 0, 0.98, 0);
         sash.rotation.x = Math.PI / 2;
-        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); player.add(satchel);
+        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); fallbackGroup.add(satchel);
         makePart(new THREE.BoxGeometry(0.34, 0.36, 0.16), darkOutfitMat, 0, 0, 0, satchel);
         makePart(new THREE.BoxGeometry(0.29, 0.11, 0.035), trimMat, 0, -0.04, -0.09, satchel);
         makePart(new THREE.TorusGeometry(0.045, 0.012, 6, 12), trimMat, 0, -0.04, -0.115, satchel);
@@ -634,7 +636,7 @@ export default function InBetweenGame() {
           for (const side of [-1, 1]) {
             const lock = new THREE.Group();
             lock.position.set(side * 0.19, 1.72, 0.045);
-            player.add(lock);
+            fallbackGroup.add(lock);
             makePart(new THREE.CapsuleGeometry(0.095, 0.46, 7, 14), hairMat, 0, -0.15, 0, lock);
             const curl = makePart(new THREE.SphereGeometry(0.105, 16, 12), hairMat, 0, -0.42, 0.015, lock);
             curl.scale.set(0.9, 0.72, 0.85);
@@ -648,7 +650,7 @@ export default function InBetweenGame() {
           makePart(new THREE.SphereGeometry(0.12, 16, 12), hairMat, 0, 1.72, 0.22);
           const ponytail = new THREE.Group();
           ponytail.position.set(0, 1.62, 0.2);
-          player.add(ponytail);
+          fallbackGroup.add(ponytail);
           makePart(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hairMat, 0, -0.12, 0, ponytail);
           hairMotion.push({ pivot: ponytail, side: 0.7 });
         } else {
@@ -690,12 +692,12 @@ export default function InBetweenGame() {
         for (let i = 0; i < 3; i++) makePart(new THREE.SphereGeometry(0.018, 10, 8), trimMat, 0.055, 1.28 - i * 0.16, -0.275);
         const scarfPivot = new THREE.Group();
         scarfPivot.position.set(0, 1.52, -0.12);
-        player.add(scarfPivot);
+        fallbackGroup.add(scarfPivot);
         const scarf = makePart(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), stitchMat, 0, -0.06, -0.07, scarfPivot);
         scarf.rotation.z = 0.12;
         const coatTail = new THREE.Group();
         coatTail.position.set(0, 0.9, 0.13);
-        player.add(coatTail);
+        fallbackGroup.add(coatTail);
         makePart(new THREE.BoxGeometry(0.43, 0.38, 0.075), darkOutfitMat, 0, -0.18, 0, coatTail);
         const collarPin = makePart(new THREE.TorusGeometry(0.055, 0.012, 6, 16), trimMat, -0.18, 1.43, -0.22);
         collarPin.rotation.x = Math.PI / 2;
@@ -703,7 +705,7 @@ export default function InBetweenGame() {
         const limb = (x: number, y: number, length: number, width: number, material: any) => {
           const pivot = new THREE.Group();
           pivot.position.set(x, y, 0);
-          player.add(pivot);
+          fallbackGroup.add(pivot);
           makePart(new THREE.CapsuleGeometry(width, length, 6, 12), material, 0, -length * 0.42, 0, pivot);
           return pivot;
         };
@@ -769,6 +771,71 @@ export default function InBetweenGame() {
         let active = true;
         let frame = 0;
         const clockTimer = new THREE.Clock();
+
+        // Mira now uses a real skinned, rigged character with authored walk/run
+        // clips. The CC0 model is hosted by Grab3D; the procedural Mira remains
+        // as a graceful fallback if the asset host or loader is unavailable.
+        let characterMixer: any = null;
+        let idleAction: any = null;
+        let walkAction: any = null;
+        let currentCharacterAction: any = null;
+        let modelReady = false;
+        const switchCharacterAction = (next: any) => {
+          if (!next || currentCharacterAction === next) return;
+          next.reset().fadeIn(0.22).play();
+          if (currentCharacterAction) currentCharacterAction.fadeOut(0.22);
+          currentCharacterAction = next;
+        };
+        void (async () => {
+          try {
+            const loaderModule = await import(/* @vite-ignore */ "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js");
+            if (!active) return;
+            const loader = new loaderModule.GLTFLoader();
+            const gltf = await loader.loadAsync("https://grab3d.com/dl/woman-rigged/woman-rigged.glb");
+            if (!active) {
+              gltf.scene.traverse((object: any) => {
+                if (object.geometry) object.geometry.dispose();
+                if (object.material) {
+                  const materials = Array.isArray(object.material) ? object.material : [object.material];
+                  materials.forEach((item: any) => item.dispose());
+                }
+              });
+              return;
+            }
+            const model = gltf.scene;
+            const bounds = new THREE.Box3().setFromObject(model);
+            const dimensions = bounds.getSize(new THREE.Vector3());
+            const centre = bounds.getCenter(new THREE.Vector3());
+            model.position.x -= centre.x;
+            model.position.z -= centre.z;
+            model.position.y -= bounds.min.y;
+            model.scale.setScalar(1.78 / Math.max(dimensions.y, 0.01));
+            // glTF character assets commonly face +Z; Mira faces into the room.
+            model.rotation.y = Math.PI;
+            model.traverse((object: any) => {
+              if (!object.isMesh) return;
+              object.castShadow = true;
+              object.receiveShadow = true;
+              if (object.material) {
+                const materials = Array.isArray(object.material) ? object.material : [object.material];
+                materials.forEach((material: any) => {
+                  if ("roughness" in material) material.roughness = Math.max(0.42, material.roughness ?? 0.7);
+                });
+              }
+            });
+            player.add(model);
+            fallbackGroup.visible = false;
+            characterMixer = new THREE.AnimationMixer(model);
+            const idleClip = gltf.animations.find((clip: any) => /idle|stand/i.test(clip.name)) || gltf.animations[0];
+            const walkClip = gltf.animations.find((clip: any) => /walk|run/i.test(clip.name));
+            idleAction = idleClip ? characterMixer.clipAction(idleClip) : null;
+            walkAction = walkClip ? characterMixer.clipAction(walkClip) : idleAction;
+            switchCharacterAction(idleAction);
+            modelReady = true;
+          } catch (error) {
+            console.warn("Mira's rigged model could not be loaded; using the built-in fallback.", error);
+          }
+        })();
         const target = new THREE.Vector3();
         const resize = () => {
           const width = canvas.clientWidth || 1;
@@ -819,6 +886,10 @@ export default function InBetweenGame() {
           if (!active) return;
           frame = requestAnimationFrame(animate);
           const delta = Math.min(clockTimer.getDelta(), 0.04);
+          if (characterMixer) {
+            characterMixer.update(delta);
+            switchCharacterAction(moving ? walkAction : idleAction);
+          }
           const forward = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
           const sideways = (keys.has("d") || keys.has("arrowright") ? 1 : 0) - (keys.has("a") || keys.has("arrowleft") ? 1 : 0);
           const moving = forward !== 0 || sideways !== 0;
@@ -1015,7 +1086,7 @@ export default function InBetweenGame() {
               <button className="ib-avatar-reset" onClick={() => setAvatar(DEFAULT_AVATAR)}>RESTORE DEFAULT LOOK</button>
             </div>
             <button className="ib-primary" onClick={() => setStarted(true)}>ENTER THE LIBRARY <span>↗</span></button>
-            <p className="ib-footnote">MIRA VALE · YOUR LOOK IS SAVED · CHAPTER 01 · THE SILENT LIBRARY</p>
+            <p className="ib-footnote">MIRA VALE · RIGGED CHARACTER · CHAPTER 01 · THE SILENT LIBRARY</p>
           </div>
         </div>
       </section>
