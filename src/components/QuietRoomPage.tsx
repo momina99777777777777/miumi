@@ -65,8 +65,8 @@ export default function QuietRoomPage() {
       speak(reply);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Something went wrong.";
-      setVoiceNotice(message.includes("not configured")
-        ? "AI connection needs its secure server key before conversations can begin. Your message was not stored."
+      setVoiceNotice(message.includes("Workers AI binding") || message.includes("free AI service is not connected")
+        ? "The free AI connection still needs to be enabled in Cloudflare Pages. Your message was not sent to the companion."
         : message + " It remains visible only in this open page; it was not sent successfully or saved to an account.");
     } finally {
       setSending(false);
@@ -120,7 +120,7 @@ export default function QuietRoomPage() {
         <div className="quiet-chat-panel">
           <div className="quiet-chat-top">
             <div className="quiet-avatar"><MessageCircle size={18} /></div>
-            <div><strong>Your Miumi companion</strong><span>Private supportive conversation · Not therapy</span></div>
+            <div><strong>Your Miumi companion</strong><span>Supportive AI conversation · Not therapy</span></div>
             <button className="quiet-sound-toggle" onClick={() => { setVoiceEnabled(value => !value); window.speechSynthesis?.cancel(); setSpeaking(false); }} aria-label={voiceEnabled ? "Mute companion voice" : "Enable companion voice"}>{voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}</button>
           </div>
           <div className="quiet-messages" aria-live="polite">
