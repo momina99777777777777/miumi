@@ -8,5 +8,17 @@
   ],
   "ai": {
     "binding": "AI"
+  },
+  "env": {
+    "production": {
+      "ai": {
+        "binding": "AI"
+      }
+    },
+    "preview": {
+      "ai": {
+        "binding": "AI"
+      }
+    }
   }
 }
