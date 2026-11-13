@@ -4411,3 +4411,12 @@ button:hover::after {
 .quiet-scene-caption { z-index:2; }
 .quiet-scene-tag { position:absolute;z-index:2;top:18px;left:20px;display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #fff9;border-radius:30px;background:#fff9;backdrop-filter:blur(12px);color:#8c657b;font-size:10px;letter-spacing:.14em;font-weight:700;box-shadow:0 4px 18px #8b617a14; }
 @media(max-width:760px){.quiet-room-3d-scene,.quiet-3d-canvas{min-height:390px;height:390px}.quiet-scene-tag{top:12px;left:12px;font-size:9px}}
+
+.quiet-room-3d-scene { min-height:620px; background:#f4e8eb; }
+.quiet-room-3d-scene:before { display:none; }
+.quiet-room-3d-scene .quiet-3d-canvas { position:relative; z-index:1; width:100%; height:620px; min-height:620px; }
+.quiet-room-3d-scene .quiet-scene-caption { z-index:3; }
+@media(max-width:760px){
+  .quiet-room-3d-scene { min-height:390px; }
+  .quiet-room-3d-scene .quiet-3d-canvas { height:390px; min-height:390px; }
+}
