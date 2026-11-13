@@ -12,7 +12,7 @@ The older `functions/api/quiet-room.ts` file remains as a fallback for deploymen
 
 Miumi's Cloudflare Pages project is configured in `wrangler.jsonc`. That file keeps the existing Pages output directory (`./dist`), the `nodejs_compat` runtime flag, and the Workers AI binding named `AI`.
 
-1. The `wrangler.jsonc` file is committed to the `main` branch.
+1. The `wrangler.jsonc` file is committed to the `main` branch and declares the `AI` binding at the top level, as well as explicitly under both `env.production` and `env.preview`.
 2. Cloudflare Pages should build and deploy the latest `main` commit.
 3. The API checks for `env.AI` and calls Cloudflare Workers AI using `@cf/zai-org/glm-4.7-flash`.
 
