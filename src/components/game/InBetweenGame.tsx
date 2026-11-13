@@ -969,7 +969,25 @@ export default function InBetweenGame() {
         resize();
 
         const foundTownClues = new Set(inventory);
+        let gameAudio:any = null;
+        const playTone = (frequency:number, duration:number, volume=0.025) => {
+          try {
+            const AudioCtor = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioCtor) return;
+            if (!gameAudio) gameAudio = new AudioCtor();
+            if (gameAudio.state === "suspended") void gameAudio.resume();
+            const oscillator = gameAudio.createOscillator();
+            const gain = gameAudio.createGain();
+            oscillator.type = "sine"; oscillator.frequency.setValueAtTime(frequency,gameAudio.currentTime);
+            gain.gain.setValueAtTime(0.0001,gameAudio.currentTime);
+            gain.gain.exponentialRampToValueAtTime(volume,gameAudio.currentTime+0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001,gameAudio.currentTime+duration);
+            oscillator.connect(gain); gain.connect(gameAudio.destination);
+            oscillator.start(); oscillator.stop(gameAudio.currentTime+duration+0.03);
+          } catch { /* Audio is optional; gameplay never depends on it. */ }
+        };
         function interact() {
+          playTone(390,0.075,0.018);
           const px = player.position.x;
           const pz = player.position.z;
           const near = (x: number, z: number, radius = 2.1) => Math.hypot(px - x, pz - z) < radius;
@@ -1011,6 +1029,7 @@ export default function InBetweenGame() {
             if (!foundTownClues.has("Paper boat")) { foundTownClues.add("Paper boat"); setInventory((items)=>[...items,"Paper boat"]); }
           } else if (townUnlocked && near(-14,-69.3,2.0)) {
             if (!foundTownClues.has("Memory shard")) { foundTownClues.add("Memory shard"); setInventory((items)=>[...items,"Memory shard"]); }
+            playTone(740,0.24,0.045);
             setMessage({ title:"A hidden memorial", body:"Behind the last row of houses, a plaque reads: “For those who stayed when the clock stopped.” The glowing shard hums softly. You found a secret memory of Bellwether." });
           } else if (near(0, -43, 2.8) && townUnlocked) {
             if (!foundTownClues.has("Fountain token")) { foundTownClues.add("Fountain token"); setInventory((items) => [...items, "Fountain token"]); }
@@ -1108,6 +1127,7 @@ export default function InBetweenGame() {
           }
           if (townUnlocked && player.position.z < -31 && !townDiscoveredRef.current) {
             townDiscoveredRef.current = true;
+            playTone(523,0.24,0.04);
             window.dispatchEvent(new CustomEvent("inbetween:town-discovered"));
           }
           if (clockActivated) hand.rotation.z = THREE.MathUtils.lerp(hand.rotation.z, -2.4, delta * 0.9);
@@ -1154,6 +1174,7 @@ export default function InBetweenGame() {
           window.removeEventListener("inbetween:unlock", onUnlock);
           window.removeEventListener("inbetween:clock-solved", onClockSolved);
           window.removeEventListener("inbetween:town-unlock", onTownUnlock);
+          if (gameAudio) { void gameAudio.close().catch(() => {}); gameAudio = null; }
           resizeObserver.disconnect();
           scene.traverse((object: any) => {
             if (object.geometry) object.geometry.dispose();
