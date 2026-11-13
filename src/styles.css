@@ -4281,3 +4281,9 @@ button:hover::after {
 .miumi-bunny-compose>button{width:36px;flex-shrink:0;border:0;border-radius:11px;background:#f7e7f0;color:#a47791;font-size:15px;cursor:pointer}
 .miumi-bunny-compose>button.miumi-bunny-customise{background:#f4effc;color:#9a83b6}
 @media(max-width:600px){.miumi-bunny-guide{right:12px;bottom:14px}.miumi-bunny-launcher{padding:6px}.miumi-bunny-launcher-art{width:44px;height:44px}.miumi-bunny-launcher-label{max-width:85px;font-size:9px}.miumi-bunny-chat{max-height:calc(100vh - 105px)}}
+
+
+/* Miumi official brand assets */
+.wordmark { display:flex; align-items:center; justify-content:flex-start; min-width:0; padding:0; border:0; background:transparent; cursor:pointer; }
+.wordmark-logo { display:block; width:clamp(118px, 15vw, 174px); height:auto; max-height:58px; object-fit:contain; object-position:left center; }
+@media(max-width:640px) { .wordmark-logo { width:clamp(105px, 31vw, 145px); max-height:48px; } }
