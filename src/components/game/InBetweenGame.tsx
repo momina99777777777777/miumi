@@ -63,7 +63,10 @@ export default function InBetweenGame() {
         setInventory(Array.isArray(data.inventory) ? data.inventory : []);
         setClockSolved(Boolean(data.clockSolved));
         setDoorOpen(Boolean(data.doorOpen));
-        if (data.avatar) setAvatar({ ...DEFAULT_AVATAR, ...data.avatar, presentation: "feminine", hairStyle: "long" });
+        if (data.avatar) {
+          const hadOldTraveller = data.avatar.presentation !== "feminine";
+          setAvatar(hadOldTraveller ? DEFAULT_AVATAR : { ...DEFAULT_AVATAR, ...data.avatar, presentation: "feminine", hairStyle: "long" });
+        }
       }
     } catch {
       localStorage.removeItem(SAVE_KEY);
