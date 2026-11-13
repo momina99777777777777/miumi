@@ -63,7 +63,7 @@ export default function InBetweenGame() {
         setInventory(Array.isArray(data.inventory) ? data.inventory : []);
         setClockSolved(Boolean(data.clockSolved));
         setDoorOpen(Boolean(data.doorOpen));
-        if (data.avatar) setAvatar({ ...DEFAULT_AVATAR, ...data.avatar });
+        if (data.avatar) setAvatar({ ...DEFAULT_AVATAR, ...data.avatar, presentation: "feminine", hairStyle: "long" });
       }
     } catch {
       localStorage.removeItem(SAVE_KEY);
@@ -541,21 +541,39 @@ export default function InBetweenGame() {
         const torso = makePart(new THREE.CapsuleGeometry(avatar.presentation === "masculine" ? 0.31 : 0.28, 0.62, 7, 16), outfitMat, 0, 1.13, 0);
         torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
         makePart(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), darkOutfitMat, 0, 0.76, 0.015);
-        makePart(new THREE.TorusGeometry(0.19, 0.025, 8, 24), trimMat, 0, 1.47, 0).rotation.x = Math.PI / 2;
-        makePart(new THREE.SphereGeometry(0.235, 28, 22), skinMat, 0, 1.82, 0);
-        const facePlate = makePart(new THREE.SphereGeometry(0.19, 24, 18, 0, Math.PI, 0.15, Math.PI * 0.7), skinMat, 0, 1.81, -0.035);
+        // Mira Vale's signature field coat, pleated travel skirt and satchel.
+        const coatSkirt = makePart(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), darkOutfitMat, 0, 0.79, 0);
+        coatSkirt.rotation.y = Math.PI / 8;
+        for (let i = 0; i < 5; i++) {
+          const pleat = makePart(new THREE.BoxGeometry(0.018, 0.43, 0.025), trimMat, -0.25 + i * 0.125, 0.79, -0.17);
+          pleat.rotation.z = (i - 2) * 0.035;
+        }
+        const sash = makePart(new THREE.TorusGeometry(0.2, 0.035, 8, 28), trimMat, 0, 0.98, 0);
+        sash.rotation.x = Math.PI / 2;
+        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); player.add(satchel);
+        makePart(new THREE.BoxGeometry(0.34, 0.36, 0.16), darkOutfitMat, 0, 0, 0, satchel);
+        makePart(new THREE.BoxGeometry(0.29, 0.11, 0.035), trimMat, 0, -0.04, -0.09, satchel);
+        makePart(new THREE.TorusGeometry(0.045, 0.012, 6, 12), trimMat, 0, -0.04, -0.115, satchel);
+        makePart(new THREE.SphereGeometry(0.235, 32, 28), skinMat, 0, 1.82, 0);
+        const facePlate = makePart(new THREE.SphereGeometry(0.19, 28, 20, 0, Math.PI, 0.15, Math.PI * 0.7), skinMat, 0, 1.81, -0.035);
         facePlate.scale.set(0.98, 0.98, 0.9);
-        // Hair cap plus selectable silhouette.
-        makePart(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hairMat, 0, 1.88, 0);
+        makePart(new THREE.SphereGeometry(0.25, 32, 24, 0, Math.PI * 2, 0, Math.PI * 0.57), hairMat, 0, 1.88, 0);
         const hairMotion: any[] = [];
         if (avatar.hairStyle === "long") {
+          makePart(new THREE.CapsuleGeometry(0.22, 0.58, 7, 16), hairMat, 0, 1.48, 0.13);
           for (const side of [-1, 1]) {
             const lock = new THREE.Group();
             lock.position.set(side * 0.19, 1.72, 0.045);
             player.add(lock);
-            makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, 0, -0.15, 0, lock);
+            makePart(new THREE.CapsuleGeometry(0.095, 0.46, 7, 14), hairMat, 0, -0.15, 0, lock);
+            const curl = makePart(new THREE.SphereGeometry(0.105, 16, 12), hairMat, 0, -0.42, 0.015, lock);
+            curl.scale.set(0.9, 0.72, 0.85);
             hairMotion.push({ pivot: lock, side });
           }
+          const fringe = makePart(new THREE.SphereGeometry(0.19, 24, 16, 0, Math.PI, 0, Math.PI * 0.5), hairMat, 0, 1.93, -0.13);
+          fringe.scale.set(1.1, 0.62, 0.72);
+          const hairPin = makePart(new THREE.TorusGeometry(0.055, 0.014, 7, 18), trimMat, 0.17, 1.91, -0.19);
+          hairPin.rotation.x = Math.PI / 2;
         } else if (avatar.hairStyle === "tied") {
           makePart(new THREE.SphereGeometry(0.12, 16, 12), hairMat, 0, 1.72, 0.22);
           const ponytail = new THREE.Group();
@@ -568,13 +586,16 @@ export default function InBetweenGame() {
         }
         // Small facial details face toward the camera/front of the character.
         const eyeMat = mat("#241e1b", 0.45);
+        const irisMat = mat("#806044", 0.35, 0.05);
         makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, -0.075, 1.83, -0.218);
         makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, 0.075, 1.83, -0.218);
         const eyeWhiteMat = mat("#e6ded0", 0.5);
         const browMat = mat(new THREE.Color(avatar.hair).multiplyScalar(0.72).getStyle());
         for (const x of [-0.075, 0.075]) {
           makePart(new THREE.SphereGeometry(0.031, 12, 10), eyeWhiteMat, x, 1.835, -0.205);
-          makePart(new THREE.SphereGeometry(0.013, 10, 8), eyeMat, x, 1.833, -0.232);
+          makePart(new THREE.SphereGeometry(0.013, 10, 8), irisMat, x, 1.833, -0.232);
+          const lash = makePart(new THREE.CapsuleGeometry(0.008, 0.055, 3, 6), eyeMat, x, 1.866, -0.221);
+          lash.rotation.z = x < 0 ? -0.45 : 0.45;
           const brow = makePart(new THREE.CapsuleGeometry(0.012, 0.065, 3, 8), browMat, x, 1.885, -0.202);
           brow.rotation.z = x < 0 ? -0.12 : 0.12;
         }
@@ -606,6 +627,8 @@ export default function InBetweenGame() {
         coatTail.position.set(0, 0.9, 0.13);
         player.add(coatTail);
         makePart(new THREE.BoxGeometry(0.43, 0.38, 0.075), darkOutfitMat, 0, -0.18, 0, coatTail);
+        const collarPin = makePart(new THREE.TorusGeometry(0.055, 0.012, 6, 16), trimMat, -0.18, 1.43, -0.22);
+        collarPin.rotation.x = Math.PI / 2;
         makePart(new THREE.BoxGeometry(0.11, 0.28, 0.035), stitchMat, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, material: any) => {
           const pivot = new THREE.Group();
