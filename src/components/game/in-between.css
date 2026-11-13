@@ -59,3 +59,6 @@
 .ib-world:has(canvas:active) canvas{cursor:grabbing}
 .ib-world-bottom{font-size:9px;gap:14px}
 @media(max-width:700px){.ib-world-bottom{font-size:7px;letter-spacing:.08em}.ib-world-bottom span:last-child{text-align:right}}
+
+.ib-world-top,.ib-world-bottom,.ib-interaction-prompt{pointer-events:none}
+.ib-mobile-controls{z-index:5}
