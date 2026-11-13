@@ -288,6 +288,13 @@ export default function InBetweenGame() {
               if (object.isMesh) {
                 object.castShadow = true;
                 object.receiveShadow = true;
+                const materials = Array.isArray(object.material) ? object.material : [object.material];
+                materials.forEach((material: any) => {
+                  const materialLabel = `${object.name} ${material?.name || ""}`.toLowerCase();
+                  if (material?.color && /hair|brow/.test(materialLabel)) material.color.set(avatar.hair);
+                  else if (material?.color && /skin|face|body|hand/.test(materialLabel)) material.color.set(avatar.skin);
+                  else if (material?.color && /blazer|shirt|trouser|pant|cloth|jacket|top|outfit/.test(materialLabel)) material.color.set(avatar.outfit);
+                });
               }
             });
             character.add(model);
@@ -859,7 +866,6 @@ export default function InBetweenGame() {
         let idleAction: any = null;
         let walkAction: any = null;
         let currentCharacterAction: any = null;
-        let modelReady = false;
         const switchCharacterAction = (next: any) => {
           if (!next || currentCharacterAction === next) return;
           next.reset().fadeIn(0.22).play();
@@ -899,6 +905,10 @@ export default function InBetweenGame() {
               if (object.material) {
                 const materials = Array.isArray(object.material) ? object.material : [object.material];
                 materials.forEach((material: any) => {
+                  const materialLabel = `${object.name} ${material.name || ""}`.toLowerCase();
+                  if (material.color && /hair|brow/.test(materialLabel)) material.color.set(avatar.hair);
+                  else if (material.color && /skin|face|body|hand/.test(materialLabel)) material.color.set(avatar.skin);
+                  else if (material.color && /blazer|shirt|trouser|pant|cloth|jacket|top|outfit/.test(materialLabel)) material.color.set(avatar.outfit);
                   if ("roughness" in material) material.roughness = Math.max(0.42, material.roughness ?? 0.7);
                 });
               }
@@ -911,7 +921,6 @@ export default function InBetweenGame() {
             idleAction = idleClip ? characterMixer.clipAction(idleClip) : null;
             walkAction = walkClip ? characterMixer.clipAction(walkClip) : idleAction;
             switchCharacterAction(idleAction);
-            modelReady = true;
           } catch (error) {
             console.warn("Mira's rigged model could not be loaded; using the built-in fallback.", error);
           }
