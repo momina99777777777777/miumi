@@ -390,6 +390,24 @@ export default function InBetweenGame() {
         coolFill.position.set(5.8, 2.8, 1.8);
         scene.add(coolFill);
 
+        // A moving layer of fine dust catches the warm and moonlit beams.
+        const dustCount = 260;
+        const dustPositions = new Float32Array(dustCount * 3);
+        const dustDrift = new Float32Array(dustCount * 3);
+        for (let i = 0; i < dustCount; i++) {
+          dustPositions[i * 3] = (Math.random() - 0.5) * 15;
+          dustPositions[i * 3 + 1] = 0.25 + Math.random() * 5.1;
+          dustPositions[i * 3 + 2] = -25 + Math.random() * 32;
+          dustDrift[i * 3] = (Math.random() - 0.5) * 0.12;
+          dustDrift[i * 3 + 1] = 0.025 + Math.random() * 0.07;
+          dustDrift[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+        }
+        const dustGeometry = new THREE.BufferGeometry();
+        dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
+        const dustMaterial = new THREE.PointsMaterial({ color: "#d7c9a9", size: 0.035, transparent: true, opacity: 0.48, depthWrite: false, sizeAttenuation: true });
+        const dustMotes = new THREE.Points(dustGeometry, dustMaterial);
+        scene.add(dustMotes);
+
         const mat = (color: string, roughness = 0.82, metalness = 0) =>
           new THREE.MeshStandardMaterial({ color, roughness, metalness });
         const floorMat = mat("#34343a", 0.94);
@@ -464,10 +482,55 @@ export default function InBetweenGame() {
           }
         }
 
+        // Architectural dressing turns the empty box into a deliberate,
+        // old-world library: carpet, carved rails, ceiling ribs and sconces.
+        makeBox(4.9, 0.035, 5.8, mat("#49333a", 0.98), 0, 0.005, -2.6);
+        for (const x of [-2.28, 2.28]) makeBox(0.055, 0.025, 5.55, brass, x, 0.03, -2.6);
+        for (const z of [-5.32, 0.12]) makeBox(4.62, 0.025, 0.055, brass, 0, 0.03, z);
+        for (const side of [-1, 1]) {
+          makeBox(0.12, 0.32, 17.2, darkWood, side * 7.72, 0.05, -2);
+          makeBox(0.12, 0.22, 17.2, wood, side * 7.72, 5.45, -2);
+          for (const z of [-9.2, -4.2, 0.8, 5.8]) {
+            makeBox(0.24, 0.5, 0.24, brass, side * 7.58, 3.25, z);
+            const sconce = new THREE.PointLight("#e6ad70", 3.8, 6, 2);
+            sconce.position.set(side * 7.2, 3.45, z); scene.add(sconce);
+            const sconceCup = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.24, 12), brass);
+            sconceCup.position.set(side * 7.2, 3.2, z); sconceCup.rotation.x = Math.PI; scene.add(sconceCup);
+          }
+        }
+        for (const z of [-9.4, -6.2, -3.0, 0.2, 3.4]) {
+          makeBox(15.4, 0.18, 0.22, darkWood, 0, 5.35, z);
+          makeBox(15.4, 0.07, 0.08, brass, 0, 5.23, z);
+        }
+        const chandelier = new THREE.Group();
+        chandelier.position.set(0, 5.05, -5.2);
+        scene.add(chandelier);
+        const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.75, 10), brass);
+        chain.position.y = 0.36; chandelier.add(chain);
+        const chandelierRing = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.055, 8, 36), brass);
+        chandelierRing.rotation.x = Math.PI / 2; chandelierRing.position.y = -0.08; chandelier.add(chandelierRing);
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2;
+          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.58, 8), brass);
+          arm.position.set(Math.cos(angle) * 0.55, -0.02, Math.sin(angle) * 0.55);
+          arm.rotation.z = Math.cos(angle) * 0.8; arm.rotation.x = Math.sin(angle) * 0.8; chandelier.add(arm);
+          const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.105, 12, 10), mat("#f5d7a1", 0.25, 0.1));
+          bulb.position.set(Math.cos(angle) * 0.82, -0.1, Math.sin(angle) * 0.82); chandelier.add(bulb);
+        }
+        const chandelierLight = new THREE.PointLight("#e9bd83", 10, 12, 2);
+        chandelierLight.position.set(0, 4.65, -5.2); scene.add(chandelierLight);
+
         // Central reading table and scattered objects.
         makeBox(3.2, 0.18, 1.8, wood, 0, 1.15, -2.2);
         for (const x of [-1.35, 1.35]) for (const z of [-2.85, -1.55]) makeBox(0.16, 1.1, 0.16, darkWood, x, 0.55, z);
         makeBox(0.9, 0.07, 0.65, paper, -0.55, 1.28, -2.1);
+        const closedBook = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.11, 0.42), mat("#5b3940"));
+        closedBook.position.set(0.72, 1.32, -2.12); closedBook.rotation.y = 0.18; closedBook.castShadow = true; scene.add(closedBook);
+        const bookPages = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.035, 0.38), paper);
+        bookPages.position.set(0.72, 1.39, -2.12); bookPages.rotation.y = 0.18; scene.add(bookPages);
+        const pagePivot = new THREE.Group(); pagePivot.position.set(0.45, 1.42, -2.12); scene.add(pagePivot);
+        const turningPage = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.34), paper);
+        turningPage.position.set(0.13, 0, 0); turningPage.rotation.y = -Math.PI / 2; pagePivot.add(turningPage);
         const letter = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.035, 0.48), paper);
         letter.position.set(-0.55, 1.34, -2.1);
         letter.rotation.y = -0.2;
@@ -813,6 +876,21 @@ export default function InBetweenGame() {
             painting.position.x = THREE.MathUtils.lerp(painting.position.x, -4.75, delta * 1.4);
             paintingArt.position.x = THREE.MathUtils.lerp(paintingArt.position.x, -4.75, delta * 1.4);
           }
+          // Small continuous motion makes the room feel inhabited, not static.
+          const time = clockTimer.elapsedTime;
+          warm.intensity = 18 + Math.sin(time * 2.1) * 1.1 + Math.sin(time * 7.4) * 0.45;
+          candleGlow.intensity = 5.5 + Math.sin(time * 5.2) * 0.75;
+          chandelierLight.intensity = 10 + Math.sin(time * 1.8) * 0.55;
+          chandelier.rotation.z = Math.sin(time * 0.55) * 0.018;
+          pagePivot.rotation.y = -0.15 + Math.sin(time * 0.8) * 0.09;
+          const dust = dustGeometry.attributes.position;
+          for (let i = 0; i < dustCount; i++) {
+            const x = dust.getX(i) + dustDrift[i * 3] * delta;
+            const y = dust.getY(i) + dustDrift[i * 3 + 1] * delta;
+            const z = dust.getZ(i) + dustDrift[i * 3 + 2] * delta;
+            dust.setXYZ(i, x > 7.5 ? -7.5 : x < -7.5 ? 7.5 : x, y > 5.6 ? 0.25 : y, z > 7 ? -25 : z < -25 ? 7 : z);
+          }
+          dust.needsUpdate = true;
           renderer.render(scene, camera);
         };
         animate();
@@ -918,7 +996,7 @@ export default function InBetweenGame() {
             <p className="ib-subtitle">Some doors are not meant to be found.</p>
             <p className="ib-intro">You wake in a library that has no windows, no visitors, and no memory of how you arrived. The clock has stopped. The exit is locked. Something is waiting beyond the shelves.</p>
             <div className="ib-avatar-studio">
-              <div className="ib-avatar-studio-heading"><span>BEFORE THE STORY</span><strong>CREATE YOUR TRAVELLER</strong></div>
+              <div className="ib-avatar-studio-heading"><span>MEET THE PROTAGONIST</span><strong>MIRA VALE · THE GIRL BETWEEN ROOMS</strong><small>A curious young archivist with a field coat, travel satchel and a strange connection to the library.</small></div>
               <div className="ib-avatar-preview-wrap"><canvas ref={avatarPreviewRef} className="ib-avatar-preview" aria-label="Rotatable 3D preview of your customized traveller" /><span className="ib-avatar-preview-hint">DRAG TO ROTATE · LIVE PREVIEW</span></div>
               <label>Character style<select value={avatar.presentation} onChange={(e) => setAvatar((a) => ({ ...a, presentation: e.target.value as AvatarSettings["presentation"] }))}><option value="feminine">Feminine</option><option value="masculine">Masculine</option><option value="androgynous">Androgynous</option></select></label>
               <label>Skin tone<select value={avatar.skin} onChange={(e) => setAvatar((a) => ({ ...a, skin: e.target.value }))}>{SKIN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
@@ -928,7 +1006,7 @@ export default function InBetweenGame() {
               <button className="ib-avatar-reset" onClick={() => setAvatar(DEFAULT_AVATAR)}>RESTORE DEFAULT LOOK</button>
             </div>
             <button className="ib-primary" onClick={() => setStarted(true)}>ENTER THE LIBRARY <span>↗</span></button>
-            <p className="ib-footnote">YOUR LOOK IS SAVED · CHAPTER 01 · THE SILENT LIBRARY</p>
+            <p className="ib-footnote">MIRA VALE · YOUR LOOK IS SAVED · CHAPTER 01 · THE SILENT LIBRARY</p>
           </div>
         </div>
       </section>
