@@ -3,6 +3,23 @@ import "./in-between.css";
 
 type GameMessage = { title: string; body: string };
 type ThreeModule = any;
+type AvatarSettings = {
+  presentation: "feminine" | "masculine" | "androgynous";
+  skin: string;
+  hair: string;
+  hairStyle: "short" | "long" | "tied";
+  outfit: string;
+};
+const DEFAULT_AVATAR: AvatarSettings = {
+  presentation: "androgynous",
+  skin: "#bd896d",
+  hair: "#241b18",
+  hairStyle: "long",
+  outfit: "#283746",
+};
+const SKIN_OPTIONS = [{label:"Warm",value:"#bd896d"},{label:"Golden",value:"#d5a27e"},{label:"Light",value:"#edc5a5"},{label:"Deep",value:"#754b3b"},{label:"Rich",value:"#9a6249"}];
+const HAIR_OPTIONS = [{label:"Espresso",value:"#241b18"},{label:"Chestnut",value:"#68412d"},{label:"Midnight",value:"#171b2b"},{label:"Auburn",value:"#8a4933"},{label:"Silver",value:"#aaa6a0"}];
+const OUTFIT_OPTIONS = [{label:"Midnight blue",value:"#283746"},{label:"Forest",value:"#34473c"},{label:"Burgundy",value:"#633c43"},{label:"Charcoal",value:"#34343a"},{label:"Ivory",value:"#b7aa91"}];
 
 const SAVE_KEY = "miumi-in-between-save-v1";
 
@@ -17,16 +34,18 @@ export default function InBetweenGame() {
   const [loading, setLoading] = useState(false);
   const [engineError, setEngineError] = useState("");
   const [nearbyPrompt, setNearbyPrompt] = useState("");
+  const [avatar, setAvatar] = useState<AvatarSettings>(DEFAULT_AVATAR);
   const progressRef = useRef({ clockSolved: false, doorOpen: false });
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(SAVE_KEY);
       if (saved) {
-        const data = JSON.parse(saved) as { inventory?: string[]; clockSolved?: boolean; doorOpen?: boolean };
+        const data = JSON.parse(saved) as { inventory?: string[]; clockSolved?: boolean; doorOpen?: boolean; avatar?: AvatarSettings };
         setInventory(Array.isArray(data.inventory) ? data.inventory : []);
         setClockSolved(Boolean(data.clockSolved));
         setDoorOpen(Boolean(data.doorOpen));
+        if (data.avatar) setAvatar({ ...DEFAULT_AVATAR, ...data.avatar });
       }
     } catch {
       localStorage.removeItem(SAVE_KEY);
@@ -39,11 +58,11 @@ export default function InBetweenGame() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify({ inventory, clockSolved, doorOpen }));
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ inventory, clockSolved, doorOpen, avatar }));
     } catch {
       // The game remains playable when browser storage is unavailable.
     }
-  }, [inventory, clockSolved, doorOpen]);
+  }, [inventory, clockSolved, doorOpen, avatar]);
 
   useEffect(() => {
     if (!started || !canvasRef.current) return;
@@ -161,68 +180,65 @@ export default function InBetweenGame() {
         lampShade.position.set(0, 4.7, -1.5);
         scene.add(lampShade);
 
-        // Player: load a rigged human GLB; keep a simple fallback if the asset is offline.
+        // Build the player's customised human character from reusable 3D parts.
+        // This keeps appearance choices local and avoids a generic sample character.
         const player = new THREE.Group();
         scene.add(player);
         player.position.set(0, 0, 4.8);
-        let mixer: any = null;
-        const loader = new GLTFLoader();
-        loader.load(
-          "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb",
-          (gltf: any) => {
-            if (cancelled) return;
-            const model = gltf.scene;
-            const bounds = new THREE.Box3().setFromObject(model);
-            const modelHeight = Math.max(bounds.max.y - bounds.min.y, 0.01);
-            const fitScale = 1.82 / modelHeight;
-            model.scale.setScalar(fitScale);
-            model.position.y = -bounds.min.y * fitScale;
-            model.traverse((child: any) => {
-              if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
-            });
-            player.add(model);
-            if (gltf.animations?.length) {
-              mixer = new THREE.AnimationMixer(model);
-              mixer.clipAction(gltf.animations[0]).play();
-            }
-          },
-          undefined,
-          () => {
-            if (player.children.length) return;
-            // Detailed fallback traveler with a long coat, hair and articulated limbs.
-            const skin = mat("#c99a7a", 0.72);
-            const coat = mat("#252b35", 0.88);
-            const coatTrim = mat("#75634e", 0.75);
-            const trousers = mat("#20232a", 0.9);
-            const boots = mat("#171719", 0.72);
-            const hair = mat("#241d1a", 0.92);
-            const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.29, 0.66, 6, 12), coat);
-            torso.position.y = 1.12; torso.castShadow = true; player.add(torso);
-            const coatTail = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.48, 0.19), coat);
-            coatTail.position.set(0, 0.73, 0.02); coatTail.castShadow = true; player.add(coatTail);
-            const collar = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.045, 8, 20), coatTrim);
-            collar.rotation.x = Math.PI / 2; collar.position.y = 1.48; player.add(collar);
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.235, 24, 18), skin);
-            head.position.y = 1.78; head.castShadow = true; player.add(head);
-            const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.242, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.58), hair);
-            hairCap.position.y = 1.84; player.add(hairCap);
-            const limb = (x: number, y: number, length: number, material: any) => {
-              const pivot = new THREE.Group(); pivot.position.set(x, y, 0); player.add(pivot);
-              const part = new THREE.Mesh(new THREE.CapsuleGeometry(0.105, length, 5, 10), material);
-              part.position.y = -length * 0.42; part.castShadow = true; pivot.add(part);
-              return pivot;
-            };
-            const armL = limb(-0.36, 1.38, 0.48, coat); const armR = limb(0.36, 1.38, 0.48, coat);
-            const legL = limb(-0.16, 0.68, 0.58, trousers); const legR = limb(0.16, 0.68, 0.58, trousers);
-            for (const leg of [legL, legR]) {
-              const boot = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.13, 0.34), boots);
-              boot.position.set(0, -0.49, -0.07); boot.castShadow = true; leg.add(boot);
-            }
-            player.userData.limbs = [armL, armR, legL, legR];
-            player.userData.fallback = true;
-          }
-        );
-
+        const skinMat = mat(avatar.skin, 0.78);
+        const hairMat = mat(avatar.hair, 0.9);
+        const outfitMat = mat(avatar.outfit, 0.88);
+        const darkOutfitMat = mat(new THREE.Color(avatar.outfit).multiplyScalar(0.72).getStyle(), 0.9);
+        const bootMat = mat("#171719", 0.7);
+        const trimMat = mat("#b49a72", 0.48, 0.35);
+        const makePart = (geometry: any, material: any, x: number, y: number, z: number, parent: any = player) => {
+          const part = new THREE.Mesh(geometry, material);
+          part.position.set(x, y, z);
+          part.castShadow = true;
+          part.receiveShadow = true;
+          parent.add(part);
+          return part;
+        };
+        const shoulder = avatar.presentation === "masculine" ? 0.39 : avatar.presentation === "feminine" ? 0.32 : 0.35;
+        const hip = avatar.presentation === "feminine" ? 0.34 : 0.29;
+        makePart(new THREE.CylinderGeometry(0.105, 0.12, 0.2, 16), skinMat, 0, 1.55, 0);
+        const torso = makePart(new THREE.CapsuleGeometry(avatar.presentation === "masculine" ? 0.31 : 0.28, 0.62, 7, 16), outfitMat, 0, 1.13, 0);
+        torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
+        makePart(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), darkOutfitMat, 0, 0.76, 0.015);
+        makePart(new THREE.TorusGeometry(0.19, 0.025, 8, 24), trimMat, 0, 1.47, 0).rotation.x = Math.PI / 2;
+        makePart(new THREE.SphereGeometry(0.235, 28, 22), skinMat, 0, 1.82, 0);
+        const facePlate = makePart(new THREE.SphereGeometry(0.19, 24, 18, 0, Math.PI, 0.15, Math.PI * 0.7), skinMat, 0, 1.81, -0.035);
+        facePlate.scale.set(0.98, 0.98, 0.9);
+        // Hair cap plus selectable silhouette.
+        makePart(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hairMat, 0, 1.88, 0);
+        if (avatar.hairStyle === "long") {
+          makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, -0.19, 1.57, 0.045);
+          makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, 0.19, 1.57, 0.045);
+        } else if (avatar.hairStyle === "tied") {
+          makePart(new THREE.SphereGeometry(0.12, 16, 12), hairMat, 0, 1.72, 0.22);
+          makePart(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hairMat, 0, 1.53, 0.18);
+        } else {
+          makePart(new THREE.SphereGeometry(0.16, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hairMat, 0, 1.94, 0.015);
+        }
+        // Small facial details face toward the camera/front of the character.
+        const eyeMat = mat("#241e1b", 0.45);
+        makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, -0.075, 1.83, -0.218);
+        makePart(new THREE.SphereGeometry(0.022, 10, 8), eyeMat, 0.075, 1.83, -0.218);
+        const limb = (x: number, y: number, length: number, width: number, material: any) => {
+          const pivot = new THREE.Group();
+          pivot.position.set(x, y, 0);
+          player.add(pivot);
+          makePart(new THREE.CapsuleGeometry(width, length, 6, 12), material, 0, -length * 0.42, 0, pivot);
+          return pivot;
+        };
+        const armL = limb(-shoulder, 1.37, 0.5, 0.095, outfitMat);
+        const armR = limb(shoulder, 1.37, 0.5, 0.095, outfitMat);
+        const handL = makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armL);
+        const handR = makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armR);
+        const legL = limb(-hip / 2, 0.67, 0.58, 0.105, darkOutfitMat);
+        const legR = limb(hip / 2, 0.67, 0.58, 0.105, darkOutfitMat);
+        for (const leg of [legL, legR]) makePart(new THREE.BoxGeometry(0.2, 0.13, 0.34), bootMat, 0, -0.49, -0.07, leg);
+        const playerLimbs = [armL, armR, legL, legR];
         const keys = new Set<string>();
         let unlocked = progressRef.current.doorOpen;
         let clockActivated = progressRef.current.clockSolved;
@@ -295,13 +311,12 @@ export default function InBetweenGame() {
             if (!collides(player.position.x, nextZ)) player.position.z = nextZ;
             player.rotation.y = Math.atan2(direction.x, direction.z);
           }
-          if (player.userData.fallback && player.userData.limbs) {
+          {
             const swing = moving ? Math.sin(clockTimer.elapsedTime * 9) * 0.48 : Math.sin(clockTimer.elapsedTime * 1.7) * 0.025;
-            const [armL, armR, legL, legR] = player.userData.limbs;
+            const [armL, armR, legL, legR] = playerLimbs;
             armL.rotation.x = swing; armR.rotation.x = -swing;
             legL.rotation.x = -swing; legR.rotation.x = swing;
           }
-          if (mixer) mixer.update(delta);
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : promptNear(0, -9.2, 2.2) ? "E  ·  TRY THE DOOR" : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
@@ -414,8 +429,17 @@ export default function InBetweenGame() {
             <h1>THE <span>IN-BETWEEN</span></h1>
             <p className="ib-subtitle">Some doors are not meant to be found.</p>
             <p className="ib-intro">You wake in a library that has no windows, no visitors, and no memory of how you arrived. The clock has stopped. The exit is locked. Something is waiting beyond the shelves.</p>
+            <div className="ib-avatar-studio">
+              <div className="ib-avatar-studio-heading"><span>BEFORE THE STORY</span><strong>CREATE YOUR TRAVELLER</strong></div>
+              <label>Character style<select value={avatar.presentation} onChange={(e) => setAvatar((a) => ({ ...a, presentation: e.target.value as AvatarSettings["presentation"] }))}><option value="feminine">Feminine</option><option value="masculine">Masculine</option><option value="androgynous">Androgynous</option></select></label>
+              <label>Skin tone<select value={avatar.skin} onChange={(e) => setAvatar((a) => ({ ...a, skin: e.target.value }))}>{SKIN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+              <label>Hair style<select value={avatar.hairStyle} onChange={(e) => setAvatar((a) => ({ ...a, hairStyle: e.target.value as AvatarSettings["hairStyle"] }))}><option value="short">Short</option><option value="long">Long</option><option value="tied">Tied back</option></select></label>
+              <label>Hair colour<select value={avatar.hair} onChange={(e) => setAvatar((a) => ({ ...a, hair: e.target.value }))}>{HAIR_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+              <label>Outfit<select value={avatar.outfit} onChange={(e) => setAvatar((a) => ({ ...a, outfit: e.target.value }))}>{OUTFIT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
+              <button className="ib-avatar-reset" onClick={() => setAvatar(DEFAULT_AVATAR)}>RESTORE DEFAULT LOOK</button>
+            </div>
             <button className="ib-primary" onClick={() => setStarted(true)}>ENTER THE LIBRARY <span>↗</span></button>
-            <p className="ib-footnote">CHAPTER 01 · THE SILENT LIBRARY</p>
+            <p className="ib-footnote">YOUR LOOK IS SAVED · CHAPTER 01 · THE SILENT LIBRARY</p>
           </div>
         </div>
       </section>
