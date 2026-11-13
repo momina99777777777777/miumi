@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./in-between.css";
 
 type GameMessage = { title: string; body: string };
-type ThreeModule = typeof import("three");
+type ThreeModule = any;
 
 const SAVE_KEY = "miumi-in-between-save-v1";
 
@@ -50,8 +50,10 @@ export default function InBetweenGame() {
       try {
         // Three.js is loaded only when the player enters the game, keeping Miumi's
         // regular pages light. The browser fetches the pinned ESM build at runtime.
-        const THREE = await import(/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js") as ThreeModule;
-        const { GLTFLoader } = await import(/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js") as { GLTFLoader: new () => { load: (url: string, onLoad: (gltf: any) => void, onProgress?: undefined, onError?: (error: unknown) => void) => void } };
+        const threeModuleUrl = "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+        const loaderModuleUrl = "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js";
+        const THREE = await import(/* @vite-ignore */ threeModuleUrl) as ThreeModule;
+        const { GLTFLoader } = await import(/* @vite-ignore */ loaderModuleUrl) as { GLTFLoader: new () => { load: (url: string, onLoad: (gltf: any) => void, onProgress?: undefined, onError?: (error: unknown) => void) => void } };
         if (cancelled || !canvasRef.current) return;
 
         const canvas = canvasRef.current;
