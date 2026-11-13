@@ -711,6 +711,7 @@ export default function InBetweenGame() {
               { x: -4.7, z: -8.9, hx: 0.48, hz: 0.48 },
               { x: 4.7, z: -8.9, hx: 0.48, hz: 0.48 },
               { x: -3.9, z: -10.1, hx: 0.72, hz: 0.35 },
+              { x: -3.35, z: -4.4, hx: 0.62, hz: 0.52 },
             ];
             const collides = (x: number, z: number) => blockers.some((b) => Math.abs(x - b.x) < b.hx && Math.abs(z - b.z) < b.hz);
             const nextX = THREE.MathUtils.clamp(player.position.x + direction.x * step, -5.8, 5.8);
