@@ -961,11 +961,19 @@ export default function InBetweenGame() {
             if (!inventory.includes("Fountain token")) setInventory((items) => [...items, "Fountain token"]);
             setMessage({ title: "The town square", body: "A brass token lies beneath the fountain. Its face shows the same 11:17 clock. On the reverse: 'The station remembers the last train.' The token has been added to your inventory." });
           } else if (near(-7, -66, 3) && townUnlocked) {
-            if (!inventory.includes("Station timetable")) setInventory((items) => [...items, "Station timetable"]);
-            setMessage({ title: "Bellwether Station", body: "The timetable lists one final train, departing at 11:17. Its destination has been scratched away. A note says: 'Only the person who remembers may choose the platform.' The timetable has been added to your inventory." });
+            if (inventory.includes("Fountain token") && inventory.includes("Garden seed")) {
+              setMessage({ title: "Ending: The Last Train", body: "Mira boards the 11:17 train and allows Bellwether to pass peacefully out of the in-between. The town is gone, but its people are finally free. This is one possible ending." });
+            } else {
+              if (!inventory.includes("Station timetable")) setInventory((items) => [...items, "Station timetable"]);
+              setMessage({ title: "Bellwether Station", body: "The timetable lists one final train, departing at 11:17. Its destination has been scratched away. A note says: 'Only the person who remembers may choose the platform.' The timetable has been added to your inventory." });
+            }
           } else if (near(7, -73, 3) && townUnlocked) {
-            if (!inventory.includes("Garden seed")) setInventory((items) => [...items, "Garden seed"]);
-            setMessage({ title: "The Forgotten Garden", body: "Flowers grow through the glasshouse floor. A note explains that Bellwether vanished when its residents tried to erase a painful day from memory. The seed has been added to your inventory." });
+            if (inventory.includes("Fountain token") && inventory.includes("Station timetable")) {
+              setMessage({ title: "Ending: The Garden Remembers", body: "Mira plants the final seed. Bellwether returns, not as it was, but as a living town that can remember its past without being trapped by it. This is another possible ending." });
+            } else {
+              if (!inventory.includes("Garden seed")) setInventory((items) => [...items, "Garden seed"]);
+              setMessage({ title: "The Forgotten Garden", body: "Flowers grow through the glasshouse floor. A note explains that Bellwether vanished when its residents tried to erase a painful day from memory. The seed has been added to your inventory." });
+            }
           } else if (near(0, -88, 4) && townUnlocked) {
             if (inventory.includes("Station timetable") && inventory.includes("Garden seed")) {
               setMessage({ title: "The Observatory", body: "You have found the town's final records. The truth is clear: Bellwether was trapped at 11:17 by a choice to forget. Return to the station to let the town go, or the garden to restore its memories." });
