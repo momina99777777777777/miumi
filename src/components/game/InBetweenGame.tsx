@@ -25,6 +25,7 @@ const SAVE_KEY = "miumi-in-between-save-v1";
 
 export default function InBetweenGame() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const avatarPreviewRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<{ dispose: () => void } | null>(null);
   const [started, setStarted] = useState(false);
   const [message, setMessage] = useState<GameMessage | null>(null);
@@ -63,6 +64,177 @@ export default function InBetweenGame() {
       // The game remains playable when browser storage is unavailable.
     }
   }, [inventory, clockSolved, doorOpen, avatar]);
+
+  // A separate lightweight 3D turntable lets players inspect their traveller
+  // before starting. Rebuild only when appearance settings change.
+  useEffect(() => {
+    if (started || !avatarPreviewRef.current) return;
+    let cancelled = false;
+    let frame = 0;
+    let renderer: any;
+    let observer: ResizeObserver | undefined;
+    let cleanup: (() => void) | undefined;
+    const bootPreview = async () => {
+      try {
+        const THREE = await import(/* @vite-ignore */ "https://esm.sh/three@0.180.0") as ThreeModule;
+        if (cancelled || !avatarPreviewRef.current) return;
+        const canvas = avatarPreviewRef.current;
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color("#171a20");
+        scene.fog = new THREE.Fog("#171a20", 5, 13);
+        const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 30);
+        camera.position.set(0, 1.55, 6.2);
+        camera.lookAt(0, 1.05, 0);
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        scene.add(new THREE.HemisphereLight("#d6d9e2", "#342b27", 2));
+        const key = new THREE.DirectionalLight("#f4dfc1", 3);
+        key.position.set(-3, 5, 4);
+        key.castShadow = true;
+        scene.add(key);
+        const rim = new THREE.PointLight("#9db5d4", 16, 9);
+        rim.position.set(2, 2.5, -2);
+        scene.add(rim);
+        const floor = new THREE.Mesh(new THREE.CircleGeometry(2.8, 48), new THREE.MeshStandardMaterial({ color: "#292a2d", roughness: 0.95 }));
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -0.025;
+        floor.receiveShadow = true;
+        scene.add(floor);
+        const platform = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.12, 0.12, 48), new THREE.MeshStandardMaterial({ color: "#554536", metalness: 0.45, roughness: 0.48 }));
+        platform.position.y = 0.04;
+        platform.castShadow = true;
+        platform.receiveShadow = true;
+        scene.add(platform);
+        const character = new THREE.Group();
+        character.position.y = 0.11;
+        scene.add(character);
+        const material = (color: string, roughness = 0.8, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
+        const skin = material(avatar.skin);
+        const hair = material(avatar.hair);
+        const outfit = material(avatar.outfit);
+        const shadowOutfit = material(new THREE.Color(avatar.outfit).multiplyScalar(0.68).getStyle());
+        const boots = material("#171719");
+        const brass = material("#b49a72", 0.4, 0.45);
+        const part = (geometry: any, mat: any, x: number, y: number, z: number, parent: any = character) => {
+          const mesh = new THREE.Mesh(geometry, mat);
+          mesh.position.set(x, y, z);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          parent.add(mesh);
+          return mesh;
+        };
+        const shoulder = avatar.presentation === "masculine" ? 0.39 : avatar.presentation === "feminine" ? 0.32 : 0.35;
+        const hip = avatar.presentation === "feminine" ? 0.34 : 0.29;
+        part(new THREE.CylinderGeometry(0.105, 0.12, 0.2, 18), skin, 0, 1.55, 0);
+        const torso = part(new THREE.CapsuleGeometry(avatar.presentation === "masculine" ? 0.31 : 0.28, 0.62, 7, 18), outfit, 0, 1.13, 0);
+        torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
+        part(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), shadowOutfit, 0, 0.76, 0.015);
+        part(new THREE.TorusGeometry(0.19, 0.025, 8, 24), brass, 0, 1.47, 0).rotation.x = Math.PI / 2;
+        part(new THREE.SphereGeometry(0.235, 28, 22), skin, 0, 1.82, 0);
+        part(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hair, 0, 1.88, 0);
+        if (avatar.hairStyle === "long") {
+          part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, -0.19, 1.57, 0.045);
+          part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, 0.19, 1.57, 0.045);
+        } else if (avatar.hairStyle === "tied") {
+          part(new THREE.SphereGeometry(0.12, 16, 12), hair, 0, 1.72, 0.22);
+          part(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hair, 0, 1.53, 0.18);
+        } else {
+          part(new THREE.SphereGeometry(0.16, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hair, 0, 1.94, 0.015);
+        }
+        const eye = material("#241e1b", 0.45);
+        part(new THREE.SphereGeometry(0.022, 10, 8), eye, -0.075, 1.83, -0.218);
+        part(new THREE.SphereGeometry(0.022, 10, 8), eye, 0.075, 1.83, -0.218);
+        const limb = (x: number, y: number, length: number, width: number, mat: any) => {
+          const pivot = new THREE.Group();
+          pivot.position.set(x, y, 0);
+          character.add(pivot);
+          part(new THREE.CapsuleGeometry(width, length, 6, 12), mat, 0, -length * 0.42, 0, pivot);
+          return pivot;
+        };
+        const armL = limb(-shoulder, 1.37, 0.5, 0.095, outfit);
+        const armR = limb(shoulder, 1.37, 0.5, 0.095, outfit);
+        part(new THREE.SphereGeometry(0.09, 14, 12), skin, 0, -0.34, 0, armL);
+        part(new THREE.SphereGeometry(0.09, 14, 12), skin, 0, -0.34, 0, armR);
+        const legL = limb(-hip / 2, 0.67, 0.58, 0.105, shadowOutfit);
+        const legR = limb(hip / 2, 0.67, 0.58, 0.105, shadowOutfit);
+        for (const leg of [legL, legR]) part(new THREE.BoxGeometry(0.2, 0.13, 0.34), boots, 0, -0.49, -0.07, leg);
+        const limbs = [armL, armR, legL, legR];
+        let dragging = false;
+        let lastX = 0;
+        let rotationVelocity = 0;
+        const down = (event: PointerEvent) => { dragging = true; lastX = event.clientX; canvas.setPointerCapture?.(event.pointerId); };
+        const move = (event: PointerEvent) => {
+          if (!dragging) return;
+          const delta = event.clientX - lastX;
+          character.rotation.y += delta * 0.012;
+          rotationVelocity = delta * 0.0007;
+          lastX = event.clientX;
+        };
+        const up = () => { dragging = false; };
+        canvas.addEventListener("pointerdown", down);
+        canvas.addEventListener("pointermove", move);
+        canvas.addEventListener("pointerup", up);
+        canvas.addEventListener("pointercancel", up);
+        canvas.addEventListener("pointerleave", up);
+        const resize = () => {
+          if (!canvas.clientWidth || !canvas.clientHeight) return;
+          renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+        };
+        observer = new ResizeObserver(resize);
+        observer.observe(canvas);
+        resize();
+        const clock = new THREE.Clock();
+        const animate = () => {
+          if (cancelled) return;
+          frame = requestAnimationFrame(animate);
+          const elapsed = clock.getElapsedTime();
+          if (!dragging) {
+            character.rotation.y += rotationVelocity || 0.0025;
+            rotationVelocity *= 0.94;
+            if (Math.abs(rotationVelocity) < 0.00008) rotationVelocity = 0;
+          }
+          const idle = Math.sin(elapsed * 1.5) * 0.018;
+          character.position.y = 0.11 + idle;
+          limbs[0].rotation.x = Math.sin(elapsed * 1.2) * 0.025;
+          limbs[1].rotation.x = -Math.sin(elapsed * 1.2) * 0.025;
+          renderer.render(scene, camera);
+        };
+        animate();
+        cleanup = () => {
+          cancelAnimationFrame(frame);
+          observer?.disconnect();
+          canvas.removeEventListener("pointerdown", down);
+          canvas.removeEventListener("pointermove", move);
+          canvas.removeEventListener("pointerup", up);
+          canvas.removeEventListener("pointercancel", up);
+          canvas.removeEventListener("pointerleave", up);
+          scene.traverse((object: any) => {
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) {
+              const materials = Array.isArray(object.material) ? object.material : [object.material];
+              materials.forEach((item: any) => item.dispose());
+            }
+          });
+          renderer.dispose();
+        };
+      } catch {
+        // The controls remain available if WebGL or the external module is unavailable.
+      }
+    };
+    bootPreview();
+    return () => {
+      cancelled = true;
+      cleanup?.();
+      if (renderer) renderer.dispose();
+    };
+  }, [started, avatar]);
 
   useEffect(() => {
     if (!started || !canvasRef.current) return;
@@ -429,6 +601,7 @@ export default function InBetweenGame() {
             <p className="ib-intro">You wake in a library that has no windows, no visitors, and no memory of how you arrived. The clock has stopped. The exit is locked. Something is waiting beyond the shelves.</p>
             <div className="ib-avatar-studio">
               <div className="ib-avatar-studio-heading"><span>BEFORE THE STORY</span><strong>CREATE YOUR TRAVELLER</strong></div>
+              <div className="ib-avatar-preview-wrap"><canvas ref={avatarPreviewRef} className="ib-avatar-preview" aria-label="Rotatable 3D preview of your customized traveller" /><span className="ib-avatar-preview-hint">DRAG TO ROTATE · LIVE PREVIEW</span></div>
               <label>Character style<select value={avatar.presentation} onChange={(e) => setAvatar((a) => ({ ...a, presentation: e.target.value as AvatarSettings["presentation"] }))}><option value="feminine">Feminine</option><option value="masculine">Masculine</option><option value="androgynous">Androgynous</option></select></label>
               <label>Skin tone<select value={avatar.skin} onChange={(e) => setAvatar((a) => ({ ...a, skin: e.target.value }))}>{SKIN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
               <label>Hair style<select value={avatar.hairStyle} onChange={(e) => setAvatar((a) => ({ ...a, hairStyle: e.target.value as AvatarSettings["hairStyle"] }))}><option value="short">Short</option><option value="long">Long</option><option value="tied">Tied back</option></select></label>
