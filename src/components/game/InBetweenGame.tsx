@@ -137,12 +137,22 @@ export default function InBetweenGame() {
         part(new THREE.TorusGeometry(0.19, 0.025, 8, 24), brass, 0, 1.47, 0).rotation.x = Math.PI / 2;
         part(new THREE.SphereGeometry(0.235, 28, 22), skin, 0, 1.82, 0);
         part(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hair, 0, 1.88, 0);
+        const hairMotion: any[] = [];
         if (avatar.hairStyle === "long") {
-          part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, -0.19, 1.57, 0.045);
-          part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, 0.19, 1.57, 0.045);
+          for (const side of [-1, 1]) {
+            const lock = new THREE.Group();
+            lock.position.set(side * 0.19, 1.72, 0.045);
+            character.add(lock);
+            part(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hair, 0, -0.15, 0, lock);
+            hairMotion.push({ pivot: lock, side });
+          }
         } else if (avatar.hairStyle === "tied") {
           part(new THREE.SphereGeometry(0.12, 16, 12), hair, 0, 1.72, 0.22);
-          part(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hair, 0, 1.53, 0.18);
+          const ponytail = new THREE.Group();
+          ponytail.position.set(0, 1.62, 0.2);
+          character.add(ponytail);
+          part(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hair, 0, -0.12, 0, ponytail);
+          hairMotion.push({ pivot: ponytail, side: 0.7 });
         } else {
           part(new THREE.SphereGeometry(0.16, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hair, 0, 1.94, 0.015);
         }
@@ -178,8 +188,15 @@ export default function InBetweenGame() {
         }
         part(new THREE.BoxGeometry(0.018, 0.65, 0.018), seam, 0, 1.12, -0.255);
         for (let i = 0; i < 3; i++) part(new THREE.SphereGeometry(0.018, 10, 8), brass, 0.055, 1.28 - i * 0.16, -0.275);
-        const scarf = part(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), seam, 0, 1.48, -0.19);
+        const scarfPivot = new THREE.Group();
+        scarfPivot.position.set(0, 1.52, -0.12);
+        character.add(scarfPivot);
+        const scarf = part(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), seam, 0, -0.06, -0.07, scarfPivot);
         scarf.rotation.z = 0.12;
+        const coatTail = new THREE.Group();
+        coatTail.position.set(0, 0.9, 0.13);
+        character.add(coatTail);
+        part(new THREE.BoxGeometry(0.43, 0.38, 0.075), shadowOutfit, 0, -0.18, 0, coatTail);
         part(new THREE.BoxGeometry(0.11, 0.28, 0.035), seam, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, mat: any) => {
           const pivot = new THREE.Group();
@@ -234,6 +251,14 @@ export default function InBetweenGame() {
           }
           const idle = Math.sin(elapsed * 1.5) * 0.018;
           character.position.y = 0.11 + idle;
+          const breeze = Math.sin(elapsed * 2.1);
+          hairMotion.forEach(({ pivot, side }) => {
+            pivot.rotation.x = Math.sin(elapsed * 2.4 + side) * 0.055;
+            pivot.rotation.z = Math.sin(elapsed * 1.8 + side) * 0.035;
+          });
+          scarfPivot.rotation.x = breeze * 0.035;
+          scarfPivot.rotation.z = 0.12 + breeze * 0.025;
+          coatTail.rotation.x = Math.sin(elapsed * 2.0) * 0.035;
           limbs[0].rotation.x = Math.sin(elapsed * 1.2) * 0.025;
           limbs[1].rotation.x = -Math.sin(elapsed * 1.2) * 0.025;
           renderer.render(scene, camera);
@@ -413,12 +438,22 @@ export default function InBetweenGame() {
         facePlate.scale.set(0.98, 0.98, 0.9);
         // Hair cap plus selectable silhouette.
         makePart(new THREE.SphereGeometry(0.245, 28, 18, 0, Math.PI * 2, 0, Math.PI * 0.57), hairMat, 0, 1.88, 0);
+        const hairMotion: any[] = [];
         if (avatar.hairStyle === "long") {
-          makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, -0.19, 1.57, 0.045);
-          makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, 0.19, 1.57, 0.045);
+          for (const side of [-1, 1]) {
+            const lock = new THREE.Group();
+            lock.position.set(side * 0.19, 1.72, 0.045);
+            player.add(lock);
+            makePart(new THREE.CapsuleGeometry(0.105, 0.42, 5, 12), hairMat, 0, -0.15, 0, lock);
+            hairMotion.push({ pivot: lock, side });
+          }
         } else if (avatar.hairStyle === "tied") {
           makePart(new THREE.SphereGeometry(0.12, 16, 12), hairMat, 0, 1.72, 0.22);
-          makePart(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hairMat, 0, 1.53, 0.18);
+          const ponytail = new THREE.Group();
+          ponytail.position.set(0, 1.62, 0.2);
+          player.add(ponytail);
+          makePart(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hairMat, 0, -0.12, 0, ponytail);
+          hairMotion.push({ pivot: ponytail, side: 0.7 });
         } else {
           makePart(new THREE.SphereGeometry(0.16, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hairMat, 0, 1.94, 0.015);
         }
@@ -453,8 +488,15 @@ export default function InBetweenGame() {
         }
         makePart(new THREE.BoxGeometry(0.018, 0.65, 0.018), stitchMat, 0, 1.12, -0.255);
         for (let i = 0; i < 3; i++) makePart(new THREE.SphereGeometry(0.018, 10, 8), trimMat, 0.055, 1.28 - i * 0.16, -0.275);
-        const scarf = makePart(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), stitchMat, 0, 1.48, -0.19);
+        const scarfPivot = new THREE.Group();
+        scarfPivot.position.set(0, 1.52, -0.12);
+        player.add(scarfPivot);
+        const scarf = makePart(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), stitchMat, 0, -0.06, -0.07, scarfPivot);
         scarf.rotation.z = 0.12;
+        const coatTail = new THREE.Group();
+        coatTail.position.set(0, 0.9, 0.13);
+        player.add(coatTail);
+        makePart(new THREE.BoxGeometry(0.43, 0.38, 0.075), darkOutfitMat, 0, -0.18, 0, coatTail);
         makePart(new THREE.BoxGeometry(0.11, 0.28, 0.035), stitchMat, 0.13, 1.28, -0.27);
         const limb = (x: number, y: number, length: number, width: number, material: any) => {
           const pivot = new THREE.Group();
@@ -548,6 +590,14 @@ export default function InBetweenGame() {
             const [armL, armR, legL, legR] = playerLimbs;
             armL.rotation.x = swing; armR.rotation.x = -swing;
             legL.rotation.x = -swing; legR.rotation.x = swing;
+            const breeze = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 2.1));
+            hairMotion.forEach(({ pivot, side }) => {
+              pivot.rotation.x = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 2.4) + side) * (moving ? 0.13 : 0.045);
+              pivot.rotation.z = Math.sin(clockTimer.elapsedTime * 2 + side) * 0.035;
+            });
+            scarfPivot.rotation.x = breeze * (moving ? 0.075 : 0.03);
+            scarfPivot.rotation.z = 0.12 + breeze * 0.025;
+            coatTail.rotation.x = Math.sin(clockTimer.elapsedTime * (moving ? 9 : 2)) * (moving ? 0.085 : 0.025);
             // Gentle counter-sway and vertical foot rhythm keep the gait from
             // looking like a rigid sliding mannequin.
             player.position.y = moving ? Math.abs(Math.sin(clockTimer.elapsedTime * 9)) * 0.045 : Math.sin(clockTimer.elapsedTime * 1.7) * 0.012;
