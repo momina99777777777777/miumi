@@ -591,7 +591,7 @@ export default function InBetweenGame() {
         scene.add(player);
         player.position.set(0, 0, 4.8);
         const fallbackGroup = new THREE.Group();
-        fallbackGroup.add(fallbackGroup);
+        player.add(fallbackGroup);
         const skinMat = mat(avatar.skin, 0.78);
         const hairMat = mat(avatar.hair, 0.9);
         const outfitMat = mat(avatar.outfit, 0.88);
@@ -886,13 +886,13 @@ export default function InBetweenGame() {
           if (!active) return;
           frame = requestAnimationFrame(animate);
           const delta = Math.min(clockTimer.getDelta(), 0.04);
+          const forward = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
+          const sideways = (keys.has("d") || keys.has("arrowright") ? 1 : 0) - (keys.has("a") || keys.has("arrowleft") ? 1 : 0);
+          const moving = forward !== 0 || sideways !== 0;
           if (characterMixer) {
             characterMixer.update(delta);
             switchCharacterAction(moving ? walkAction : idleAction);
           }
-          const forward = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
-          const sideways = (keys.has("d") || keys.has("arrowright") ? 1 : 0) - (keys.has("a") || keys.has("arrowleft") ? 1 : 0);
-          const moving = forward !== 0 || sideways !== 0;
           if (moving) {
             const forwardVector = new THREE.Vector3(Math.sin(cameraYaw), 0, -Math.cos(cameraYaw));
             const rightVector = new THREE.Vector3(Math.cos(cameraYaw), 0, Math.sin(cameraYaw));
