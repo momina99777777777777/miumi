@@ -1,34 +1,23 @@
-# The Quiet Room setup
+# The Quiet Room
 
-The Quiet Room is a supportive AI conversation feature, not a therapy or crisis service.
+The Quiet Room is a supportive, non-clinical conversation space, not therapy or a crisis service.
 
-## Cloudflare Pages Workers AI binding
+## Modes
 
-Cloudflare Pages treats Workers AI as a non-inheritable binding when Wrangler environments are configured. Therefore Miumi's `wrangler.jsonc` declares the `AI` binding at the top level and explicitly for both `env.production` and `env.preview`.
+- **Cloudflare AI mode:** When the Pages runtime provides the Workers AI binding named `AI`, the server uses the `@cf/zai-org/glm-4.7-flash` model for generated replies.
+- **Free guided mode:** If the binding is missing or the AI request fails, the server returns a built-in supportive prompt matched to common conversation topics. The interface labels this clearly; it is not generative AI and does not send the message to an external AI provider.
 
-Current project configuration:
-- Project: `miumiapp`
-- Pages build output: `./dist`
-- Runtime compatibility flag: `nodejs_compat`
-- Workers AI binding: `AI` in production and preview
+## Deployment configuration
 
-The Git-integrated Cloudflare Pages project is set to deploy the `main` branch automatically. After a new deployment containing this configuration finishes successfully, the API health endpoint `/api/quiet-room` should report `configured: true`.
+The Git repository includes `wrangler.jsonc` with Pages output `./dist`, Node compatibility, and the `AI` binding. It explicitly declares the binding at top level and under production and preview environments. The Git-integrated Cloudflare Pages project uses `main` for production and automatic deployments.
 
-Because Wrangler is the source of truth, the dashboard may show **Managed by Wrangler** and disable its Add button. Do not try to add a duplicate dashboard binding.
+The health endpoint is `/api/quiet-room`. It reports `configured: true` and `provider: cloudflare-workers-ai` only when the runtime binding is present. Otherwise it reports guided-free mode.
 
-## API routing
+If the binding still does not appear, use Cloudflare's recommended command in the project checkout to download the actual dashboard configuration: `npx wrangler pages download config miumiapp`. Review the result before deploying; do not guess the dashboard's existing configuration.
 
-Miumi's TanStack Start app uses a custom Cloudflare Worker entry point in `src/server.ts`. The `/api/quiet-room` route is handled directly in that Worker before all other requests are forwarded to TanStack Start. This is required for Pages advanced mode, where a generated `_worker.js` takes control of the domain and the separate `/functions` directory is ignored.
+## Privacy and safety
 
-## Free usage and billing
-
-Cloudflare Workers AI has a daily free allocation on the Workers Free plan. Keep the account on the Free plan and do not enable paid billing. Requests stop when the daily free allocation is exhausted. Some models require a paid plan; the selected `@cf/zai-org/glm-4.7-flash` model is listed as available on the Free plan. Check Cloudflare's current pricing before use.
-
-## Privacy and experience
-
-- Text chat calls the same-origin `/api/quiet-room` endpoint.
-- The server does not write conversation history to a database.
-- The page keeps the current conversation in component memory only; leaving or refreshing clears it.
-- Browser speech recognition is optional and requires user permission. Voice transcription may be handled by the browser's speech service. Browser speech synthesis reads companion replies aloud.
-- The 3D companion is rendered in the browser with Three.js.
-- This is supportive reflection, not professional mental-health care. Avoid entering identifying or highly sensitive information.
+- The app does not save the conversation to a database. Messages are held in page memory and disappear when the page is closed or refreshed.
+- Browser speech recognition requires microphone permission. Browser speech synthesis reads replies aloud.
+- Avoid sharing identifying or highly sensitive details.
+- The companion is not a therapist, doctor, or crisis service. For serious distress or danger, reach out to a trusted adult or emergency support.
