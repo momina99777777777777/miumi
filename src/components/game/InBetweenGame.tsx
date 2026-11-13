@@ -138,6 +138,9 @@ export default function InBetweenGame() {
         character.position.y = 0.11;
         scene.add(character);
         const fallbackPreview = new THREE.Group();
+        // The hand-built fallback's face is modelled toward local -Z, while
+        // the preview camera looks from +Z. Turn it toward the viewer.
+        fallbackPreview.rotation.y = Math.PI;
         character.add(fallbackPreview);
         const material = (color: string, roughness = 0.8, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
         const skin = material(avatar.skin);
