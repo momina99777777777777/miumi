@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Mic, MicOff, Send, Volume2, VolumeX, ShieldCheck, Sparkles } from "lucide-react";
+import { MessageCircle, Mic, MicOff, Send, Volume2, VolumeX, ShieldCheck } from "lucide-react";
 
 type Message = { id: number; role: "companion" | "you"; text: string };
 
