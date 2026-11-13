@@ -946,7 +946,7 @@ export default function InBetweenGame() {
     const letter = () => {
       if (!inventory.includes("The torn letter")) {
         setInventory((items) => [...items, "The torn letter"]);
-        setMessage({ title: "A letter left behind", body: "“If you have found this room, the library has already noticed you. The clock remembers the minute the first door disappeared. 11:17.”" });
+        setMessage({ title: "A letter in Mira's handwriting", body: "“Mira — if you are reading this, the library has found you again. Set the clock to 11:17. Do not trust the room that looks familiar. You wrote this before you arrived.” The handwriting is unmistakably yours, but the paper is older than the building." });
       } else setMessage({ title: "The torn letter", body: "The ink still points to the same time: 11:17." });
     };
     const clock = () => {
