@@ -522,10 +522,57 @@ export default function InBetweenGame() {
         // glasshouse and observatory.
         makeBox(38, 0.32, 66, mat("#30343a", 0.98), 0, -0.22, -59);
         makeBox(7.2, 0.035, 65, mat("#45464a", 0.98), 0, -0.035, -59);
+        // Full Victorian streetscape buildings: masonry bases, timber trim,
+        // pitched slate roofs, chimneys, deep window reveals and usable-looking doors.
         const townBuilding = (x: number, z: number, w: number, h: number, color: string) => {
-          makeBox(w, h, 5.8, mat(color, 0.94), x, h / 2 - 0.08, z);
-          makeBox(w + 0.35, 0.28, 6.1, darkWood, x, h + 0.05, z);
-          makeBox(w * 0.72, 0.45, 0.12, mat("#d7a66c", 0.5, 0.05), x, h * 0.62, z - 2.96);
+          const facade = mat(color, 0.94);
+          const roofMat = mat("#292b31", 0.88, 0.04);
+          const stone = mat("#77716a", 0.96);
+          const glass = new THREE.MeshStandardMaterial({color:"#8fa9b2",roughness:0.22,metalness:0.12,emissive:"#24343a",emissiveIntensity:0.18});
+          const warmGlass = new THREE.MeshStandardMaterial({color:"#e6b879",roughness:0.28,emissive:"#a86632",emissiveIntensity:0.28});
+          makeBox(w, h, 5.8, facade, x, h / 2 - 0.08, z);
+          makeBox(w + 0.5, 0.34, 6.15, stone, x, 0.02, z);
+          makeBox(w + 0.38, 0.2, 6.12, darkWood, x, h + 0.02, z);
+          // Two roof planes meet at a raised ridge to form a recognisable pitched roof.
+          const roofA = makeBox(w + 1.0, 0.2, 3.65, roofMat, x, h + 0.72, z - 1.12);
+          roofA.rotation.x = -0.39;
+          const roofB = makeBox(w + 1.0, 0.2, 3.65, roofMat, x, h + 0.72, z + 1.12);
+          roofB.rotation.x = 0.39;
+          makeBox(w + 1.12, 0.14, 0.16, darkWood, x, h + 0.14, z - 3.02);
+          makeBox(w + 1.12, 0.14, 0.16, darkWood, x, h + 0.14, z + 3.02);
+          // Chimney stack and cap.
+          makeBox(0.62, 1.45, 0.68, mat("#62534d",0.98), x + w * 0.28, h + 1.05, z + 1.25);
+          makeBox(0.78, 0.13, 0.82, stone, x + w * 0.28, h + 1.82, z + 1.25);
+          // Upper and lower windows, with stone sills, timber frames and glowing panes.
+          const windowXs = w > 6.2 ? [-w * 0.29, w * 0.29] : [-w * 0.25, w * 0.25];
+          const windowYs = h > 7 ? [2.05, h * 0.68] : [h * 0.66];
+          for (const wx of windowXs) for (const wy of windowYs) {
+            const ww = 0.92, wh = 1.22;
+            makeBox(ww + 0.2, wh + 0.2, 0.16, darkWood, x + wx, wy, z - 2.96);
+            makeBox(ww, wh, 0.08, (Math.abs(wx + wy) % 2 > 0.8) ? glass : warmGlass, x + wx, wy, z - 3.055);
+            makeBox(0.07, wh + 0.08, 0.08, stone, x + wx, wy, z - 3.12);
+            makeBox(0.07, wh + 0.08, 0.08, stone, x + wx, wy, z - 3.12);
+            makeBox(ww + 0.16, 0.1, 0.22, stone, x + wx, wy - wh / 2 - 0.09, z - 3.12);
+            makeBox(0.055, wh, 0.1, brass, x + wx, wy, z - 3.17);
+            makeBox(ww, 0.055, 0.1, brass, x + wx, wy, z - 3.17);
+          }
+          // Recessed front entrance, transom, handle and doorstep.
+          makeBox(1.08, 2.25, 0.18, darkWood, x, 1.08, z - 3.0);
+          makeBox(0.82, 1.98, 0.09, wood, x, 1.04, z - 3.12);
+          makeBox(0.82, 0.28, 0.1, warmGlass, x, 2.12, z - 3.14);
+          makeBox(0.08, 0.08, 0.08, brass, x + 0.28, 1.08, z - 3.2);
+          makeBox(1.5, 0.18, 0.62, stone, x, 0.08, z - 3.28);
+          // Corner pilasters and a signboard make each facade feel occupied.
+          for (const side of [-1,1]) {
+            makeBox(0.16, h - 0.25, 0.18, stone, x + side * (w / 2 - 0.12), h / 2, z - 2.98);
+            makeBox(0.2, 0.18, 0.22, brass, x + side * (w / 2 - 0.12), h - 0.22, z - 3.02);
+          }
+          makeBox(Math.min(w * 0.72,4.2),0.42,0.16,wood,x,h * 0.48,z - 3.18);
+          makeBox(Math.min(w * 0.68,3.9),0.055,0.05,brass,x,h * 0.48,z - 3.28);
+          // A small fabric awning over the entrance adds a lived-in shopfront silhouette.
+          const awning = makeBox(1.75,0.12,0.8,mat("#76514b",0.9),x,h * 0.82,z - 3.35);
+          awning.rotation.x = -0.12;
+          for (let stripe=-2;stripe<=2;stripe++) makeBox(0.035,0.14,0.78,stone,x+stripe*0.34,h*0.82,z-3.36);
         };
         townBuilding(-10, -39, 6, 7.2, "#4a4140");
         townBuilding(10, -42, 6.5, 8.4, "#3e4848");
@@ -533,6 +580,39 @@ export default function InBetweenGame() {
         townBuilding(10, -61, 6, 7.5, "#49434b");
         townBuilding(-10, -75, 6, 8.2, "#39484a");
         townBuilding(10, -78, 6.5, 6.8, "#51433d");
+        // Raised pavements, kerbs and a worn central lane give the square scale.
+        for (const side of [-1,1]) {
+          makeBox(2.25,0.16,64,mat("#77736d",0.98),side*5.15,-0.02,-59);
+          makeBox(0.18,0.2,64,stoneForTown,side*4.0,0.0,-59);
+        }
+        // Street furniture: benches, planters, drains and rain-dark puddles.
+        const benchWood = mat("#594333",0.86);
+        const iron = mat("#252a2e",0.62,0.42);
+        for (const z of [-39,-52,-66,-80]) {
+          for (const side of [-1,1]) {
+            const bx=side*2.85;
+            makeBox(1.45,0.12,0.48,benchWood,bx,0.62,z);
+            makeBox(1.45,0.52,0.1,benchWood,bx,0.92,z+0.18);
+            for (const legSide of [-1,1]) {
+              makeBox(0.09,0.62,0.1,iron,bx+legSide*0.55,0.31,z);
+              makeBox(0.09,0.62,0.1,iron,bx+legSide*0.55,0.31,z+0.16);
+            }
+            const planter=makeBox(0.82,0.42,0.82,mat("#4b4037",0.98),side*7.2,0.18,z+1.4);
+            for(let p=0;p<5;p++){
+              const shrub=new THREE.Mesh(new THREE.SphereGeometry(0.22,8,7),mat(p%2?"#405843":"#536b4a",0.98));
+              shrub.position.set(side*7.2+(p-2)*0.17,0.56+(p%2)*0.08,z+1.4); scene.add(shrub);
+            }
+          }
+          makeBox(0.72,0.035,0.28,iron,0,0.0,z+2.1);
+        }
+        const stoneForTown = mat("#77716a",0.96);
+        // Scattered wet patches catch lantern reflections on the old road.
+        for(let i=0;i<12;i++){
+          const puddle=new THREE.Mesh(new THREE.CircleGeometry(0.28+(i%3)*0.13,16),new THREE.MeshStandardMaterial({color:"#60717a",roughness:0.16,metalness:0.22,transparent:true,opacity:0.42}));
+          puddle.rotation.x=-Math.PI/2;
+          puddle.position.set(Math.sin(i*7.1)*3.1,0.012,-36-i*3.9);
+          puddle.scale.y=0.48; scene.add(puddle);
+        }
         for (const z of [-34, -46, -58, -70, -82]) for (const x of [-3.7, 3.7]) {
           makeBox(0.12, 3.4, 0.12, darkWood, x, 1.7, z);
           makeBox(0.52, 0.12, 0.52, brass, x, 3.45, z);
