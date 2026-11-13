@@ -15,7 +15,7 @@ const DEFAULT_AVATAR: AvatarSettings = {
   skin: "#d5a27e",
   hair: "#8a4933",
   hairStyle: "long",
-  outfit: "#34473c",
+  outfit: "#263d32",
 };
 const SKIN_OPTIONS = [{label:"Warm",value:"#bd896d"},{label:"Golden",value:"#d5a27e"},{label:"Light",value:"#edc5a5"},{label:"Deep",value:"#754b3b"},{label:"Rich",value:"#9a6249"}];
 const HAIR_OPTIONS = [{label:"Espresso",value:"#241b18"},{label:"Chestnut",value:"#68412d"},{label:"Midnight",value:"#171b2b"},{label:"Auburn",value:"#8a4933"},{label:"Silver",value:"#aaa6a0"}];
@@ -270,47 +270,11 @@ export default function InBetweenGame() {
         for (const leg of [legL, legR]) part(new THREE.BoxGeometry(0.2, 0.13, 0.34), boots, 0, -0.49, -0.07, leg);
         const limbs = [armL, armR, legL, legR];
 
-        // Use the same CC0 rigged Mira model in the character turntable.
+        // Keep Mira's authored, fully coloured design in the preview.
+        // No external sample model is loaded, so the character stays consistent
+        // even when third-party model hosts are unavailable.
         let previewMixer: any = null;
         const previewAnimationClock = new THREE.Clock();
-        void (async () => {
-          try {
-            const loaderModule = await import(/* @vite-ignore */ "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js");
-            if (cancelled) return;
-            const loader = new loaderModule.GLTFLoader();
-            const gltf = await loader.loadAsync("https://grab3d.com/dl/woman-rigged/woman-rigged.glb");
-            if (cancelled) return;
-            const model = gltf.scene;
-            const bounds = new THREE.Box3().setFromObject(model);
-            const dimensions = bounds.getSize(new THREE.Vector3());
-            const centre = bounds.getCenter(new THREE.Vector3());
-            model.position.x -= centre.x;
-            model.position.z -= centre.z;
-            model.position.y -= bounds.min.y;
-            model.scale.setScalar(1.78 / Math.max(dimensions.y, 0.01));
-            model.rotation.y = Math.PI;
-            model.traverse((object: any) => {
-              if (object.isMesh) {
-                object.castShadow = true;
-                object.receiveShadow = true;
-                const materials = Array.isArray(object.material) ? object.material : [object.material];
-                materials.forEach((material: any) => {
-                  const materialLabel = `${object.name} ${material?.name || ""}`.toLowerCase();
-                  if (material?.color && /hair|brow/.test(materialLabel)) material.color.set(avatar.hair);
-                  else if (material?.color && /skin|face|body|hand/.test(materialLabel)) material.color.set(avatar.skin);
-                  else if (material?.color && /blazer|shirt|trouser|pant|cloth|jacket|top|outfit/.test(materialLabel)) material.color.set(avatar.outfit);
-                });
-              }
-            });
-            character.add(model);
-            fallbackPreview.visible = false;
-            previewMixer = new THREE.AnimationMixer(model);
-            const idleClip = gltf.animations.find((clip: any) => /idle|stand/i.test(clip.name)) || gltf.animations[0];
-            if (idleClip) previewMixer.clipAction(idleClip).play();
-          } catch (error) {
-            console.warn("Mira preview is using its built-in fallback.", error);
-          }
-        })();
         let dragging = false;
         let lastX = 0;
         let rotationVelocity = 0;
@@ -703,7 +667,23 @@ export default function InBetweenGame() {
         makePart(new THREE.CylinderGeometry(0.105, 0.12, 0.2, 16), skinMat, 0, 1.55, 0);
         const torso = makePart(new THREE.CapsuleGeometry(avatar.presentation === "masculine" ? 0.31 : 0.28, 0.62, 7, 16), outfitMat, 0, 1.13, 0);
         torso.scale.x = avatar.presentation === "masculine" ? 1.08 : 1;
-        makePart(new THREE.BoxGeometry(hip * 2, 0.42, 0.22), darkOutfitMat, 0, 0.76, 0.015);
+        // A warm ivory blouse peeks through the open field coat.
+        const blouseMat = mat("#e8dfca", 0.92);
+        const blousePanel = makePart(new THREE.BoxGeometry(0.17, 0.48, 0.035), blouseMat, 0, 1.25, -0.247);
+        blousePanel.rotation.z = 0.015;
+        const blouseCollarL = makePart(new THREE.BoxGeometry(0.105, 0.16, 0.045), blouseMat, -0.075, 1.48, -0.255);
+        const blouseCollarR = makePart(new THREE.BoxGeometry(0.105, 0.16, 0.045), blouseMat, 0.075, 1.48, -0.255);
+        blouseCollarL.rotation.z = -0.28;
+        blouseCollarR.rotation.z = 0.28;
+        makePart(new THREE.BoxGeometry(0.025, 0.42, 0.018), trimMat, -0.012, 1.24, -0.27);
+        for (let i = 0; i < 3; i++) makePart(new THREE.SphereGeometry(0.012, 8, 8), trimMat, 0.025, 1.37 - i * 0.12, -0.281);
+        makePart(new THREE.BoxGeometry(hip * 2 + 0.06, 0.42, 0.22), darkOutfitMat, 0, 0.76, 0.015);
+        // A fitted belt, brass buckle and stitched coat edges add readable detail.
+        const beltMat = mat("#49372b", 0.72);
+        makePart(new THREE.BoxGeometry(0.48, 0.075, 0.255), beltMat, 0, 0.99, -0.012);
+        makePart(new THREE.BoxGeometry(0.075, 0.085, 0.025), trimMat, 0, 0.99, -0.151);
+        makePart(new THREE.BoxGeometry(0.018, 0.34, 0.018), trimMat, -0.205, 1.15, -0.245);
+        makePart(new THREE.BoxGeometry(0.018, 0.34, 0.018), trimMat, 0.205, 1.15, -0.245);
         // Mira Vale's signature field coat, pleated travel skirt and satchel.
         const skirtMat = mat("#514047", 0.88);
         const coatSkirt = makePart(new THREE.CylinderGeometry(0.24, 0.39, 0.58, 8, 1, false), skirtMat, 0, 0.79, 0);
@@ -718,6 +698,12 @@ export default function InBetweenGame() {
         makePart(new THREE.BoxGeometry(0.34, 0.36, 0.16), darkOutfitMat, 0, 0, 0, satchel);
         makePart(new THREE.BoxGeometry(0.29, 0.11, 0.035), trimMat, 0, -0.04, -0.09, satchel);
         makePart(new THREE.TorusGeometry(0.045, 0.012, 6, 12), trimMat, 0, -0.04, -0.115, satchel);
+        // Cross-body leather strap runs from shoulder to the satchel.
+        const strapMat = mat("#59402e", 0.78);
+        const strap = makePart(new THREE.CapsuleGeometry(0.025, 0.78, 4, 8), strapMat, 0.24, 1.28, 0.11);
+        strap.rotation.z = -0.48;
+        const satchelFlap = makePart(new THREE.BoxGeometry(0.31, 0.13, 0.025), beltMat, 0, 0.105, -0.095, satchel);
+        satchelFlap.rotation.x = -0.08;
         makePart(new THREE.SphereGeometry(0.235, 32, 28), skinMat, 0, 1.82, 0);
         const facePlate = makePart(new THREE.SphereGeometry(0.19, 28, 20, 0, Math.PI, 0.15, Math.PI * 0.7), skinMat, 0, 1.81, -0.035);
         facePlate.scale.set(0.98, 0.98, 0.9);
@@ -738,6 +724,12 @@ export default function InBetweenGame() {
           fringe.scale.set(1.1, 0.62, 0.72);
           const hairPin = makePart(new THREE.TorusGeometry(0.055, 0.014, 7, 18), trimMat, 0.17, 1.91, -0.19);
           hairPin.rotation.x = Math.PI / 2;
+          const ribbonMat = mat("#405b43", 0.82);
+          makePart(new THREE.BoxGeometry(0.13, 0.035, 0.025), ribbonMat, 0.17, 1.89, -0.205);
+          const ribbonTailA = makePart(new THREE.BoxGeometry(0.035, 0.13, 0.018), ribbonMat, 0.13, 1.81, -0.19);
+          ribbonTailA.rotation.z = -0.18;
+          const ribbonTailB = makePart(new THREE.BoxGeometry(0.035, 0.13, 0.018), ribbonMat, 0.21, 1.81, -0.19);
+          ribbonTailB.rotation.z = 0.18;
         } else if (avatar.hairStyle === "tied") {
           makePart(new THREE.SphereGeometry(0.12, 16, 12), hairMat, 0, 1.72, 0.22);
           const ponytail = new THREE.Group();
@@ -864,72 +856,13 @@ export default function InBetweenGame() {
         let frame = 0;
         const clockTimer = new THREE.Clock();
 
-        // Mira now uses a real skinned, rigged character with authored walk/run
-        // clips. The CC0 model is hosted by Grab3D; the procedural Mira remains
-        // as a graceful fallback if the asset host or loader is unavailable.
+        // Mira is built from the authored, coloured Three.js character parts
+        // below. This avoids replacing her with an unrelated sample avatar.
         let characterMixer: any = null;
         let idleAction: any = null;
         let walkAction: any = null;
         let currentCharacterAction: any = null;
-        const switchCharacterAction = (next: any) => {
-          if (!next || currentCharacterAction === next) return;
-          next.reset().fadeIn(0.22).play();
-          if (currentCharacterAction) currentCharacterAction.fadeOut(0.22);
-          currentCharacterAction = next;
-        };
-        void (async () => {
-          try {
-            const loaderModule = await import(/* @vite-ignore */ "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js");
-            if (!active) return;
-            const loader = new loaderModule.GLTFLoader();
-            const gltf = await loader.loadAsync("https://grab3d.com/dl/woman-rigged/woman-rigged.glb");
-            if (!active) {
-              gltf.scene.traverse((object: any) => {
-                if (object.geometry) object.geometry.dispose();
-                if (object.material) {
-                  const materials = Array.isArray(object.material) ? object.material : [object.material];
-                  materials.forEach((item: any) => item.dispose());
-                }
-              });
-              return;
-            }
-            const model = gltf.scene;
-            const bounds = new THREE.Box3().setFromObject(model);
-            const dimensions = bounds.getSize(new THREE.Vector3());
-            const centre = bounds.getCenter(new THREE.Vector3());
-            model.position.x -= centre.x;
-            model.position.z -= centre.z;
-            model.position.y -= bounds.min.y;
-            model.scale.setScalar(1.78 / Math.max(dimensions.y, 0.01));
-            // glTF character assets commonly face +Z; Mira faces into the room.
-            model.rotation.y = Math.PI;
-            model.traverse((object: any) => {
-              if (!object.isMesh) return;
-              object.castShadow = true;
-              object.receiveShadow = true;
-              if (object.material) {
-                const materials = Array.isArray(object.material) ? object.material : [object.material];
-                materials.forEach((material: any) => {
-                  const materialLabel = `${object.name} ${material.name || ""}`.toLowerCase();
-                  if (material.color && /hair|brow/.test(materialLabel)) material.color.set(avatar.hair);
-                  else if (material.color && /skin|face|body|hand/.test(materialLabel)) material.color.set(avatar.skin);
-                  else if (material.color && /blazer|shirt|trouser|pant|cloth|jacket|top|outfit/.test(materialLabel)) material.color.set(avatar.outfit);
-                  if ("roughness" in material) material.roughness = Math.max(0.42, material.roughness ?? 0.7);
-                });
-              }
-            });
-            player.add(model);
-            fallbackGroup.visible = false;
-            characterMixer = new THREE.AnimationMixer(model);
-            const idleClip = gltf.animations.find((clip: any) => /idle|stand/i.test(clip.name)) || gltf.animations[0];
-            const walkClip = gltf.animations.find((clip: any) => /walk|run/i.test(clip.name));
-            idleAction = idleClip ? characterMixer.clipAction(idleClip) : null;
-            walkAction = walkClip ? characterMixer.clipAction(walkClip) : idleAction;
-            switchCharacterAction(idleAction);
-          } catch (error) {
-            console.warn("Mira's rigged model could not be loaded; using the built-in fallback.", error);
-          }
-        })();
+        const switchCharacterAction = (_next: any) => {};
         const target = new THREE.Vector3();
         const resize = () => {
           const width = canvas.clientWidth || 1;
