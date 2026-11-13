@@ -467,10 +467,9 @@ export default function InBetweenGame() {
 
         // Interactive furniture and clues: drawers, a photograph, a wardrobe,
         // and a ledger waiting in the archive.
-        const drawerFront = makeBox(0.9, 0.28, 0.12, wood, -2.45, 0.82, -2.15);
-        const drawerHandle = makeBox(0.16, 0.035, 0.045, brass, -2.45, 0.82, -2.075);
-        const sideCabinet = makeBox(1.05, 1.05, 0.8, darkWood, -2.45, 0.55, -2.5);
-        const drawerOpenPosition = { x: -2.45, z: -1.82 };
+        const sideCabinet = makeBox(1.05, 1.05, 0.8, darkWood, -3.35, 0.55, -4.4);
+        const drawerFront = makeBox(0.9, 0.28, 0.12, wood, -3.35, 0.82, -3.98);
+        const drawerHandle = makeBox(0.16, 0.035, 0.045, brass, -3.35, 0.82, -3.905);
         const photoFrame = makeBox(0.72, 0.92, 0.12, brass, 5.8, 2.15, -5.8);
         const photoImage = makeBox(0.58, 0.76, 0.035, mat("#59646a"), 5.8, 2.15, -5.7);
         const wardrobe = new THREE.Group();
@@ -482,8 +481,10 @@ export default function InBetweenGame() {
         wardrobeDoorL.position.set(-0.33, 1.7, -0.47); wardrobe.add(wardrobeDoorL);
         const wardrobeDoorR = new THREE.Mesh(new THREE.BoxGeometry(0.62, 3.25, 0.08), wood);
         wardrobeDoorR.position.set(0.33, 1.7, -0.47); wardrobe.add(wardrobeDoorR);
-        const wardrobeHandleL = makeBox(0.035, 0.18, 0.05, brass, 5.85, 1.7, -18.62);
-        const wardrobeHandleR = makeBox(0.035, 0.18, 0.05, brass, 5.85, 1.7, -18.62);
+        const wardrobeHandleL = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.18, 0.05), brass);
+        wardrobeHandleL.position.set(0.2, 0, -0.055); wardrobeDoorL.add(wardrobeHandleL);
+        const wardrobeHandleR = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.18, 0.05), brass);
+        wardrobeHandleR.position.set(-0.2, 0, -0.055); wardrobeDoorR.add(wardrobeHandleR);
         const archiveLedger = makeBox(0.7, 0.09, 0.52, paper, 0, 1.22, -20.5);
         const ledgerSeal = makeBox(0.12, 0.025, 0.12, brass, 0, 1.28, -20.5);
 
@@ -672,7 +673,7 @@ export default function InBetweenGame() {
           } else if (near(0, -9.2, 2.5)) {
             if (unlocked) doorIsOpen = !doorIsOpen;
             else window.dispatchEvent(new CustomEvent("inbetween:door"));
-          } else if (near(-2.45, -2.5, 1.8)) {
+          } else if (near(-3.35, -4.4, 1.8)) {
             drawerIsOpen = !drawerIsOpen;
             if (drawerIsOpen && !inventory.includes("Old photograph")) {
               setInventory((items) => [...items, "Old photograph"]);
@@ -685,6 +686,7 @@ export default function InBetweenGame() {
           } else if (near(5.85, -18.1, 2.0)) {
             wardrobeIsOpen = !wardrobeIsOpen;
             hidingInWardrobe = wardrobeIsOpen;
+            player.visible = !hidingInWardrobe;
             setMessage({ title: wardrobeIsOpen ? "Inside the wardrobe" : "Back in the archive", body: wardrobeIsOpen ? "You slip inside and pull the wardrobe doors nearly shut. The archive sounds distant from here." : "You step out into the archive. The wardrobe doors creak closed behind you." });
           } else if (near(0, -20.5, 2.0)) {
             if (!inventory.includes("Archive ledger")) setInventory((items) => [...items, "Archive ledger"]);
@@ -738,7 +740,7 @@ export default function InBetweenGame() {
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
           const doorNear = promptNear(0, -9.2, 2.5);
           const inArchive = player.position.z < -12.2;
-          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-2.45, -2.5, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : "";
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : !inArchive && promptNear(-3.35, -4.4, 1.8) ? "E  ·  OPEN DRAWER" : !inArchive && promptNear(5.8, -5.8, 2) ? "E  ·  INSPECT PHOTOGRAPH" : inArchive && promptNear(5.85, -18.1, 2) ? (wardrobeIsOpen ? "E  ·  LEAVE WARDROBE" : "E  ·  HIDE IN WARDROBE") : inArchive && promptNear(0, -20.5, 2) ? "E  ·  READ LEDGER" : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
           const horizontalDistance = Math.cos(cameraPitch) * 6.2;
@@ -746,8 +748,8 @@ export default function InBetweenGame() {
           camera.position.lerp(desired, 1 - Math.pow(0.001, delta));
           camera.lookAt(target);
           doorPivot.rotation.y = THREE.MathUtils.lerp(doorPivot.rotation.y, doorIsOpen ? -1.42 : 0, delta * 2.2);
-          drawerFront.position.z = THREE.MathUtils.lerp(drawerFront.position.z, drawerIsOpen ? -1.72 : -2.15, delta * 3);
-          drawerHandle.position.z = THREE.MathUtils.lerp(drawerHandle.position.z, drawerIsOpen ? -1.645 : -2.075, delta * 3);
+          drawerFront.position.z = THREE.MathUtils.lerp(drawerFront.position.z, drawerIsOpen ? -3.48 : -3.98, delta * 3);
+          drawerHandle.position.z = THREE.MathUtils.lerp(drawerHandle.position.z, drawerIsOpen ? -3.405 : -3.905, delta * 3);
           wardrobeDoorL.rotation.y = THREE.MathUtils.lerp(wardrobeDoorL.rotation.y, wardrobeIsOpen ? -0.95 : 0, delta * 2.5);
           wardrobeDoorR.rotation.y = THREE.MathUtils.lerp(wardrobeDoorR.rotation.y, wardrobeIsOpen ? 0.95 : 0, delta * 2.5);
           if (unlocked && !enteredArchive && player.position.z < -12.2) {
