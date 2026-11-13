@@ -126,6 +126,8 @@ export default function QuietRoomAvatar({ speaking }: Props) {
         limb(person, skin, [0.55,2.05,0.02], [0.68,1.56,0.47], 0.13);
         limb(person, outfit, [-0.58,1.98,0.01], [-0.4,1.48,0.37], 0.19);
         limb(person, outfit, [0.58,1.98,0.01], [0.4,1.48,0.37], 0.19);
+        sphere(person, "#e8b9a5", -0.4,1.46,0.39,0.12,0.11,0.13);
+        sphere(person, "#e8b9a5", 0.4,1.46,0.39,0.12,0.11,0.13);
         // Seated thighs and lower legs.
         limb(person, outfit, [-0.36,1.35,0.08], [-0.55,0.78,0.72], 0.24);
         limb(person, outfit, [0.36,1.35,0.08], [0.55,0.78,0.72], 0.24);
