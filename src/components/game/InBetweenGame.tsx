@@ -16,6 +16,7 @@ export default function InBetweenGame() {
   const [doorOpen, setDoorOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [engineError, setEngineError] = useState("");
+  const [nearbyPrompt, setNearbyPrompt] = useState("");
 
   useEffect(() => {
     try {
@@ -166,8 +167,11 @@ export default function InBetweenGame() {
           (gltf: any) => {
             if (cancelled) return;
             const model = gltf.scene;
-            model.scale.setScalar(0.9);
-            model.position.y = 0;
+            const bounds = new THREE.Box3().setFromObject(model);
+            const modelHeight = Math.max(bounds.max.y - bounds.min.y, 0.01);
+            const fitScale = 1.82 / modelHeight;
+            model.scale.setScalar(fitScale);
+            model.position.y = -bounds.min.y * fitScale;
             model.traverse((child: any) => {
               if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
             });
@@ -180,20 +184,48 @@ export default function InBetweenGame() {
           undefined,
           () => {
             if (player.children.length) return;
-            const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.85, 5, 10), mat("#343c49"));
-            body.position.y = 1.05;
-            body.castShadow = true;
-            player.add(body);
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 20, 16), mat("#c99b7b"));
-            head.position.y = 1.78;
-            player.add(head);
+            // Detailed fallback traveler with a long coat, hair and articulated limbs.
+            const skin = mat("#c99a7a", 0.72);
+            const coat = mat("#252b35", 0.88);
+            const coatTrim = mat("#75634e", 0.75);
+            const trousers = mat("#20232a", 0.9);
+            const boots = mat("#171719", 0.72);
+            const hair = mat("#241d1a", 0.92);
+            const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.29, 0.66, 6, 12), coat);
+            torso.position.y = 1.12; torso.castShadow = true; player.add(torso);
+            const coatTail = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.48, 0.19), coat);
+            coatTail.position.set(0, 0.73, 0.02); coatTail.castShadow = true; player.add(coatTail);
+            const collar = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.045, 8, 20), coatTrim);
+            collar.rotation.x = Math.PI / 2; collar.position.y = 1.48; player.add(collar);
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.235, 24, 18), skin);
+            head.position.y = 1.78; head.castShadow = true; player.add(head);
+            const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.242, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.58), hair);
+            hairCap.position.y = 1.84; player.add(hairCap);
+            const limb = (x: number, y: number, length: number, material: any) => {
+              const pivot = new THREE.Group(); pivot.position.set(x, y, 0); player.add(pivot);
+              const part = new THREE.Mesh(new THREE.CapsuleGeometry(0.105, length, 5, 10), material);
+              part.position.y = -length * 0.42; part.castShadow = true; pivot.add(part);
+              return pivot;
+            };
+            const armL = limb(-0.36, 1.38, 0.48, coat); const armR = limb(0.36, 1.38, 0.48, coat);
+            const legL = limb(-0.16, 0.68, 0.58, trousers); const legR = limb(0.16, 0.68, 0.58, trousers);
+            for (const leg of [legL, legR]) {
+              const boot = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.13, 0.34), boots);
+              boot.position.set(0, -0.49, -0.07); boot.castShadow = true; leg.add(boot);
+            }
+            player.userData.limbs = [armL, armR, legL, legR];
+            player.userData.fallback = true;
           }
         );
 
         const keys = new Set<string>();
         let unlocked = false;
+        let clockActivated = false;
+        let lastPrompt = "";
         const onUnlock = () => { unlocked = true; };
+        const onClockSolved = () => { clockActivated = true; };
         window.addEventListener("inbetween:unlock", onUnlock);
+        window.addEventListener("inbetween:clock-solved", onClockSolved);
         const onKeyDown = (event: KeyboardEvent) => {
           if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) event.preventDefault();
           keys.add(event.key.toLowerCase());
@@ -242,12 +274,30 @@ export default function InBetweenGame() {
           const moving = forward !== 0 || sideways !== 0;
           if (moving) {
             const direction = new THREE.Vector3(sideways, 0, -forward).normalize();
-            player.position.addScaledVector(direction, delta * 3.2);
-            player.position.x = THREE.MathUtils.clamp(player.position.x, -5.8, 5.8);
-            player.position.z = THREE.MathUtils.clamp(player.position.z, -9.5, 7.2);
+            const step = delta * 3.2;
+            const blockers = [
+              { x: 0, z: -2.2, hx: 1.82, hz: 1.12 },
+              { x: -4.7, z: -8.9, hx: 0.48, hz: 0.48 },
+              { x: 4.7, z: -8.9, hx: 0.48, hz: 0.48 },
+              { x: -3.9, z: -10.1, hx: 0.72, hz: 0.35 },
+            ];
+            const collides = (x: number, z: number) => blockers.some((b) => Math.abs(x - b.x) < b.hx && Math.abs(z - b.z) < b.hz);
+            const nextX = THREE.MathUtils.clamp(player.position.x + direction.x * step, -5.8, 5.8);
+            const nextZ = THREE.MathUtils.clamp(player.position.z + direction.z * step, -9.5, 7.2);
+            if (!collides(nextX, player.position.z)) player.position.x = nextX;
+            if (!collides(player.position.x, nextZ)) player.position.z = nextZ;
             player.rotation.y = Math.atan2(direction.x, direction.z);
           }
+          if (player.userData.fallback && player.userData.limbs) {
+            const swing = moving ? Math.sin(clockTimer.elapsedTime * 9) * 0.48 : Math.sin(clockTimer.elapsedTime * 1.7) * 0.025;
+            const [armL, armR, legL, legR] = player.userData.limbs;
+            armL.rotation.x = swing; armR.rotation.x = -swing;
+            legL.rotation.x = -swing; legR.rotation.x = swing;
+          }
           if (mixer) mixer.update(delta);
+          const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : promptNear(0, -9.2, 2.2) ? "E  ·  TRY THE DOOR" : "";
+          if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
           const desired = new THREE.Vector3(player.position.x, 3.1, player.position.z + 6.2);
           camera.position.lerp(desired, 1 - Math.pow(0.001, delta));
@@ -255,6 +305,8 @@ export default function InBetweenGame() {
           if (unlocked) {
             door.rotation.y = THREE.MathUtils.lerp(door.rotation.y, -1.2, delta * 1.2);
           }
+          if (clockActivated) hand.rotation.z = THREE.MathUtils.lerp(hand.rotation.z, -2.4, delta * 0.9);
+          if (clockActivated) painting.position.x = THREE.MathUtils.lerp(painting.position.x, -4.75, delta * 1.4);
           renderer.render(scene, camera);
         };
         animate();
@@ -265,6 +317,7 @@ export default function InBetweenGame() {
           window.removeEventListener("keydown", onKeyDown);
           window.removeEventListener("keyup", onKeyUp);
           window.removeEventListener("inbetween:unlock", onUnlock);
+          window.removeEventListener("inbetween:clock-solved", onClockSolved);
           resizeObserver.disconnect();
           scene.traverse((object: any) => {
             if (object.geometry) object.geometry.dispose();
@@ -292,6 +345,7 @@ export default function InBetweenGame() {
   }, [started]);
 
   useEffect(() => {
+    const prompt = (event: Event) => setNearbyPrompt((event as CustomEvent<string>).detail || "");
     const letter = () => {
       if (!inventory.includes("The torn letter")) {
         setInventory((items) => [...items, "The torn letter"]);
@@ -301,6 +355,7 @@ export default function InBetweenGame() {
     const clock = () => {
       if (inventory.includes("The torn letter")) {
         setClockSolved(true);
+        window.dispatchEvent(new CustomEvent("inbetween:clock-solved"));
         setMessage({ title: "The clock begins to move", body: "11:17. A quiet click echoes through the library. Something behind the painting shifts." });
       } else setMessage({ title: "A stopped clock", body: "Its hands are frozen. You need to find a clue before changing the time." });
     };
@@ -317,11 +372,13 @@ export default function InBetweenGame() {
         setMessage({ title: "The first door opens", body: "Beyond it is not the hallway you expected. A second library stretches into darkness. Chapter One is complete — and the real mystery is only beginning." });
       } else setMessage({ title: "A locked door", body: "The lock is old, but still intact. There must be a key somewhere in this room." });
     };
+    window.addEventListener("inbetween:prompt", prompt);
     window.addEventListener("inbetween:letter", letter);
     window.addEventListener("inbetween:clock", clock);
     window.addEventListener("inbetween:painting", painting);
     window.addEventListener("inbetween:door", door);
     return () => {
+      window.removeEventListener("inbetween:prompt", prompt);
       window.removeEventListener("inbetween:letter", letter);
       window.removeEventListener("inbetween:clock", clock);
       window.removeEventListener("inbetween:painting", painting);
@@ -367,6 +424,7 @@ export default function InBetweenGame() {
           <canvas ref={canvasRef} aria-label="Third-person 3D view of the Silent Library" />
           <div className="ib-world-top"><span>✦ THE SILENT LIBRARY</span><span>CHAPTER 01 / 04</span></div>
           <div className="ib-world-bottom"><span>W A S D / ARROW KEYS TO MOVE</span><span>E · INTERACT</span></div>
+          {nearbyPrompt && <div className="ib-interaction-prompt">{nearbyPrompt}</div>}
           {loading && <div className="ib-loading"><span className="ib-loader" />Preparing the library…</div>}
           {engineError && <div className="ib-error">{engineError}</div>}
           <div className="ib-mobile-controls">
