@@ -25,7 +25,7 @@ If a user mentions self-harm or suicide, respond supportively without describing
 Do not give medical diagnoses or medication instructions. Do not make promises of confidentiality; explain that the service is an AI and users should avoid sharing identifying or highly sensitive information.
 Never roleplay romance, dependency, exclusivity, or claim to be human. Keep responses concise and kind.\`;
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env }: { request: Request; env: Env }) => {
   if (!env.OPENAI_API_KEY) {
     return json({ error: "AI is not configured yet. The site owner must add the secure OPENAI_API_KEY server secret." }, 503);
   }
