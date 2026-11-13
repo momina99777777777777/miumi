@@ -76,9 +76,7 @@ export default function InBetweenGame() {
         // Three.js is loaded only when the player enters the game, keeping Miumi's
         // regular pages light. The browser fetches the pinned ESM build at runtime.
         const threeModuleUrl = "https://esm.sh/three@0.180.0";
-        const loaderModuleUrl = "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js";
         const THREE = await import(/* @vite-ignore */ threeModuleUrl) as ThreeModule;
-        const { GLTFLoader } = await import(/* @vite-ignore */ loaderModuleUrl) as { GLTFLoader: new () => { load: (url: string, onLoad: (gltf: any) => void, onProgress?: undefined, onError?: (error: unknown) => void) => void } };
         if (cancelled || !canvasRef.current) return;
 
         const canvas = canvasRef.current;
@@ -233,8 +231,8 @@ export default function InBetweenGame() {
         };
         const armL = limb(-shoulder, 1.37, 0.5, 0.095, outfitMat);
         const armR = limb(shoulder, 1.37, 0.5, 0.095, outfitMat);
-        const handL = makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armL);
-        const handR = makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armR);
+        makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armL);
+        makePart(new THREE.SphereGeometry(0.09, 14, 12), skinMat, 0, -0.34, 0, armR);
         const legL = limb(-hip / 2, 0.67, 0.58, 0.105, darkOutfitMat);
         const legR = limb(hip / 2, 0.67, 0.58, 0.105, darkOutfitMat);
         for (const leg of [legL, legR]) makePart(new THREE.BoxGeometry(0.2, 0.13, 0.34), bootMat, 0, -0.49, -0.07, leg);
