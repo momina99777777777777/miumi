@@ -135,6 +135,8 @@ export default function InBetweenGame() {
         const character = new THREE.Group();
         character.position.y = 0.11;
         scene.add(character);
+        const fallbackPreview = new THREE.Group();
+        character.add(fallbackPreview);
         const material = (color: string, roughness = 0.8, metalness = 0) => new THREE.MeshStandardMaterial({ color, roughness, metalness });
         const skin = material(avatar.skin);
         const hair = material(avatar.hair);
@@ -142,7 +144,7 @@ export default function InBetweenGame() {
         const shadowOutfit = material(new THREE.Color(avatar.outfit).multiplyScalar(0.68).getStyle());
         const boots = material("#171719");
         const brass = material("#b49a72", 0.4, 0.45);
-        const part = (geometry: any, mat: any, x: number, y: number, z: number, parent: any = character) => {
+        const part = (geometry: any, mat: any, x: number, y: number, z: number, parent: any = fallbackPreview) => {
           const mesh = new THREE.Mesh(geometry, mat);
           mesh.position.set(x, y, z);
           mesh.castShadow = true;
@@ -166,7 +168,7 @@ export default function InBetweenGame() {
         }
         const sash = part(new THREE.TorusGeometry(0.2, 0.035, 8, 28), brass, 0, 0.98, 0);
         sash.rotation.x = Math.PI / 2;
-        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); character.add(satchel);
+        const satchel = new THREE.Group(); satchel.position.set(0.34, 1.02, 0.19); fallbackPreview.add(satchel);
         part(new THREE.BoxGeometry(0.34, 0.36, 0.16), shadowOutfit, 0, 0, 0, satchel);
         part(new THREE.BoxGeometry(0.29, 0.11, 0.035), brass, 0, -0.04, -0.09, satchel);
         part(new THREE.TorusGeometry(0.045, 0.012, 6, 12), brass, 0, -0.04, -0.115, satchel);
@@ -180,7 +182,7 @@ export default function InBetweenGame() {
           for (const side of [-1, 1]) {
             const lock = new THREE.Group();
             lock.position.set(side * 0.19, 1.72, 0.045);
-            character.add(lock);
+            fallbackPreview.add(lock);
             part(new THREE.CapsuleGeometry(0.095, 0.46, 7, 14), hair, 0, -0.15, 0, lock);
             const curl = part(new THREE.SphereGeometry(0.105, 16, 12), hair, 0, -0.42, 0.015, lock);
             curl.scale.set(0.9, 0.72, 0.85);
@@ -194,7 +196,7 @@ export default function InBetweenGame() {
           part(new THREE.SphereGeometry(0.12, 16, 12), hair, 0, 1.72, 0.22);
           const ponytail = new THREE.Group();
           ponytail.position.set(0, 1.62, 0.2);
-          character.add(ponytail);
+          fallbackPreview.add(ponytail);
           part(new THREE.CapsuleGeometry(0.07, 0.22, 5, 10), hair, 0, -0.12, 0, ponytail);
           hairMotion.push({ pivot: ponytail, side: 0.7 });
         } else {
@@ -237,12 +239,12 @@ export default function InBetweenGame() {
         for (let i = 0; i < 3; i++) part(new THREE.SphereGeometry(0.018, 10, 8), brass, 0.055, 1.28 - i * 0.16, -0.275);
         const scarfPivot = new THREE.Group();
         scarfPivot.position.set(0, 1.52, -0.12);
-        character.add(scarfPivot);
+        fallbackPreview.add(scarfPivot);
         const scarf = part(new THREE.CapsuleGeometry(0.075, 0.2, 4, 10), seam, 0, -0.06, -0.07, scarfPivot);
         scarf.rotation.z = 0.12;
         const coatTail = new THREE.Group();
         coatTail.position.set(0, 0.9, 0.13);
-        character.add(coatTail);
+        fallbackPreview.add(coatTail);
         part(new THREE.BoxGeometry(0.43, 0.38, 0.075), shadowOutfit, 0, -0.18, 0, coatTail);
         const collarPin = part(new THREE.TorusGeometry(0.055, 0.012, 6, 16), brass, -0.18, 1.43, -0.22);
         collarPin.rotation.x = Math.PI / 2;
@@ -250,7 +252,7 @@ export default function InBetweenGame() {
         const limb = (x: number, y: number, length: number, width: number, mat: any) => {
           const pivot = new THREE.Group();
           pivot.position.set(x, y, 0);
-          character.add(pivot);
+          fallbackPreview.add(pivot);
           part(new THREE.CapsuleGeometry(width, length, 6, 12), mat, 0, -length * 0.42, 0, pivot);
           return pivot;
         };
@@ -262,6 +264,41 @@ export default function InBetweenGame() {
         const legR = limb(hip / 2, 0.67, 0.58, 0.105, shadowOutfit);
         for (const leg of [legL, legR]) part(new THREE.BoxGeometry(0.2, 0.13, 0.34), boots, 0, -0.49, -0.07, leg);
         const limbs = [armL, armR, legL, legR];
+
+        // Use the same CC0 rigged Mira model in the character turntable.
+        let previewMixer: any = null;
+        const previewAnimationClock = new THREE.Clock();
+        void (async () => {
+          try {
+            const loaderModule = await import(/* @vite-ignore */ "https://esm.sh/three@0.180.0/examples/jsm/loaders/GLTFLoader.js");
+            if (cancelled) return;
+            const loader = new loaderModule.GLTFLoader();
+            const gltf = await loader.loadAsync("https://grab3d.com/dl/woman-rigged/woman-rigged.glb");
+            if (cancelled) return;
+            const model = gltf.scene;
+            const bounds = new THREE.Box3().setFromObject(model);
+            const dimensions = bounds.getSize(new THREE.Vector3());
+            const centre = bounds.getCenter(new THREE.Vector3());
+            model.position.x -= centre.x;
+            model.position.z -= centre.z;
+            model.position.y -= bounds.min.y;
+            model.scale.setScalar(1.78 / Math.max(dimensions.y, 0.01));
+            model.rotation.y = Math.PI;
+            model.traverse((object: any) => {
+              if (object.isMesh) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+              }
+            });
+            character.add(model);
+            fallbackPreview.visible = false;
+            previewMixer = new THREE.AnimationMixer(model);
+            const idleClip = gltf.animations.find((clip: any) => /idle|stand/i.test(clip.name)) || gltf.animations[0];
+            if (idleClip) previewMixer.clipAction(idleClip).play();
+          } catch (error) {
+            console.warn("Mira preview is using its built-in fallback.", error);
+          }
+        })();
         let dragging = false;
         let lastX = 0;
         let rotationVelocity = 0;
@@ -312,6 +349,7 @@ export default function InBetweenGame() {
           satchel.rotation.z = Math.sin(elapsed * 1.8) * 0.035;
           limbs[0].rotation.x = Math.sin(elapsed * 1.2) * 0.025;
           limbs[1].rotation.x = -Math.sin(elapsed * 1.2) * 0.025;
+          if (previewMixer) previewMixer.update(previewAnimationClock.getDelta());
           renderer.render(scene, camera);
         };
         animate();
