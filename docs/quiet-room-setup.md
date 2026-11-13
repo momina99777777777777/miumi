@@ -4,21 +4,17 @@ The Quiet Room is a supportive AI conversation feature, not a therapy or crisis 
 
 ## Connect the free Cloudflare AI service
 
-The Quiet Room uses Cloudflare Workers AI through a server-side Pages binding. It does not need an OpenAI API key or a payment card when the project stays on Cloudflare's Workers Free plan and within its free daily allocation.
+Miumi's Cloudflare Pages project is configured in `wrangler.jsonc`. That file keeps the existing Pages output directory (`./dist`), the `nodejs_compat` runtime flag, and the Workers AI binding named `AI`.
 
-1. Open the Cloudflare dashboard and select the account that hosts the Miumi Pages project.
-2. Open **Workers & Pages** and select the Miumi Pages project.
-3. Open **Settings → Bindings**.
-4. Choose **Add → Workers AI**.
-5. Set the variable name to exactly `AI`.
-6. Add the binding to **Production**. Repeat for **Preview** only if you want preview deployments to use it.
-7. Save the binding and redeploy the latest deployment.
+1. The `wrangler.jsonc` file is committed to the `main` branch.
+2. Cloudflare Pages should build and deploy the latest `main` commit.
+3. The Pages Function at `functions/api/quiet-room.ts` reads the `AI` binding and calls Cloudflare Workers AI. No OpenAI key is required.
 
-The Pages Function uses the Cloudflare-hosted `@cf/zai-org/glm-4.7-flash` model. No provider API key is stored in the repository or browser.
+Because Wrangler is the source of truth, the Cloudflare dashboard may show the binding but keep its Add button disabled. Do not try to add a duplicate binding in the dashboard.
 
 ## Free usage limits
 
-Cloudflare documents a 10,000-Neuron daily free allocation on the Workers Free plan. The allocation resets daily. When the Free-plan allowance is exhausted, further AI requests fail until it resets; do not upgrade to a paid Workers plan or add billing just for this feature. Check the current Cloudflare pricing and account plan before enabling AI.
+Cloudflare documents a free allocation of 10,000 Neurons per day on the Workers Free plan. The daily allowance resets at 00:00 UTC. When the free allowance is exhausted, further requests fail until the reset; using more than the free allocation requires moving to Workers Paid. Keep the account on the Free plan and do not enable paid billing.
 
 ## Current experience and privacy
 
