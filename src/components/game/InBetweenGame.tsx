@@ -380,16 +380,32 @@ export default function InBetweenGame() {
         };
 
         makeBox(16, 0.35, 18, floorMat, 0, -0.2, -2);
-        makeBox(16, 6, 0.35, wallMat, 0, 2.8, -11);
+        makeBox(6.8, 6, 0.35, wallMat, -4.6, 2.8, -11);
+        makeBox(6.8, 6, 0.35, wallMat, 4.6, 2.8, -11);
+        makeBox(2.4, 1.85, 0.35, wallMat, 0, 5.08, -11);
         makeBox(0.35, 6, 18, wallMat, -8, 2.8, -2);
         makeBox(0.35, 6, 18, wallMat, 8, 2.8, -2);
         makeBox(16, 0.35, 18, darkWood, 0, 5.8, -2);
-        // A dark opening and heavy door at the far end.
-        const door = makeBox(2.4, 4.1, 0.22, darkWood, 0, 2.05, -10.72);
-        makeBox(2.55, 0.16, 0.3, brass, 0, 4.2, -10.58);
+        const doorPivot = new THREE.Group();
+        doorPivot.position.set(-1.2, 0, -10.72); scene.add(doorPivot);
+        const door = new THREE.Mesh(new THREE.BoxGeometry(2.4, 4.1, 0.22), darkWood);
+        door.position.set(1.2, 2.05, 0); door.castShadow = true; door.receiveShadow = true; doorPivot.add(door);
+        const doorPanel = new THREE.Mesh(new THREE.BoxGeometry(1.85, 3.55, 0.055), wood);
+        doorPanel.position.set(1.2, 2.05, -0.13); doorPanel.castShadow = true; doorPivot.add(doorPanel);
         const knob = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 12), brass);
-        knob.position.set(0.82, 1.8, -10.48);
-        scene.add(knob);
+        knob.position.set(0.82, 1.8, -0.2); doorPivot.add(knob);
+        makeBox(2.55, 0.16, 0.3, brass, 0, 4.2, -10.58);
+        makeBox(16, 0.35, 15, mat("#292a30", 0.9), 0, -0.2, -18.5);
+        makeBox(0.35, 6, 15, wallMat, -8, 2.8, -18.5);
+        makeBox(0.35, 6, 15, wallMat, 8, 2.8, -18.5);
+        makeBox(16, 6, 0.35, wallMat, 0, 2.8, -26);
+        makeBox(16, 0.35, 15, darkWood, 0, 5.8, -18.5);
+        makeBox(3.6, 0.18, 1.2, wood, 0, 1.05, -20.5);
+        for (const x of [-1.45, 1.45]) makeBox(0.15, 1.0, 0.15, darkWood, x, 0.5, -20.5);
+        const archiveGlow = new THREE.PointLight("#7f9bb9", 9, 13, 2);
+        archiveGlow.position.set(0, 3.1, -23); scene.add(archiveGlow);
+        makeBox(0.7, 1.3, 0.45, mat("#4a3b32"), -3.6, 0.65, -23.2);
+        makeBox(0.7, 1.3, 0.45, mat("#3b4651"), 3.6, 0.65, -23.2);
 
         // Tall library shelves, filled with individually shaded book spines.
         for (const side of [-1, 1]) {
@@ -546,20 +562,46 @@ export default function InBetweenGame() {
         const playerLimbs = [armL, armR, legL, legR];
         const keys = new Set<string>();
         let unlocked = progressRef.current.doorOpen;
+        let doorIsOpen = unlocked;
         let clockActivated = progressRef.current.clockSolved;
-        if (unlocked) door.rotation.y = -1.2;
+        let enteredArchive = false;
+        if (doorIsOpen) doorPivot.rotation.y = -1.42;
         if (clockActivated) painting.position.x = -4.75;
         let lastPrompt = "";
-        const onUnlock = () => { unlocked = true; };
+        const onUnlock = () => { unlocked = true; doorIsOpen = true; };
         const onClockSolved = () => { clockActivated = true; };
         window.addEventListener("inbetween:unlock", onUnlock);
         window.addEventListener("inbetween:clock-solved", onClockSolved);
+        let cameraYaw = 0;
+        let cameraPitch = 0.16;
+        let touchLookActive = false;
+        let lastTouchX = 0, lastTouchY = 0;
+        const onCanvasClick = () => { if (document.pointerLockElement !== canvas && canvas.requestPointerLock) canvas.requestPointerLock(); };
+        const onMouseMove = (event: MouseEvent) => {
+          if (document.pointerLockElement !== canvas) return;
+          cameraYaw -= event.movementX * 0.0024;
+          cameraPitch = THREE.MathUtils.clamp(cameraPitch + event.movementY * 0.0018, -0.12, 0.62);
+        };
+        const onTouchStart = (event: PointerEvent) => { if (event.pointerType === "touch") { touchLookActive = true; lastTouchX = event.clientX; lastTouchY = event.clientY; } };
+        const onTouchMove = (event: PointerEvent) => {
+          if (!touchLookActive || event.pointerType !== "touch") return;
+          cameraYaw -= (event.clientX-lastTouchX)*0.006;
+          cameraPitch = THREE.MathUtils.clamp(cameraPitch+(event.clientY-lastTouchY)*0.003,-0.12,0.62);
+          lastTouchX=event.clientX; lastTouchY=event.clientY;
+        };
+        const onTouchEnd = () => { touchLookActive = false; };
         const onKeyDown = (event: KeyboardEvent) => {
           if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) event.preventDefault();
           keys.add(event.key.toLowerCase());
           if (event.key.toLowerCase() === "e") interact();
         };
         const onKeyUp = (event: KeyboardEvent) => keys.delete(event.key.toLowerCase());
+        canvas.addEventListener("click", onCanvasClick);
+        canvas.addEventListener("pointerdown", onTouchStart);
+        canvas.addEventListener("pointermove", onTouchMove);
+        canvas.addEventListener("pointerup", onTouchEnd);
+        canvas.addEventListener("pointercancel", onTouchEnd);
+        window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("keydown", onKeyDown);
         window.addEventListener("keyup", onKeyUp);
 
@@ -588,8 +630,9 @@ export default function InBetweenGame() {
             window.dispatchEvent(new CustomEvent("inbetween:clock"));
           } else if (near(-3.9, -9.2, 2.2)) {
             window.dispatchEvent(new CustomEvent("inbetween:painting"));
-          } else if (near(0, -9.2, 2.2)) {
-            window.dispatchEvent(new CustomEvent("inbetween:door"));
+          } else if (near(0, -9.2, 2.5)) {
+            if (unlocked) doorIsOpen = !doorIsOpen;
+            else window.dispatchEvent(new CustomEvent("inbetween:door"));
           }
         }
 
@@ -601,7 +644,9 @@ export default function InBetweenGame() {
           const sideways = (keys.has("d") || keys.has("arrowright") ? 1 : 0) - (keys.has("a") || keys.has("arrowleft") ? 1 : 0);
           const moving = forward !== 0 || sideways !== 0;
           if (moving) {
-            const direction = new THREE.Vector3(sideways, 0, -forward).normalize();
+            const forwardVector = new THREE.Vector3(Math.sin(cameraYaw), 0, -Math.cos(cameraYaw));
+            const rightVector = new THREE.Vector3(Math.cos(cameraYaw), 0, Math.sin(cameraYaw));
+            const direction = forwardVector.multiplyScalar(forward).add(rightVector.multiplyScalar(sideways)).normalize();
             const step = delta * 3.2;
             const blockers = [
               { x: 0, z: -2.2, hx: 1.82, hz: 1.12 },
@@ -611,7 +656,7 @@ export default function InBetweenGame() {
             ];
             const collides = (x: number, z: number) => blockers.some((b) => Math.abs(x - b.x) < b.hx && Math.abs(z - b.z) < b.hz);
             const nextX = THREE.MathUtils.clamp(player.position.x + direction.x * step, -5.8, 5.8);
-            const nextZ = THREE.MathUtils.clamp(player.position.z + direction.z * step, -9.5, 7.2);
+            const nextZ = THREE.MathUtils.clamp(player.position.z + direction.z * step, unlocked ? -24.8 : -9.5, 7.2);
             if (!collides(nextX, player.position.z)) player.position.x = nextX;
             if (!collides(player.position.x, nextZ)) player.position.z = nextZ;
             player.rotation.y = Math.atan2(direction.x, direction.z);
@@ -635,14 +680,18 @@ export default function InBetweenGame() {
             player.rotation.z = moving ? Math.sin(clockTimer.elapsedTime * 4.5) * 0.018 : 0;
           }
           const promptNear = (x: number, z: number, radius: number) => Math.hypot(player.position.x - x, player.position.z - z) < radius;
-          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : promptNear(0, -9.2, 2.2) ? "E  ·  TRY THE DOOR" : "";
+          const doorNear = promptNear(0, -9.2, 2.5);
+          const prompt = promptNear(-0.55, -2.1, 2.1) ? "E  ·  READ THE LETTER" : promptNear(2.8, -9.8, 2.4) ? "E  ·  EXAMINE THE CLOCK" : promptNear(-3.9, -9.2, 2.2) ? "E  ·  INSPECT THE PAINTING" : doorNear ? (unlocked ? "E  ·  OPEN / CLOSE DOOR" : "E  ·  TRY THE DOOR") : "";
           if (prompt !== lastPrompt) { lastPrompt = prompt; window.dispatchEvent(new CustomEvent("inbetween:prompt", { detail: prompt })); }
           target.set(player.position.x, 1.15, player.position.z);
-          const desired = new THREE.Vector3(player.position.x, 3.1, player.position.z + 6.2);
+          const horizontalDistance = Math.cos(cameraPitch) * 6.2;
+          const desired = new THREE.Vector3(player.position.x + Math.sin(cameraYaw)*horizontalDistance, 3.1 + Math.sin(cameraPitch)*6.2, player.position.z + Math.cos(cameraYaw)*horizontalDistance);
           camera.position.lerp(desired, 1 - Math.pow(0.001, delta));
           camera.lookAt(target);
-          if (unlocked) {
-            door.rotation.y = THREE.MathUtils.lerp(door.rotation.y, -1.2, delta * 1.2);
+          doorPivot.rotation.y = THREE.MathUtils.lerp(doorPivot.rotation.y, doorIsOpen ? -1.42 : 0, delta * 2.2);
+          if (unlocked && !enteredArchive && player.position.z < -12.2) {
+            enteredArchive = true;
+            setTimeout(() => setMessage({ title:"The hidden archive", body:"The library was only the first room. Shelves of forgotten records stretch into the dark. Somewhere in here, another door is waiting." }), 250);
           }
           if (clockActivated) hand.rotation.z = THREE.MathUtils.lerp(hand.rotation.z, -2.4, delta * 0.9);
           if (clockActivated) {
@@ -658,6 +707,13 @@ export default function InBetweenGame() {
           cancelAnimationFrame(frame);
           window.removeEventListener("keydown", onKeyDown);
           window.removeEventListener("keyup", onKeyUp);
+          window.removeEventListener("mousemove", onMouseMove);
+          canvas.removeEventListener("click", onCanvasClick);
+          canvas.removeEventListener("pointerdown", onTouchStart);
+          canvas.removeEventListener("pointermove", onTouchMove);
+          canvas.removeEventListener("pointerup", onTouchEnd);
+          canvas.removeEventListener("pointercancel", onTouchEnd);
+          if (document.pointerLockElement === canvas) document.exitPointerLock();
           window.removeEventListener("inbetween:unlock", onUnlock);
           window.removeEventListener("inbetween:clock-solved", onClockSolved);
           resizeObserver.disconnect();
