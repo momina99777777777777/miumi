@@ -4761,3 +4761,125 @@ button:hover::after {
 
 .font-studio-live-hint { margin:7px 0 0; color:#B18DA4; font-size:9px; line-height:1.5; }
 .font-studio-live-output .font-studio-output-text { min-height:48px; padding:9px 10px; border:1px solid #F0DCE7; border-radius:10px; background:#FFFBFD; }
+
+
+/* Font Studio refinement — compact selector and immediately visible preview */
+.home-font-studio-rail { width:100%; min-width:0; }
+.home-font-studio {
+  padding: 19px 15px 16px;
+  border-color: #E7BED3;
+  background:
+    radial-gradient(circle at 96% 2%, rgba(255,255,255,.94), transparent 27%),
+    radial-gradient(circle at 2% 98%, rgba(255,255,255,.8), transparent 26%),
+    linear-gradient(160deg,#FFF1F7 0%,#FBE5F0 55%,#F8E9F7 100%);
+}
+.font-studio-heading { margin-bottom:15px; }
+.font-studio-heading > p:last-child { max-width:220px; margin-left:auto; margin-right:auto; }
+.font-studio-input-label { display:block; margin:12px 1px 6px; }
+.font-studio-select-wrap {
+  position:relative;
+  margin-bottom:13px;
+}
+.font-studio-select {
+  display:block;
+  width:100%;
+  min-height:42px;
+  appearance:none;
+  padding:10px 35px 10px 12px;
+  border:1px solid #E6C2D5;
+  border-radius:12px;
+  outline:none;
+  background:#FFFCFE;
+  color:#936982;
+  font:800 11px "Nunito",sans-serif;
+  cursor:pointer;
+}
+.font-studio-select:focus { border-color:#C98EAE; box-shadow:0 0 0 3px rgba(201,142,174,.16); }
+.font-studio-select-wrap > span {
+  position:absolute;
+  top:50%;
+  right:13px;
+  transform:translateY(-55%);
+  color:#B77D9C;
+  font-size:18px;
+  pointer-events:none;
+}
+.font-studio-input {
+  min-height:75px;
+  margin-top:0;
+  padding:11px 12px;
+  border-color:#E7C3D6;
+  background:#FFFCFE;
+}
+.font-studio-input-meta { margin:5px 2px 10px; }
+.font-studio-live-output {
+  margin-top:8px;
+  padding:11px;
+  border:1px solid #E4BBD1;
+  border-radius:16px;
+  background:linear-gradient(150deg,#FFFDFE,#FFF5FA);
+  box-shadow:0 5px 15px rgba(170,112,149,.08);
+}
+.font-studio-output-top { font-size:9px; }
+.font-studio-preview-canvas {
+  min-height:94px;
+  margin:9px 0 10px;
+  padding:11px 10px;
+  border:1px dashed #E5C3D6;
+  border-radius:11px;
+  background:#FFFFFF;
+}
+.font-studio-live-hint {
+  margin:0 0 7px;
+  color:#B18DA4;
+  font-size:8px;
+  line-height:1.4;
+}
+.font-studio-output-text {
+  min-height:38px;
+  max-height:120px;
+  margin:0;
+  overflow-wrap:anywhere;
+  overflow-y:auto;
+  color:#875C79;
+  font-size:19px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.font-studio-copy-button {
+  min-height:40px;
+  border:1px solid #BD7FA1;
+  background:linear-gradient(135deg,#DDAEC7,#C58BAA);
+}
+.font-studio-footnote { margin-top:8px; font-size:8px; }
+@media(min-width:981px) {
+  .app-layout.has-home-font-studio {
+    grid-template-columns:190px minmax(0,1fr) 300px;
+    gap:18px;
+  }
+  .home-font-studio-rail { position:sticky; top:18px; }
+}
+@media(max-width:980px) and (min-width:661px) {
+  .app-layout.has-home-font-studio {
+    grid-template-columns:140px minmax(0,1fr) 270px;
+    gap:14px;
+  }
+  .app-layout.has-home-font-studio .home-font-studio-rail {
+    position:sticky;
+    top:14px;
+    grid-column:auto;
+  }
+  .app-layout.has-home-font-studio .side-nav { padding:14px 8px; }
+  .app-layout.has-home-font-studio .nav-button { padding:10px 9px !important; gap:8px !important; font-size:10px !important; }
+  .font-studio-style-list { display:none; }
+}
+@media(max-width:660px) {
+  .app-layout.has-home-font-studio { display:flex; flex-direction:column; gap:15px; }
+  .app-layout.has-home-font-studio .content-column { order:1; width:100%; }
+  .app-layout.has-home-font-studio .home-font-studio-rail { order:0; width:100%; margin-top:0; }
+  .home-font-studio { padding:17px 14px; }
+  .font-studio-heading { margin-bottom:13px; }
+  .font-studio-select { min-height:44px; }
+  .font-studio-preview-canvas { min-height:82px; }
+}
