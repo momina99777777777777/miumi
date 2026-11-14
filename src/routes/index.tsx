@@ -2282,6 +2282,22 @@ function MiumiScrapbook() {
   );
 }
 
+const homeCopySymbols = [
+  "⋆‧°𓏲ּ𝄢",
+  "⊹₊˚‧︵‿₊୨ᰔ୧₊‿︵‧˚₊⊹",
+  "𝜗𝜚⋆₊˚",
+  "˙⋆✮",
+  "‧₊ ♪˚⊹",
+  "⊹ ࣪ ˖꒰ঌ ໒꒱.⋆˚࿔",
+  "⋆˙⟡",
+  "𐙚",
+  "୨୧",
+  "⋆｡°✩",
+  "꒰ა ♡ ໒꒱",
+  "♡₊˚",
+  "｡ﾟ☁︎｡",
+] as const;
+
 function HomePage({
   daily,
   dailyAnswer,
@@ -2295,8 +2311,56 @@ function HomePage({
   onBrowse: () => void;
   onStart: (definition: QuizDefinition) => void;
 }) {
+  const [copiedSymbol, setCopiedSymbol] = useState<string | null>(null);
+  const [copyFailed, setCopyFailed] = useState(false);
+
+  const copySymbol = async (symbol: string) => {
+    try {
+      await navigator.clipboard.writeText(symbol);
+      setCopiedSymbol(symbol);
+      setCopyFailed(false);
+      window.setTimeout(() => {
+        setCopiedSymbol((current) => current === symbol ? null : current);
+      }, 1500);
+    } catch {
+      setCopyFailed(true);
+      setCopiedSymbol(null);
+      window.setTimeout(() => setCopyFailed(false), 2200);
+    }
+  };
+
   return (
     <div className="home-page page-enter">
+      <section className="home-symbol-library" aria-label="Copy cute symbols">
+        <div className="home-symbol-heading">
+          <div>
+            <p className="eyebrow">a tiny touch of pretty</p>
+            <h2>Little symbols to copy ♡</h2>
+          </div>
+          <span className="home-symbol-sparkle" aria-hidden="true">✧</span>
+        </div>
+        <div className="home-symbol-row" role="group" aria-label="Choose a symbol to copy">
+          {homeCopySymbols.map((symbol, index) => {
+            const isCopied = copiedSymbol === symbol;
+            return (
+              <button
+                type="button"
+                key={index}
+                className={"home-symbol-copy-button" + (isCopied ? " is-copied" : "")}
+                onClick={() => void copySymbol(symbol)}
+                title={"Copy " + symbol}
+                aria-label={isCopied ? "Symbol copied" : "Copy symbol " + (index + 1)}
+              >
+                <span className="home-symbol-glyph">{symbol}</span>
+                <span className="home-symbol-copy-label">{isCopied ? "Copied!" : "Copy"}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="home-symbol-feedback" aria-live="polite">
+          {copyFailed ? "Clipboard access wasn't available. Please try again. ♡" : copiedSymbol ? "Copied to your clipboard! ♡" : "Tap any symbol to copy it"}
+        </p>
+      </section>
       <section className="welcome-hero">
         <div className="hero-copy">
           <p className="eyebrow"><span className="eyebrow-flower">✿</span> your happy place</p>
