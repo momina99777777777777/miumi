@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type CSSProperties } from "react";
 import {
@@ -234,6 +234,27 @@ function MiumiHome() {
             <img className="wordmark-logo" src="/brand/miumi_horizontal_logo_transparent.png" alt="Miumi — Your world, all in one place." />
           </button>
           <span className="topbar-note"><Sparkles size={14} /> Your world, all in one place.</span>
+          <Link
+            to="/shop"
+            aria-label="Visit Miumi Picks"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 7,
+              padding: "9px 15px",
+              borderRadius: 999,
+              border: "1px solid #efd4df",
+              background: "linear-gradient(135deg, #fff2f7, #f8efff)",
+              color: "#895d73",
+              fontSize: 13,
+              fontWeight: 800,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            🎀 Miumi Picks
+          </Link>
           <div className="topbar-actions">
             <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
             <MiumiBunnyGuide onNavigate={navigate} />
