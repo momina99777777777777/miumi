@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Heart, Sparkles, ShoppingBag, Crown, HandHeart, Store } from "lucide-react";
+import { ArrowLeft, Heart, Sparkles, ShoppingBag, Crown, HandHeart, Store, MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -12,13 +12,16 @@ export const Route = createFileRoute("/shop")({
   component: AffiliateShopPage,
 });
 
-type TabId = "premium" | "affiliate" | "donations" | "marketplace";
+type TabId = "premium" | "affiliate" | "donations" | "marketplace" | "reviews";
+type AppReview = { name: string; rating: number; message: string; date: string };
+const REVIEW_STORAGE_KEY = "miumi-app-reviews-v1";
 
 const tabs: Array<{ id: TabId; label: string; icon: typeof Crown; emoji: string }> = [
   { id: "premium", label: "Premium", icon: Crown, emoji: "✨" },
   { id: "affiliate", label: "Affiliate Picks", icon: ShoppingBag, emoji: "🎀" },
   { id: "donations", label: "Donations", icon: HandHeart, emoji: "💗" },
   { id: "marketplace", label: "Marketplace", icon: Store, emoji: "🛍️" },
+  { id: "reviews", label: "Reviews", icon: MessageSquare, emoji: "⭐" },
 ];
 
 // Add only genuine, approved affiliate URLs here.
@@ -43,6 +46,43 @@ function ComingSoon({ emoji, title, description, note }: { emoji: string; title:
 
 function AffiliateShopPage() {
   const [activeTab, setActiveTab] = useState<TabId>("premium");
+  const [reviews, setReviews] = useState<AppReview[]>([]);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewMessage, setReviewMessage] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewNotice, setReviewNotice] = useState("");
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(REVIEW_STORAGE_KEY);
+      if (saved) setReviews(JSON.parse(saved) as AppReview[]);
+    } catch {
+      setReviews([]);
+    }
+  }, []);
+
+  function submitReview(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const message = reviewMessage.trim();
+    if (!message) return;
+    const nextReview: AppReview = {
+      name: reviewName.trim() || "Miumi visitor",
+      rating: reviewRating,
+      message,
+      date: new Date().toISOString(),
+    };
+    const updated = [nextReview, ...reviews].slice(0, 50);
+    setReviews(updated);
+    try {
+      window.localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(updated));
+      setReviewNotice("Thanks for sharing your feedback! Your review is saved in this browser.");
+    } catch {
+      setReviewNotice("Thanks for your feedback! This browser could not save it for later.");
+    }
+    setReviewName("");
+    setReviewMessage("");
+    setReviewRating(5);
+  }
 
   return (
     <main style={{ minHeight: "100vh", padding: "32px 20px 64px", background: "radial-gradient(circle at 10% 5%, #ffe8ef 0, transparent 32%), linear-gradient(145deg, #fff9fb 0%, #fff 55%, #f8f1ff 100%)", color: "#493640", fontFamily: "Nunito, sans-serif" }}>
@@ -93,6 +133,42 @@ function AffiliateShopPage() {
           {activeTab === "donations" && <ComingSoon emoji="💗" title="Support Miumi" description="If you enjoy Miumi, you will be able to support its development and help us keep creating new experiences." note="Donation options will be added only after a legitimate payment provider and an appropriate account arrangement are confirmed. No payment link is active yet." />}
 
           {activeTab === "marketplace" && <ComingSoon emoji="🛍️" title="The Miumi Marketplace" description="A future space to discover digital creations, art, templates, handmade finds, and other products from independent creators." note="Listings, seller rules, safe checkout, and any fees will be set up before the marketplace opens. No buying or selling is active yet." />}
+
+          {activeTab === "reviews" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, alignItems: "start" }}>
+              <form onSubmit={submitReview} style={{ padding: 24, borderRadius: 22, border: "1px solid #f0dce5", background: "rgba(255,255,255,.88)" }}>
+                <h2 style={{ margin: "0 0 12px", color: "#684957", fontFamily: "Georgia, serif", fontWeight: 500 }}>Share your Miumi experience</h2>
+                <label htmlFor="review-name" style={{ display: "block", color: "#795969", fontWeight: 800, fontSize: 13, margin: "14px 0 6px" }}>Name (optional)</label>
+                <input id="review-name" value={reviewName} onChange={(event) => setReviewName(event.target.value)} maxLength={40} placeholder="Your name or nickname" style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ead5df", borderRadius: 12, padding: 12, color: "#684957", background: "#fffafd" }} />
+                <label htmlFor="review-rating" style={{ display: "block", color: "#795969", fontWeight: 800, fontSize: 13, margin: "14px 0 6px" }}>Your rating</label>
+                <select id="review-rating" value={reviewRating} onChange={(event) => setReviewRating(Number(event.target.value))} style={{ width: "100%", border: "1px solid #ead5df", borderRadius: 12, padding: 12, color: "#684957", background: "#fffafd" }}>
+                  {[5, 4, 3, 2, 1].map((rating) => <option key={rating} value={rating}>{rating} out of 5 stars</option>)}
+                </select>
+                <label htmlFor="review-message" style={{ display: "block", color: "#795969", fontWeight: 800, fontSize: 13, margin: "14px 0 6px" }}>Your review</label>
+                <textarea id="review-message" required value={reviewMessage} onChange={(event) => setReviewMessage(event.target.value)} maxLength={600} rows={5} placeholder="What do you like about Miumi? What could we improve?" style={{ width: "100%", boxSizing: "border-box", resize: "vertical", border: "1px solid #ead5df", borderRadius: 12, padding: 12, color: "#684957", background: "#fffafd", font: "inherit" }} />
+                <p style={{ textAlign: "right", color: "#a58b97", fontSize: 11, margin: "5px 0 12px" }}>{reviewMessage.length}/600</p>
+                <button type="submit" style={{ width: "100%", border: 0, borderRadius: 999, padding: "13px 18px", background: "linear-gradient(135deg, #f5dce7, #eee3fa)", color: "#754d60", fontWeight: 900, cursor: "pointer" }}>Submit review ✨</button>
+                {reviewNotice && <p role="status" style={{ color: "#795969", fontSize: 13, lineHeight: 1.6 }}>{reviewNotice}</p>}
+                <p style={{ color: "#9b8790", fontSize: 11, lineHeight: 1.6 }}>Please don't include private contact details or sensitive personal information.</p>
+              </form>
+              <div>
+                <h2 style={{ margin: "0 0 14px", color: "#684957", fontFamily: "Georgia, serif", fontWeight: 500 }}>Visitor reviews</h2>
+                {reviews.length === 0 ? <ComingSoon emoji="💌" title="Be the first to review!" description="Tell us what you think about the Miumi app. Your feedback helps us make it better." note="Reviews currently save only in the browser where they are submitted. They are not yet sent to a shared public review board." /> : (
+                  <div style={{ display: "grid", gap: 12 }}>
+                    {reviews.map((review, index) => <article key={index} style={{ padding: 18, borderRadius: 18, border: "1px solid #f0dce5", background: "rgba(255,255,255,.85)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center" }}>
+                        <strong style={{ color: "#795969" }}>{review.name}</strong>
+                        <span aria-label={review.rating + " out of 5 stars"} style={{ color: "#c58ba3", whiteSpace: "nowrap" }}>{Array.from({ length: review.rating }, () => "★").join("")}</span>
+                      </div>
+                      <p style={{ color: "#806c76", lineHeight: 1.7, margin: "10px 0" }}>{review.message}</p>
+                      <time dateTime={review.date} style={{ color: "#ad98a1", fontSize: 11 }}>{new Date(review.date).toLocaleDateString()}</time>
+                    </article>)}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
         </section>
 
         <p style={{ maxWidth: 760, margin: "34px auto 0", textAlign: "center", color: "#9b8790", fontSize: 12, lineHeight: 1.7 }}>Miumi is building these sections gradually. Payment, donation, membership, and marketplace features will remain inactive until their providers, terms, and safety checks are in place.</p>
