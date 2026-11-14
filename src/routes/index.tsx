@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type CSSProperties } from "react";
 import {
