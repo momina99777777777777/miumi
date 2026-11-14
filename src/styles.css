@@ -4757,3 +4757,7 @@ button:hover::after {
   .font-studio-heading h2 { font-size:21px; }
   .font-studio-style-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+
+
+.font-studio-live-hint { margin:7px 0 0; color:#B18DA4; font-size:9px; line-height:1.5; }
+.font-studio-live-output .font-studio-output-text { min-height:48px; padding:9px 10px; border:1px solid #F0DCE7; border-radius:10px; background:#FFFBFD; }
