@@ -117,11 +117,27 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+
+        <div
+          style={{
+            width: "300px",
+            minHeight: "250px",
+            margin: "24px auto",
+            textAlign: "center",
+          }}
+        >
+          <p style={{ fontSize: "11px", color: "#888" }}>
+            Advertisement
+          </p>
+          <div id="miumi-adsterra-banner" />
+        </div>
+
         <Scripts />
       </body>
     </html>
   );
 }
+
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
