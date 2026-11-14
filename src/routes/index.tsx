@@ -2632,6 +2632,7 @@ function FontStudio() {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
   const convertedText = convertUnicodeFont(draft, selectedFont);
+  const selectedFontLabel = unicodeFontStyles.find((style) => style.id === selectedFont)?.label ?? "Classic";
 
   const copyConvertedText = async () => {
     if (!convertedText.trim()) return;
@@ -2652,29 +2653,11 @@ function FontStudio() {
         <span className="font-studio-icon" aria-hidden="true">Aa</span>
         <p className="eyebrow">your little writing corner</p>
         <h2>Font Studio</h2>
-        <p>Type a little something and give it a new look.</p>
-      </div>
-
-      <label className="font-studio-input-label" htmlFor="miumi-font-input">YOUR WORDS</label>
-      <textarea
-        id="miumi-font-input"
-        className="font-studio-input"
-        value={draft}
-        onChange={(event) => {
-          setDraft(event.target.value);
-          setCopyState("idle");
-        }}
-        maxLength={240}
-        rows={3}
-        placeholder="Write something lovely..."
-      />
-      <div className="font-studio-input-meta">
-        <span>♡ your text stays right here</span>
-        <span>{draft.length}/240</span>
+        <p>Choose a style first, then type. Your text changes as you write.</p>
       </div>
 
       <div className="font-studio-style-heading">
-        <span>CHOOSE YOUR FONT</span>
+        <span>01 · CHOOSE YOUR FONT</span>
         <span>✧</span>
       </div>
       <div className="font-studio-style-list">
@@ -2699,12 +2682,32 @@ function FontStudio() {
         ))}
       </div>
 
-      <div className="font-studio-output">
+      <label className="font-studio-input-label" htmlFor="miumi-font-input">02 · TYPE YOUR WORDS</label>
+      <textarea
+        id="miumi-font-input"
+        className="font-studio-input"
+        value={draft}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          setCopyState("idle");
+        }}
+        maxLength={240}
+        rows={3}
+        placeholder="Write something lovely..."
+        aria-describedby="miumi-font-live-hint"
+      />
+      <div className="font-studio-input-meta">
+        <span>♡ original text · private to this page</span>
+        <span>{draft.length}/240</span>
+      </div>
+
+      <div className="font-studio-output font-studio-live-output">
         <div className="font-studio-output-top">
-          <span>YOUR NEW LOOK</span>
-          <span>♡</span>
+          <span>03 · LIVE CONVERSION</span>
+          <span>{selectedFontLabel} ♡</span>
         </div>
-        <p className="font-studio-output-text" aria-live="polite">
+        <p className="font-studio-live-hint" id="miumi-font-live-hint">This is the exact text that will be copied:</p>
+        <p className="font-studio-output-text" aria-live="polite" aria-label="Converted text preview">
           {convertedText || "Your pretty text will appear here..."}
         </p>
         <button
@@ -2714,11 +2717,11 @@ function FontStudio() {
           disabled={!convertedText.trim()}
         >
           <span aria-hidden="true">{copyState === "copied" ? "✓" : "▢"}</span>
-          {copyState === "copied" ? "Copied!" : copyState === "error" ? "Couldn't copy — try again" : "Copy styled text"}
+          {copyState === "copied" ? "Copied!" : copyState === "error" ? "Couldn't copy — try again" : "Copy converted text"}
         </button>
       </div>
       <p className="font-studio-footnote">
-        Copy-ready Unicode styles for bios, captions & messages. Some characters may look different across apps.
+        Copy-ready Unicode styles for bios, captions & messages. Some characters may look different across apps. Letters and numbers are styled; spaces and punctuation stay the same.
       </p>
       <div className="font-studio-deco font-studio-deco-bottom" aria-hidden="true">♡ ⋆</div>
     </section>
