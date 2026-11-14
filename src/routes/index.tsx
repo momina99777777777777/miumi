@@ -234,7 +234,10 @@ function MiumiHome() {
             <img className="wordmark-logo" src="/brand/miumi_horizontal_logo_transparent.png" alt="Miumi — Your world, all in one place." />
           </button>
           <span className="topbar-note"><Sparkles size={14} /> Your world, all in one place.</span>
-          <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
+          <div className="topbar-actions">
+            <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
+            <MiumiBunnyGuide onNavigate={navigate} />
+          </div>
         </header>
 
         <div className={"app-layout" + (page === "home" ? " has-home-font-studio" : "")}>
@@ -464,7 +467,6 @@ function MiumiHome() {
   <NavButton active={page === "museum"} icon={<Landmark />} label="Museum" onClick={() => navigate("museum")} />
   <NavButton active={page === "quiet-room"} icon={<MessageCircle />} label="Quiet Room" onClick={() => navigate("quiet-room")} />
 </nav>
-        <MiumiBunnyGuide onNavigate={navigate} />
         <div className="notice" role="status" aria-live="polite" data-visible={Boolean(notice)}>{notice}</div>
       </div>
     </main>
