@@ -677,6 +677,18 @@ function MiumiMuseumPage({ onNotice }: { onNotice: (message: string) => void }) 
 type PhotoCardFormat = "postcard" | "folded";
 type PhotoCardTemplate = "coquette" | "vintage" | "minimal" | "chaos" | "midnight" | "lavender";
 type StudioPhoto = { id: string; src: string; name: string };
+type PhotoStickerId = "kitty" | "sleepy-kitty" | "paw-prints" | "pink-bow" | "milk-carton" | "daisy" | "love-note" | "sparkles";
+type PhotoSticker = { id: PhotoStickerId; label: string; art: string; kind: string };
+const photoStickers: PhotoSticker[] = [
+  { id: "kitty", label: "Sweet kitty", art: "🐱", kind: "cat" },
+  { id: "sleepy-kitty", label: "Sleepy kitty", art: "😽", kind: "cat" },
+  { id: "paw-prints", label: "Tiny paws", art: "🐾", kind: "paw" },
+  { id: "pink-bow", label: "Baby bow", art: "🎀", kind: "bow" },
+  { id: "milk-carton", label: "Milk time", art: "🥛", kind: "sweet" },
+  { id: "daisy", label: "Little daisy", art: "🌼", kind: "flower" },
+  { id: "love-note", label: "Love note", art: "💌", kind: "love" },
+  { id: "sparkles", label: "Magic sparkles", art: "✨", kind: "shine" },
+];
 type PhotoFilterId = "original" | "golden" | "film" | "noir" | "rose" | "dream" | "chrome" | "faded" | "sunset" | "flash";
 const photoFilters: { id: PhotoFilterId; name: string; vibe: string; css: string; emoji: string }[] = [
   { id: "original", name: "Original", vibe: "True-to-life colour", css: "none", emoji: "✧" },
@@ -710,8 +722,22 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
   const [message, setMessage] = useState("Some memories deserve a place to stay. ♡");
   const [from, setFrom] = useState("with love,");
   const [accent, setAccent] = useState("#d99bb7");
+  const [stickerIds, setStickerIds] = useState<PhotoStickerId[]>([]);
   const activeTemplate = photoTemplates.find((item) => item.id === template) ?? photoTemplates[0];
   const activeFilter = photoFilters.find((item) => item.id === filter) ?? photoFilters[0];
+  const selectedStickers = photoStickers.filter((sticker) => stickerIds.includes(sticker.id));
+
+  const toggleSticker = (id: PhotoStickerId) => {
+    if (stickerIds.includes(id)) {
+      setStickerIds((previous) => previous.filter((stickerId) => stickerId !== id));
+      return;
+    }
+    if (stickerIds.length >= 6) {
+      onNotice("Your card can have up to 6 little stickers ♡");
+      return;
+    }
+    setStickerIds((previous) => [...previous, id]);
+  };
 
   const addPhotos = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.target.files ?? []);
@@ -748,21 +774,24 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
   const printCard = () => {
     if (photos.length < 2) { onNotice("Add at least 2 photos before printing your card ♡"); return; }
     const photoMarkup = photos.map((photo) => '<img src="' + photo.src + '" alt="" style="filter:' + activeFilter.css + '" />').join("");
+    const stickerMarkup = selectedStickers.map((sticker, index) => '<span class="print-sticker print-sticker-' + index + '">' + escapeHtml(sticker.art) + '</span>').join("");
     const safeTitle = escapeHtml(title || "A little memory");
     const safeMessage = escapeHtml(message);
     const safeFrom = escapeHtml(from);
     const accentColor = customMode ? accent : "#d99bb7";
     const cardClass = "print-" + template;
     const pageMarkup = format === "postcard"
-      ? '<section class="print-page postcard ' + cardClass + '"><div class="print-photo-grid">' + photoMarkup + '</div><div class="print-copy"><p class="print-kicker">A LITTLE KEEPSAKE</p><h1>' + safeTitle + '</h1><p>' + safeMessage + '</p><small>' + safeFrom + '</small></div></section>'
-      : '<section class="print-page folded outside ' + cardClass + '"><div class="fold-panel fold-back"><span>♡</span><small>made with miumi</small></div><div class="fold-panel fold-front"><div class="print-photo-grid">' + photoMarkup + '</div><h1>' + safeTitle + '</h1><small>' + safeFrom + '</small></div></section><section class="print-page folded inside ' + cardClass + '"><div class="fold-panel"><h2>' + safeTitle + '</h2><p>' + safeMessage + '</p><small>♡</small></div><div class="fold-panel"><div class="print-photo-grid">' + photoMarkup + '</div></div></section>';
+      ? '<section class="print-page postcard ' + cardClass + '"><div class="print-photo-grid">' + photoMarkup + '</div>' + stickerMarkup + '<div class="print-copy"><p class="print-kicker">A LITTLE KEEPSAKE</p><h1>' + safeTitle + '</h1><p>' + safeMessage + '</p><small>' + safeFrom + '</small></div></section>'
+      : '<section class="print-page folded outside ' + cardClass + '"><div class="fold-panel fold-back"><span>♡</span><small>made with miumi</small></div><div class="fold-panel fold-front"><div class="print-photo-grid">' + photoMarkup + '</div><h1>' + safeTitle + '</h1><small>' + safeFrom + '</small></div>' + stickerMarkup + '</section><section class="print-page folded inside ' + cardClass + '"><div class="fold-panel"><h2>' + safeTitle + '</h2><p>' + safeMessage + '</p><small>♡</small></div><div class="fold-panel"><div class="print-photo-grid">' + photoMarkup + '</div></div>' + stickerMarkup + '</section>';
 
     const printWindow = window.open("", "_blank", "width=900,height=700");
     if (!printWindow) { onNotice("Please allow pop-ups to print your card ♡"); return; }
     const styles = [
       "@page{size:" + (format === "postcard" ? "A6 landscape" : "A5 landscape") + ";margin:0}",
       "*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#665b65}",
-      ".print-page{width:" + (format === "postcard" ? "148mm" : "210mm") + ";height:" + (format === "postcard" ? "105mm" : "148mm") + ";page-break-after:always;overflow:hidden;background:#fff9fc}",
+      ".print-page{position:relative;width:" + (format === "postcard" ? "148mm" : "210mm") + ";height:" + (format === "postcard" ? "105mm" : "148mm") + ";page-break-after:always;overflow:hidden;background:#fff9fc}",
+      ".print-sticker{position:absolute;z-index:8;display:grid;place-items:center;width:12mm;height:12mm;border:1mm solid rgba(255,255,255,.96);border-radius:4mm;background:rgba(255,255,255,.92);box-shadow:0 1mm 3mm rgba(80,55,75,.18);font-size:22pt;line-height:1}",
+      ".print-sticker-0{left:4%;top:4%;transform:rotate(-12deg)}.print-sticker-1{left:38%;top:4%;transform:rotate(10deg)}.print-sticker-2{right:4%;top:4%;transform:rotate(12deg)}.print-sticker-3{right:4%;bottom:7%;transform:rotate(-10deg)}.print-sticker-4{left:42%;bottom:5%;transform:rotate(8deg)}.print-sticker-5{left:4%;bottom:7%;transform:rotate(-8deg)}",
       ".postcard{display:grid;grid-template-columns:55% 45%;padding:7mm;gap:5mm}",
       ".print-photo-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;gap:2mm;min-height:0;overflow:hidden}",
       ".print-photo-grid img{width:100%;height:100%;min-height:0;object-fit:cover;border-radius:2mm}",
@@ -833,11 +862,40 @@ function PhotoStudioPage({ onNotice }: { onNotice: (message: string) => void }) 
           {customMode && <label className="studio-colour-field">Accent colour<input type="color" value={accent} onChange={(event) => setAccent(event.target.value)} /></label>}
         </div>
 
+        <div className="studio-section-heading studio-format-heading">
+          <div><p className="garden-overline">STEP 06 · THE LITTLE EXTRAS</p><h2>Dress it up with stickers</h2></div>
+          <span className="studio-sticker-count">{selectedStickers.length}/6 on your card</span>
+        </div>
+        <p className="studio-sticker-instructions">Tap a sticker to add it. Tap it again to take it off. ♡</p>
+        <div className="studio-sticker-grid">
+          {photoStickers.map((item) => {
+            const isSelected = stickerIds.includes(item.id);
+            return (
+              <button
+                type="button"
+                key={item.id}
+                className={"studio-sticker-option " + (isSelected ? "is-selected" : "")}
+                onClick={() => toggleSticker(item.id)}
+                aria-pressed={isSelected}
+              >
+                <span className={"studio-sticker-art sticker-kind-" + item.kind} aria-hidden="true">{item.art}</span>
+                <span className="studio-sticker-label">{item.label}</span>
+                {isSelected && <span className="studio-sticker-check" aria-hidden="true">✓</span>}
+              </button>
+            );
+          })}
+        </div>
+        {selectedStickers.length > 0 && (
+          <button type="button" className="studio-clear-stickers" onClick={() => setStickerIds([])}>Clear all stickers ×</button>
+        )}
         <div className="studio-section-heading studio-format-heading"><div><p className="garden-overline">YOUR LIVE PREVIEW</p><h2>A card taking shape</h2></div></div>
         <div className={"studio-live-card " + activeTemplate.className + (format === "folded" ? " is-folded" : "")} style={customMode ? { borderColor: accent } : undefined}>
           <div className="studio-live-photos">{photos.length ? photos.map((photo) => <img src={photo.src} alt="" key={photo.id} style={{ filter: activeFilter.css }} />) : <div className="studio-empty-photo">♡<small>Your photos will appear here</small></div>}</div>
           <div className="studio-live-copy"><span className="studio-live-kicker">A LITTLE KEEPSAKE</span><h3>{title || "A little memory"}</h3><p>{message || "Your message will appear here."}</p><small>{from || "with love,"}</small></div>
           <span className="studio-live-decoration">୨୧</span>
+          {selectedStickers.map((item, index) => (
+            <span key={item.id} className={"studio-card-sticker studio-card-sticker-" + index} aria-hidden="true">{item.art}</span>
+          ))}
         </div>
         <div className="studio-print-actions"><p>{photos.length < 2 ? "Add at least 2 photos to unlock printing." : photos.length + " photos ready · " + (format === "postcard" ? "A6 postcard" : "A5 folded card")}</p>
           <button type="button" onClick={printCard} disabled={photos.length < 2}><Printer size={17} /> Print / Save as PDF</button>
