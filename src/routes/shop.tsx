@@ -15,7 +15,7 @@ export const Route = createFileRoute("/shop")({
 type TabId = "premium" | "affiliate" | "donations" | "marketplace" | "reviews";
 type AppReview = { id: string; name: string; rating: number; message: string; date: string };
 const supabaseEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env;
-const SUPABASE_URL = supabaseEnv?.VITE_SUPABASE_URL?.replace(/\/$/, "");
+const SUPABASE_URL = supabaseEnv?.VITE_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
 const SUPABASE_ANON_KEY = supabaseEnv?.VITE_SUPABASE_ANON_KEY;
 const reviewsConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
