@@ -2627,7 +2627,7 @@ function convertUnicodeFont(value: string, font: UnicodeFontId) {
 }
 
 function FontStudio() {
-  const [draft, setDraft] = useState("hello lovely");
+  const [draft, setDraft] = useState("");
   const [selectedFont, setSelectedFont] = useState<UnicodeFontId>("script");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
@@ -2653,33 +2653,25 @@ function FontStudio() {
         <span className="font-studio-icon" aria-hidden="true">Aa</span>
         <p className="eyebrow">your little writing corner</p>
         <h2>Font Studio</h2>
-        <p>Choose a style first, then type. Your text changes as you write.</p>
+        <p>Pick a style, type your words, and watch them change.</p>
       </div>
 
-      <div className="font-studio-style-heading">
-        <span>01 · CHOOSE YOUR FONT</span>
-        <span>✧</span>
-      </div>
-      <div className="font-studio-style-list">
-        {unicodeFontStyles.map((style) => (
-          <button
-            key={style.id}
-            type="button"
-            className={"font-studio-style-option" + (selectedFont === style.id ? " is-selected" : "")}
-            onClick={() => {
-              setSelectedFont(style.id);
-              setCopyState("idle");
-            }}
-            aria-pressed={selectedFont === style.id}
-          >
-            <span className="font-studio-style-sample">{convertUnicodeFont("Aa Bb 123", style.id)}</span>
-            <span className="font-studio-style-copy">
-              <strong>{style.label}</strong>
-              <small>{style.description}</small>
-            </span>
-            {selectedFont === style.id && <span className="font-studio-style-check" aria-hidden="true">✓</span>}
-          </button>
-        ))}
+      <label className="font-studio-input-label" htmlFor="miumi-font-style">01 · CHOOSE A FONT</label>
+      <div className="font-studio-select-wrap">
+        <select
+          id="miumi-font-style"
+          className="font-studio-select"
+          value={selectedFont}
+          onChange={(event) => {
+            setSelectedFont(event.target.value as UnicodeFontId);
+            setCopyState("idle");
+          }}
+        >
+          {unicodeFontStyles.map((style) => (
+            <option key={style.id} value={style.id}>{style.label} — {style.description}</option>
+          ))}
+        </select>
+        <span aria-hidden="true">⌄</span>
       </div>
 
       <label className="font-studio-input-label" htmlFor="miumi-font-input">02 · TYPE YOUR WORDS</label>
@@ -2693,23 +2685,27 @@ function FontStudio() {
         }}
         maxLength={240}
         rows={3}
-        placeholder="Write something lovely..."
+        placeholder="Start typing here..."
         aria-describedby="miumi-font-live-hint"
       />
       <div className="font-studio-input-meta">
-        <span>♡ original text · private to this page</span>
+        <span>♡ Your text changes as you type</span>
         <span>{draft.length}/240</span>
       </div>
 
       <div className="font-studio-output font-studio-live-output">
         <div className="font-studio-output-top">
-          <span>03 · LIVE CONVERSION</span>
+          <span>03 · LIVE PREVIEW</span>
           <span>{selectedFontLabel} ♡</span>
         </div>
-        <p className="font-studio-live-hint" id="miumi-font-live-hint">This is the exact text that will be copied:</p>
-        <p className="font-studio-output-text" aria-live="polite" aria-label="Converted text preview">
-          {convertedText || "Your pretty text will appear here..."}
-        </p>
+        <div className="font-studio-preview-canvas" aria-live="polite">
+          <p className="font-studio-live-hint" id="miumi-font-live-hint">
+            {draft.trim() ? "Your converted text:" : "Your styled text will appear here"}
+          </p>
+          <p className="font-studio-output-text" aria-label="Converted text preview">
+            {convertedText || "Your pretty words will bloom here..."}
+          </p>
+        </div>
         <button
           type="button"
           className="font-studio-copy-button"
@@ -2721,7 +2717,7 @@ function FontStudio() {
         </button>
       </div>
       <p className="font-studio-footnote">
-        Copy-ready Unicode styles for bios, captions & messages. Some characters may look different across apps. Letters and numbers are styled; spaces and punctuation stay the same.
+        The preview is the exact Unicode text copied to your clipboard. Some characters may look different in other apps.
       </p>
       <div className="font-studio-deco font-studio-deco-bottom" aria-hidden="true">♡ ⋆</div>
     </section>
