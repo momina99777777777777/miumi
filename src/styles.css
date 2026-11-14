@@ -4420,3 +4420,37 @@ button:hover::after {
   .quiet-room-3d-scene { min-height:390px; }
   .quiet-room-3d-scene .quiet-3d-canvas { height:390px; min-height:390px; }
 }
+
+
+/* Photo Studio sticker drawer and card decorations */
+.studio-sticker-count { color:#B77D9C; font-size:10px; font-weight:900; }
+.studio-sticker-instructions { margin:-7px 0 13px; color:#9AA1AF; font-size:10px; line-height:1.6; }
+.studio-sticker-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.studio-sticker-option { position:relative; display:flex; min-width:0; min-height:100px; flex-direction:column; align-items:center; justify-content:center; gap:7px; padding:12px 8px; border:1px solid #EDE3EA; border-radius:17px; background:linear-gradient(145deg,#FFFCFE,#F8FAFF); color:#7C7184; cursor:pointer; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease; }
+.studio-sticker-option:hover { transform:translateY(-3px) rotate(-1deg); border-color:#D9B3C9; box-shadow:0 7px 16px rgba(155,112,145,.10); }
+.studio-sticker-option.is-selected { border:1.5px solid #C98EAE; background:linear-gradient(145deg,#FFF2F8,#F8F4FF); box-shadow:0 0 0 3px rgba(201,142,174,.12); }
+.studio-sticker-art { display:grid; width:53px; height:53px; place-items:center; border:2px solid rgba(255,255,255,.95); border-radius:17px; background:#FFF; box-shadow:0 4px 10px rgba(130,100,130,.10); font-size:30px; line-height:1; }
+.sticker-kind-cat { background:#FFF0F5; }
+.sticker-kind-paw { background:#F8F0FF; }
+.sticker-kind-bow { background:#FFF0F7; }
+.sticker-kind-sweet { background:#F4F8FF; }
+.sticker-kind-flower { background:#FFF8E9; }
+.sticker-kind-love { background:#FFF0F4; }
+.sticker-kind-shine { background:#F5F2FF; }
+.studio-sticker-label { max-width:100%; overflow:hidden; color:#81758A; font-size:10px; font-weight:800; text-overflow:ellipsis; white-space:nowrap; }
+.studio-sticker-check { position:absolute; top:6px; right:7px; display:grid; width:18px; height:18px; place-items:center; border-radius:50%; background:#C98EAE; color:#FFF; font-size:11px; font-weight:900; }
+.studio-clear-stickers { margin-top:10px; padding:7px 11px; border:1px solid #E9DCE5; border-radius:10px; background:#FFF; color:#A77C98; font:800 10px "Nunito",sans-serif; cursor:pointer; }
+.studio-card-sticker { position:absolute; z-index:4; display:grid; width:45px; height:45px; place-items:center; border:2px solid rgba(255,255,255,.98); border-radius:15px; background:rgba(255,255,255,.94); box-shadow:0 4px 12px rgba(90,65,90,.16); font-size:26px; line-height:1; pointer-events:none; }
+.studio-card-sticker-0 { top:5%; left:5%; transform:rotate(-12deg); }
+.studio-card-sticker-1 { top:5%; left:43%; transform:rotate(9deg); }
+.studio-card-sticker-2 { top:5%; right:5%; transform:rotate(12deg); }
+.studio-card-sticker-3 { right:5%; bottom:8%; transform:rotate(-9deg); }
+.studio-card-sticker-4 { bottom:6%; left:43%; transform:rotate(8deg); }
+.studio-card-sticker-5 { bottom:8%; left:5%; transform:rotate(-8deg); }
+@media(max-width:640px) {
+  .studio-sticker-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; }
+  .studio-sticker-option { min-height:88px; padding:8px 4px; }
+  .studio-sticker-art { width:45px; height:45px; font-size:26px; }
+  .studio-sticker-label { font-size:9px; }
+  .studio-card-sticker { width:38px; height:38px; border-radius:12px; font-size:22px; }
+}
