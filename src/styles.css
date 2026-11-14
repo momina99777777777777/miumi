@@ -4550,3 +4550,210 @@ button:hover::after {
   .home-symbol-copy-button { min-height: 44px; gap: 7px; padding: 7px 9px; }
   .home-symbol-glyph { font-size: 18px; }
 }
+
+
+/* Home right rail — pink Unicode Font Studio */
+.app-layout.has-home-font-studio {
+  grid-template-columns: 190px minmax(0, 1fr) 278px;
+  gap: 20px;
+  align-items: start;
+}
+.home-font-studio-rail {
+  position: sticky;
+  top: 22px;
+  align-self: start;
+  min-width: 0;
+}
+.home-font-studio {
+  position: relative;
+  padding: 20px 16px 17px;
+  overflow: hidden;
+  border: 1px solid #EAC9DA;
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 95% 4%, rgba(255,255,255,.9), transparent 24%),
+    radial-gradient(circle at 0% 94%, rgba(255,255,255,.72), transparent 28%),
+    linear-gradient(158deg, #FFF0F7 0%, #FCE4F0 48%, #F9EAF8 100%);
+  box-shadow: 0 13px 32px rgba(190,128,164,.13), inset 0 1px 0 rgba(255,255,255,.8);
+}
+.font-studio-deco {
+  position: absolute;
+  color: rgba(184,119,157,.36);
+  pointer-events: none;
+  user-select: none;
+}
+.font-studio-deco-top { top: 10px; right: 13px; font-size: 25px; transform: rotate(10deg); }
+.font-studio-deco-bottom { right: 17px; bottom: 7px; font-size: 19px; letter-spacing: 5px; }
+.font-studio-heading { position: relative; margin: 0 0 17px; padding: 0 2px; text-align: center; }
+.font-studio-icon {
+  display: grid;
+  width: 53px;
+  height: 53px;
+  place-items: center;
+  margin: 0 auto 11px;
+  border: 1px solid rgba(255,255,255,.95);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #FFF, #F8DCEB);
+  box-shadow: 0 6px 16px rgba(177,119,153,.14);
+  color: #B57698;
+  font: 800 21px "Zen Maru Gothic",sans-serif;
+}
+.font-studio-heading .eyebrow { color: #B47B9A; font-size: 8px; }
+.font-studio-heading h2 {
+  margin: 5px 0 4px;
+  color: #9D6485;
+  font: 800 23px "Zen Maru Gothic",sans-serif;
+  letter-spacing: -.3px;
+}
+.font-studio-heading > p:last-child { margin: 0; color: #A8849B; font-size: 10px; line-height: 1.6; }
+.font-studio-input-label,.font-studio-style-heading,.font-studio-output-top {
+  color: #A67591;
+  font: 900 9px "Nunito",sans-serif;
+  letter-spacing: 1px;
+}
+.font-studio-input {
+  display: block;
+  width: 100%;
+  min-height: 82px;
+  margin-top: 7px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid #E9C9D9;
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255,255,255,.88);
+  color: #765B70;
+  font: 600 12px/1.7 "Nunito",sans-serif;
+  box-shadow: inset 0 1px 3px rgba(150,105,135,.04);
+}
+.font-studio-input::placeholder { color: #C5A8BA; }
+.font-studio-input:focus { border-color: #C98EAE; box-shadow: 0 0 0 3px rgba(201,142,174,.15); }
+.font-studio-input-meta { display:flex; justify-content:space-between; gap:8px; margin:6px 2px 15px; color:#B18DA4; font-size:8px; }
+.font-studio-style-heading { display:flex; justify-content:space-between; margin:0 2px 8px; }
+.font-studio-style-heading span:last-child { color:#C28BA9; font-size:14px; }
+.font-studio-style-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  max-height: 290px;
+  overflow-y: auto;
+  padding: 1px 3px 3px 1px;
+  scrollbar-width: thin;
+  scrollbar-color: #E5BFD4 transparent;
+}
+.font-studio-style-option {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 43px;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border: 1px solid rgba(227,194,213,.88);
+  border-radius: 12px;
+  background: rgba(255,255,255,.72);
+  color: #8E6D83;
+  text-align: left;
+  cursor: pointer;
+  transition: background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease;
+}
+.font-studio-style-option:hover { transform:translateY(-1px); border-color:#D5A2BF; background:#FFF9FC; }
+.font-studio-style-option.is-selected {
+  border-color: #C98EAE;
+  background: #FFF9FC;
+  box-shadow: 0 0 0 2px rgba(201,142,174,.13);
+}
+.font-studio-style-sample {
+  display: grid;
+  flex: 0 0 88px;
+  min-height: 28px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #FFF0F7;
+  color: #936A87;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.font-studio-style-copy { display:flex; min-width:0; flex:1; flex-direction:column; gap:1px; }
+.font-studio-style-copy strong { color:#936982; font:800 10px "Nunito",sans-serif; }
+.font-studio-style-copy small { color:#B194A8; font:9px "Nunito",sans-serif; }
+.font-studio-style-check {
+  display:grid;
+  flex:0 0 17px;
+  width:17px;
+  height:17px;
+  place-items:center;
+  border-radius:50%;
+  background:#C98EAE;
+  color:#FFF;
+  font-size:10px;
+  font-weight:900;
+}
+.font-studio-output {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #D8A9C3;
+  border-radius: 15px;
+  background: rgba(255,255,255,.8);
+}
+.font-studio-output-top { display:flex; justify-content:space-between; }
+.font-studio-output-top span:last-child { color:#C28BA9; font-size:14px; }
+.font-studio-output-text {
+  min-height: 42px;
+  max-height: 110px;
+  margin: 9px 0 11px;
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+  color: #865C79;
+  font-size: 16px;
+  line-height: 1.65;
+}
+.font-studio-copy-button {
+  display:flex;
+  width:100%;
+  min-height:38px;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:9px 12px;
+  border:1px solid #C98EAE;
+  border-radius:11px;
+  background:linear-gradient(135deg,#DCAAC5,#C88EAF);
+  color:#FFF;
+  font:900 10px "Nunito",sans-serif;
+  cursor:pointer;
+  box-shadow:0 5px 12px rgba(183,125,156,.17);
+  transition:transform .16s ease,filter .16s ease;
+}
+.font-studio-copy-button:hover:not(:disabled) { transform:translateY(-1px); filter:brightness(1.03); }
+.font-studio-copy-button:disabled { opacity:.45; cursor:not-allowed; }
+.font-studio-copy-button span { font-size:15px; }
+.font-studio-footnote { margin:10px 3px 0; color:#AB8EA2; font-size:8px; line-height:1.6; text-align:center; }
+@media(max-width:1200px) {
+  .app-layout.has-home-font-studio {
+    grid-template-columns:145px minmax(0,1fr);
+    gap:18px;
+  }
+  .app-layout.has-home-font-studio .home-font-studio-rail {
+    position:static;
+    grid-column:2;
+  }
+  .home-font-studio { max-width:none; }
+  .font-studio-style-list { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:235px; }
+  .font-studio-style-option { min-height:48px; }
+  .font-studio-style-sample { flex-basis:76px; }
+}
+@media(max-width:660px) {
+  .home-font-studio-rail { position:static; margin-top:0; }
+  .home-font-studio { padding:18px 14px; }
+  .font-studio-style-list { grid-template-columns:repeat(2,minmax(0,1fr)); max-height:250px; }
+}
+@media(max-width:640px) {
+  .app-layout.has-home-font-studio { display:flex; flex-direction:column; gap:16px; }
+  .app-layout.has-home-font-studio .content-column { order:1; width:100%; }
+  .app-layout.has-home-font-studio .home-font-studio-rail { order:0; width:100%; margin-top:0; }
+  .home-font-studio { width:100%; border-radius:20px; }
+  .font-studio-heading h2 { font-size:21px; }
+  .font-studio-style-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
