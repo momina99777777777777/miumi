@@ -237,7 +237,7 @@ function MiumiHome() {
           <button className="top-heart" onClick={() => navigate("results")} aria-label="See your results"><Heart size={19} /></button>
         </header>
 
-        <div className="app-layout">
+        <div className={"app-layout" + (page === "home" ? " has-home-font-studio" : "")}>
          <aside className="side-nav" aria-label="Main navigation">
   <NavButton
     active={page === "home"}
@@ -443,6 +443,11 @@ function MiumiHome() {
             {page === "quiet-room" && <QuietRoomPage />}
 
           </div>
+          {page === "home" && (
+            <aside className="home-font-studio-rail" aria-label="Home font studio">
+              <FontStudio />
+            </aside>
+          )}
         </div>
 
        <nav className="mobile-nav" aria-label="Main navigation">
@@ -2538,6 +2543,185 @@ function HomePage({
   </div>
 </footer>
     </div>
+  );
+}
+
+
+type UnicodeFontId =
+  | "normal"
+  | "bold"
+  | "italic"
+  | "boldItalic"
+  | "script"
+  | "boldScript"
+  | "fraktur"
+  | "doubleStruck"
+  | "monospace"
+  | "sans"
+  | "sansBold";
+
+const unicodeFontStyles: {
+  id: UnicodeFontId;
+  label: string;
+  description: string;
+}[] = [
+  { id: "normal", label: "Classic", description: "Simple & clean" },
+  { id: "bold", label: "Bold", description: "A little louder" },
+  { id: "italic", label: "Italic", description: "Soft & slanted" },
+  { id: "boldItalic", label: "Bold italic", description: "Extra emphasis" },
+  { id: "script", label: "Script", description: "Pretty handwriting" },
+  { id: "boldScript", label: "Bold script", description: "Flowy & strong" },
+  { id: "fraktur", label: "Gothic", description: "Vintage lettering" },
+  { id: "doubleStruck", label: "Double-struck", description: "Outlined look" },
+  { id: "monospace", label: "Monospace", description: "Typewriter style" },
+  { id: "sans", label: "Sans serif", description: "Modern & neat" },
+  { id: "sansBold", label: "Sans bold", description: "Clean & bold" },
+];
+
+const unicodeFontRanges: Partial<Record<UnicodeFontId, { upper: number; lower: number; digits?: number }>> = {
+  bold: { upper: 0x1D400, lower: 0x1D41A, digits: 0x1D7CE },
+  italic: { upper: 0x1D434, lower: 0x1D44E },
+  boldItalic: { upper: 0x1D468, lower: 0x1D482 },
+  script: { upper: 0x1D49C, lower: 0x1D4B6 },
+  boldScript: { upper: 0x1D4D0, lower: 0x1D4EA },
+  fraktur: { upper: 0x1D504, lower: 0x1D51E },
+  doubleStruck: { upper: 0x1D538, lower: 0x1D552, digits: 0x1D7D8 },
+  monospace: { upper: 0x1D670, lower: 0x1D68A, digits: 0x1D7F6 },
+  sans: { upper: 0x1D5A0, lower: 0x1D5BA, digits: 0x1D7E2 },
+  sansBold: { upper: 0x1D5D4, lower: 0x1D5EE, digits: 0x1D7EC },
+};
+
+const unicodeFontExceptions: Partial<Record<UnicodeFontId, Record<string, string>>> = {
+  italic: { h: "ℎ" },
+  script: {
+    B: "ℬ", E: "ℰ", F: "ℱ", H: "ℋ", I: "ℐ", L: "ℒ", M: "ℳ", R: "ℛ",
+    e: "ℯ", g: "ℊ", o: "ℴ",
+  },
+  fraktur: { C: "ℭ", H: "ℌ", I: "ℑ", R: "ℜ" },
+  doubleStruck: {
+    C: "ℂ", H: "ℍ", N: "ℕ", P: "ℙ", Q: "ℚ", R: "ℝ", Z: "ℤ",
+  },
+};
+
+function convertUnicodeFont(value: string, font: UnicodeFontId) {
+  if (font === "normal") return value;
+  const ranges = unicodeFontRanges[font];
+  if (!ranges) return value;
+
+  return Array.from(value, (character) => {
+    const exception = unicodeFontExceptions[font]?.[character];
+    if (exception) return exception;
+
+    const codePoint = character.codePointAt(0) ?? 0;
+    if (codePoint >= 65 && codePoint <= 90) {
+      return String.fromCodePoint(ranges.upper + codePoint - 65);
+    }
+    if (codePoint >= 97 && codePoint <= 122) {
+      return String.fromCodePoint(ranges.lower + codePoint - 97);
+    }
+    if (ranges.digits && codePoint >= 48 && codePoint <= 57) {
+      return String.fromCodePoint(ranges.digits + codePoint - 48);
+    }
+    return character;
+  }).join("");
+}
+
+function FontStudio() {
+  const [draft, setDraft] = useState("hello lovely");
+  const [selectedFont, setSelectedFont] = useState<UnicodeFontId>("script");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+
+  const convertedText = convertUnicodeFont(draft, selectedFont);
+
+  const copyConvertedText = async () => {
+    if (!convertedText.trim()) return;
+    try {
+      await navigator.clipboard.writeText(convertedText);
+      setCopyState("copied");
+      window.setTimeout(() => setCopyState("idle"), 1700);
+    } catch {
+      setCopyState("error");
+      window.setTimeout(() => setCopyState("idle"), 2400);
+    }
+  };
+
+  return (
+    <section className="home-font-studio" aria-label="Font converter">
+      <div className="font-studio-deco font-studio-deco-top" aria-hidden="true">୨୧</div>
+      <div className="font-studio-heading">
+        <span className="font-studio-icon" aria-hidden="true">Aa</span>
+        <p className="eyebrow">your little writing corner</p>
+        <h2>Font Studio</h2>
+        <p>Type a little something and give it a new look.</p>
+      </div>
+
+      <label className="font-studio-input-label" htmlFor="miumi-font-input">YOUR WORDS</label>
+      <textarea
+        id="miumi-font-input"
+        className="font-studio-input"
+        value={draft}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          setCopyState("idle");
+        }}
+        maxLength={240}
+        rows={3}
+        placeholder="Write something lovely..."
+      />
+      <div className="font-studio-input-meta">
+        <span>♡ your text stays right here</span>
+        <span>{draft.length}/240</span>
+      </div>
+
+      <div className="font-studio-style-heading">
+        <span>CHOOSE YOUR FONT</span>
+        <span>✧</span>
+      </div>
+      <div className="font-studio-style-list">
+        {unicodeFontStyles.map((style) => (
+          <button
+            key={style.id}
+            type="button"
+            className={"font-studio-style-option" + (selectedFont === style.id ? " is-selected" : "")}
+            onClick={() => {
+              setSelectedFont(style.id);
+              setCopyState("idle");
+            }}
+            aria-pressed={selectedFont === style.id}
+          >
+            <span className="font-studio-style-sample">{convertUnicodeFont("Aa Bb 123", style.id)}</span>
+            <span className="font-studio-style-copy">
+              <strong>{style.label}</strong>
+              <small>{style.description}</small>
+            </span>
+            {selectedFont === style.id && <span className="font-studio-style-check" aria-hidden="true">✓</span>}
+          </button>
+        ))}
+      </div>
+
+      <div className="font-studio-output">
+        <div className="font-studio-output-top">
+          <span>YOUR NEW LOOK</span>
+          <span>♡</span>
+        </div>
+        <p className="font-studio-output-text" aria-live="polite">
+          {convertedText || "Your pretty text will appear here..."}
+        </p>
+        <button
+          type="button"
+          className="font-studio-copy-button"
+          onClick={() => void copyConvertedText()}
+          disabled={!convertedText.trim()}
+        >
+          <span aria-hidden="true">{copyState === "copied" ? "✓" : "▢"}</span>
+          {copyState === "copied" ? "Copied!" : copyState === "error" ? "Couldn't copy — try again" : "Copy styled text"}
+        </button>
+      </div>
+      <p className="font-studio-footnote">
+        Copy-ready Unicode styles for bios, captions & messages. Some characters may look different across apps.
+      </p>
+      <div className="font-studio-deco font-studio-deco-bottom" aria-hidden="true">♡ ⋆</div>
+    </section>
   );
 }
 
