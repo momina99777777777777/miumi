@@ -6,7 +6,7 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Miumi World — Premium, Picks, Support & Marketplace" },
-      { name: "description", content: "Explore Miumi Premium, affiliate picks, donations, and the community marketplace." },
+      { name: "description", content: "Explore Miumi Premium, affiliate picks, donations, the marketplace, and community reviews." },
     ],
   }),
   component: AffiliateShopPage,
@@ -180,7 +180,7 @@ function AffiliateShopPage() {
                 <p style={{ textAlign: "right", color: "#a58b97", fontSize: 11, margin: "5px 0 12px" }}>{reviewMessage.length}/600</p>
                 <button type="submit" disabled={!reviewsConfigured || reviewSubmitting} style={{ width: "100%", border: 0, borderRadius: 999, padding: "13px 18px", background: "linear-gradient(135deg, #f5dce7, #eee3fa)", color: "#754d60", fontWeight: 900, cursor: reviewSubmitting ? "wait" : "pointer", opacity: !reviewsConfigured ? 0.55 : 1 }}>{reviewSubmitting ? "Submitting..." : "Submit review ✨"}</button>
                 {reviewNotice && <p role="status" style={{ color: "#795969", fontSize: 13, lineHeight: 1.6 }}>{reviewNotice}</p>}
-                <p style={{ color: "#9b8790", fontSize: 11, lineHeight: 1.6 }}>Please don't include private contact details or sensitive personal information.</p>
+                <p style={{ color: "#9b8790", fontSize: 11, lineHeight: 1.6 }}>Your review will be publicly visible to other visitors. Please do not include private contact details or sensitive personal information.</p>
               </form>
               <div>
                 <h2 style={{ margin: "0 0 14px", color: "#684957", fontFamily: "Georgia, serif", fontWeight: 500 }}>Visitor reviews</h2>
