@@ -196,7 +196,7 @@ function AffiliateShopPage() {
                       <time dateTime={review.date} style={{ color: "#ad98a1", fontSize: 11 }}>{new Date(review.date).toLocaleDateString()}</time>
                     </article>)}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           )}
